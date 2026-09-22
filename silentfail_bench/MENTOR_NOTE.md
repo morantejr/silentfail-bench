@@ -153,3 +153,54 @@ by critic scoring, not generation.
 Extrapolating to n=1,000 locally: roughly 15 hours. Via an inference API,
 roughly $5-25 and a couple of hours. True reward models add a separate local
 cost — see the throughput note in DEFECTS.md.
+
+---
+
+# 8. A structural limit that n cannot fix (found 2026-09-22, profile B setup)
+
+SWE-bench Verified is **500 instances across only 12 repositories**, and the
+distribution is severely imbalanced:
+
+| repo | instances | share |
+|---|---|---|
+| django/django | 231 | **46.2%** |
+| sympy/sympy | 75 | 15.0% |
+| sphinx-doc/sphinx | 44 | 8.8% |
+| matplotlib/matplotlib | 34 | 6.8% |
+| scikit-learn/scikit-learn | 32 | 6.4% |
+| *(7 more)* | 83 | 16.6% |
+| pallets/flask | 1 | 0.2% |
+
+The primary estimand is held-out ΔAUROC **across repositories**, so repo is the
+clustering unit and the effective sample size is not n. With mean cluster size
+41.7 — inflated to 129.2 by the imbalance — the design effect is severe:
+
+| ICC | design effect | effective n (of 500) |
+|---|---|---|
+| 0.02 | 3.56 | **140** |
+| 0.05 | 7.41 | **67** |
+| 0.10 | 13.82 | **36** |
+
+**This is a worse problem than the n=200 shortfall, and adding trajectories
+does not solve it.** My earlier power simulations assumed one row per cluster
+(groups = rows), which was optimistic. Under repo clustering, evaluating all
+500 Verified instances may carry the power of roughly 67–140 independent
+observations. A 70/30 repo split leaves about **4 test repos**, which is far
+too few for a stable cluster bootstrap.
+
+### Consequences
+
+1. **n is the wrong lever.** 200 → 2,000 trajectories over 12 repos buys
+   within-cluster data that the design effect heavily discounts.
+2. **Repos are the scarce resource**, not instances.
+3. **The unit of generalization may have to change.** Either widen the task
+   pool beyond Verified (SWE-Gym, SWE-smith, or multiple benchmarks) to obtain
+   more repositories, or retreat from "held-out repos" to "held-out instances"
+   and state plainly that cross-repo generalization is untested.
+
+### Next measurement
+
+The ICC is assumed above, not measured. It should be estimated directly from
+pilot data (variance of per-repo failure rates relative to binomial), which
+turns this table from a warning into a number. That is the single highest-value
+statistic remaining for the design.
