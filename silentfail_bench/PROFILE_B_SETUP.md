@@ -61,7 +61,14 @@ scaling; at 4.23 GB per instance image that is ~4 instances resident.
 ## Validation — always run the oracle controls first
 
 If the known-correct answer does not resolve, the oracle is broken and every
-downstream number is fiction. This caught a fatal bug in profile A.
+downstream number is fiction. This caught a fatal bug in profile A, where a
+missing numpy made *every* trajectory score g=0 — a 100% failure rate that
+looked like a finding.
+
+The no-op control matters as much as the gold one: an empty patch is
+short-circuited as `empty_patch` without running anything, so only a
+**non-empty patch that applies cleanly and fixes nothing** proves the harness
+actually executes tests and can fail them.
 
 ```bash
 .venv-swebench/bin/python -m swebench.harness.run_evaluation \
@@ -73,7 +80,7 @@ downstream number is fiction. This caught a fatal bug in profile A.
 |---|---|---|
 | gold patch | resolved | **resolved 1/1, 33 s** ✅ |
 | empty patch | not resolved | classified `empty_patch`, short-circuited ✅ |
-| non-empty no-op patch | not resolved, tests actually run | see `negctl2` |
+| non-empty no-op patch | not resolved, tests actually run | **completed 1, unresolved 1, 27 s** ✅ |
 
 ## Measured cost
 
