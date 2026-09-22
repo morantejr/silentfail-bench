@@ -1,0 +1,336 @@
+% SilentFail-Bench proposal --- revision per MAKE-OR-BREAK checklist
+\documentclass[11pt]{article}
+\usepackage[margin=0.9in]{geometry}
+\usepackage{amsmath,amssymb,booktabs,enumitem,hyperref,tabularx,array}
+\hypersetup{colorlinks=true,allcolors=teal!50!black}
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{0pt}
+\newcommand{\arx}[1]{\href{https://arxiv.org/abs/#1}{arXiv:#1}}
+\newcommand{\gzero}{g{=}0}
+\newcommand{\DeltaAUROC}{\Delta\mathrm{AUROC}}
+
+\title{\textbf{SilentFail-Bench: Beyond-Score Detection of Critic Blind Spots\\[-2pt]
+in Critic-Selected LLM-Agent Trajectories}\\[4pt]
+\large Research Proposal --- AAAI workshop style}
+\author{Joseph M. Morante Jr.\\Algoverse}
+\date{September 2026}
+
+\begin{document}
+\maketitle
+\vspace{-1em}
+
+\begin{abstract}
+\noindent
+When LLM agents commit by best-of-$n$ (or related) selection under an imperfect critic, selection concentrates Goodhart errors: high selecting-critic score, verified task failure.
+We call these events \emph{critic blind spots}.
+\textbf{Primary unit of analysis:} one completed \emph{trajectory} $\tau$; gold $g(\tau)\in\{0,1\}$ is trajectory-level task success (e.g., SWE-bench tests), never a claim that every intermediate step was invalid.
+\textbf{Open cell:} among critic-selected trajectories, does audit-panel uncertainty $u$ improve held-out discrimination of $\gzero$ \emph{beyond} the selecting-critic score $c$, under a \emph{disjoint} selection-critic vs audit-panel design?
+We propose \textbf{SilentFail-Bench}: a reproducible offline protocol with a frozen logistic combining model, repository-level train/test splits, a 200-trajectory pilot that sets power and go/no-go, and a quality-controlled diversity analysis (association, not causal mediation by default).
+A null is first-class and safety-relevant.
+\end{abstract}
+
+\section{Motivation and Main Claim}
+
+\paragraph{Why it matters.}
+Agent failures compound mid-task~\cite{agentforesight,detectrepair,falsesuccess}.
+Many scaffolds select among candidates using a critic score~\cite{lightman,mathshepherd,agentprm}.
+Under Goodhart and the winner's curse in best-of-$n$~\cite{gao2023,inferencetimehacking,caution,minin}, optimizing proxy $c$ enriches the \emph{selected} set for critic mistakes.
+Repair needs a trigger~\cite{reflexion}.
+Prior UQ either changes \emph{selection} (pessimistic BoN)~\cite{coste,caution,urm}, filters unconditionally, or uses agent verbal confidence (weak early)~\cite{laststep}.
+None answer: given the trajectory the agent already committed to, does a separate audit signal $u$ still help beyond $c$?
+
+\paragraph{Main claim (selection-bias / Goodhart).}
+Conditional on critic selection, disagreement among a \emph{disjoint} audit panel is associated with residual information about trajectory failure beyond $c$.
+Lower pairwise error correlation across quality-matched panels is \emph{associated} with larger residual detection (mechanism analysis; not a causal mediation claim unless diversity is randomized under fixed quality).
+Falsifiable null: even diverse panels share blind spots under selection.
+
+\paragraph{What we do not claim.}
+We do not invent ``silent failures''~\cite{falsesuccess}; do not propose a new auditor~\cite{agentforesight}; do not claim first use of RM uncertainty~\cite{urm,coste,caution}.
+Novelty is the \textbf{selection-conditional, beyond-score, held-out estimand on agent trajectories with disjoint audit panels + pilot-powered SilentFail-Bench}.
+
+\section{Notation (locked)}
+
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item $\tau$: one completed agent trajectory (primary observation).
+  \item $\mathrm{sel}$: the selection event that committed $\tau$ (best-of-$n$ over candidate trajectories, or top-$K$ integer retention from a fixed pool; defined per experiment).
+  \item $c$: score from the \emph{selection critic} $c_{\mathrm{sel}}$ on the committed $\tau$ (higher $c$ $=$ predicted higher quality / success).
+  \item $u$: disagreement statistic from an \emph{audit panel} (higher $u$ $=$ more disagreement).
+  \item $g(\tau)\in\{0,1\}$: trajectory-level gold; $g{=}1$ iff verified task success (unit tests / env reward). Positive class for AUROC: $\gzero$ (failure).
+  \item $n$: candidate-pool size for best-of-$n$ (select top-1).
+  \item $K$: integer number retained under top-$K$ filtering (not a percent of small $n$).
+  \item $m$: audit-panel size.
+  \item $b$: selective-verification budget (fraction of selected trajectories flagged for review).
+\end{itemize}
+
+\section{Related Work: Crowded Neighborhood, Open Cell}
+
+\begin{table}[h]
+\centering\footnotesize
+\begin{tabular}{@{}p{0.24\linewidth}p{0.38\linewidth}p{0.30\linewidth}@{}}
+\toprule
+\textbf{Neighbor} & \textbf{What they do} & \textbf{Difference} \\
+\midrule
+False success~\cite{falsesuccess}
+& Self-declared done vs env gold
+& Label $=$ agent claim, not critic-selected high-$c$ trajectory \\
+AgentForesight; detect+repair~\cite{agentforesight,detectrepair}
+& Online auditors / telemetry + rollback
+& Not held-out $c$ vs $c{+}u$ under critic $\mathrm{sel}$ \\
+Last Step Matters~\cite{laststep}
+& Early verbal/perplexity UQ weak
+& Different $u$; not critic-panel residual test \\
+CAUTION; mini-N~\cite{caution,minin}
+& UQ changes BoN \emph{selection} / guards false accept
+& Selection policy $\neq$ post-selection residual detection \\
+URM/URME; ensembles; RM$\to$judge~\cite{urm,coste,eisenstein,askjudge}
+& Unconditional UQ / filter / route prefs
+& Non-agentic or not conditioned on agent $\mathrm{sel}$ \\
+PRMs / AgentPRM~\cite{lightman,agentprm,genver}
+& Score and select
+& No beyond-score held-out $\DeltaAUROC$ on selected trajectories \\
+Judge disagreement in RLHF~\cite{rlhffails}
+& Taxonomy of hacking / judge disagreement
+& Training dynamics, not agent-trajectory post-selection audit \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Critical gap.}
+To our knowledge, no public evaluation jointly reports:
+(i)~held-out $\DeltaAUROC$ of audit uncertainty beyond selecting-critic score,
+(ii)~conditional on critic selection of LLM-agent trajectories,
+(iii)~trajectory-verified gold,
+(iv)~a disjoint selection-critic vs audit-panel design, and
+(v)~quality-controlled diversity comparisons.
+Closest work uses uncertainty to \emph{change} BoN selection~\cite{caution,urm,minin}, not to detect residual failure \emph{after} selection.
+
+\section{Gold Label and Unit of Analysis}
+
+\paragraph{Primary endpoint.}
+One observation $=$ one selected trajectory $\tau$.
+$g(\tau)$ is trajectory-level verified success/failure.
+A failed final test suite means the \emph{trajectory} failed; it does \textbf{not} prove that every intermediate action was invalid.
+A \emph{critic blind spot} is a selected trajectory with high $c$ and $\gzero$.
+
+\paragraph{How many observations.}
+Each trajectory contributes \textbf{exactly one} primary observation $(c,u,g,\mathrm{controls})$.
+Train/test splits and bootstrap CIs are clustered by trajectory (and by repository when splitting).
+
+\paragraph{Secondary (optional, clearly approximate).}
+Step-level claims use Math-Shepherd-style Monte-Carlo rollouts from a state (``still on a succeeding path'')~\cite{mathshepherd}, reported with rollout-noise sensitivity and a hierarchical model clustered by trajectory.
+Step labels are never treated as exact oracles.
+
+\section{Selection Critic vs Audit Panel (Leakage Control)}
+
+\paragraph{Disjoint (primary).}
+Selection critic $c_{\mathrm{sel}}$ chooses $\tau$.
+A separate frozen audit panel $\{c_1,\ldots,c_m\}$ with $c_{\mathrm{sel}}\notin\{c_1,\ldots,c_m\}$ produces $u$.
+This is the clean beyond-score test.
+
+\paragraph{Shared (ablation only).}
+$c_{\mathrm{sel}}$ is included in the panel (deployment-realistic, coupled).
+Reported separately; not the primary confirmatory contrast.
+
+\paragraph{Definitions of $c$ and $u$ (primary).}
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item $c := c_{\mathrm{sel}}(\tau)$, the selecting critic's score on the committed trajectory.
+  \item Rank-normalize each audit critic's scores using \emph{training-split} rank parameters only (frozen at test time).
+  \item Primary $u :=$ sample standard deviation of the $m$ rank-normalized audit scores on $\tau$.
+  \item Exploratory $u$: range; mean pairwise rank disagreement (labeled exploratory).
+\end{itemize}
+
+\paragraph{Combining model (frozen, named).}
+Let $x_{\mathrm{ctrl}}=(\mathrm{length},\,\mathrm{step\text{-}count},\,\mathrm{mean\ agent\ entropy})$.
+Fit on training repositories only:
+\begin{align*}
+M_{c}:&\quad \Pr(\gzero)=\sigma(\beta_0+\beta_c c+\beta_{\mathrm{ctrl}}^\top x_{\mathrm{ctrl}}),\\
+M_{u}:&\quad \Pr(\gzero)=\sigma(\beta_0+\beta_u u+\beta_{\mathrm{ctrl}}^\top x_{\mathrm{ctrl}}),\\
+M_{c{+}u}:&\quad \Pr(\gzero)=\sigma(\beta_0+\beta_c c+\beta_u u+\beta_{\mathrm{ctrl}}^\top x_{\mathrm{ctrl}}).
+\end{align*}
+Held-out AUROCs use predicted failure probabilities.
+\[
+\DeltaAUROC := \mathrm{AUROC}_{\mathrm{held\text{-}out}}(M_{c{+}u})-\mathrm{AUROC}_{\mathrm{held\text{-}out}}(M_{c}).
+\]
+Also report $M_{u}$ alone, AUPRC (class imbalance), LR test for $\beta_u$ in $M_{c{+}u}$, and trajectory-/repo-clustered bootstrap 95\% CIs for $\DeltaAUROC$.
+
+\paragraph{Confirmatory vs exploratory.}
+\textbf{Confirmatory:} disjoint-panel $\DeltaAUROC$ at the anchor (diverse vs quality-matched seed panel).
+\textbf{Exploratory:} shared-panel ablation; alternate $u$ stats; secondary step labels; full pressure$\times$diversity grid; E4--E7.
+Multiple exploratory slices use BH-FDR or are clearly marked non-confirmatory.
+
+\section{Pilot, Power, and Compute}
+
+\paragraph{200-trajectory pilot (Stage 0; before full matrix).}
+Anchor configuration only. Report: \#trajectories; \#selection decisions logged; selected-set failure count and rate with CI; $c$ and $u$ distributions; $c$--$u$ correlation (range restriction); exclusions.
+
+\paragraph{Go/no-go (numeric thresholds set from pilot, not hopes).}
+Continue to Stage 1 only if:
+(i)~enough $\gzero$ cases in the selected set for useful precision on $\DeltaAUROC$ (pilot simulation sets the count), and
+(ii)~$M_{c}$ alone does not already saturate (held-out AUROC headroom for $u$).
+Planning assumption only (not a result): failure rates on hard agent benches are often non-trivial; the pilot replaces any 10--20\% target.
+
+\paragraph{Power.}
+Simulation-based power using observed pilot base rate, within-repo clustering, and the train/test split.
+Predeclare minimum detectable $\DeltaAUROC$ worth pursuing (set after pilot; planning placeholder $\DeltaAUROC\geq 0.03$ pending pilot).
+Report required trajectories/failures for 80\% and 90\% power.
+
+\paragraph{Compute budget (planning; refine after pilot).}
+\begin{table}[h]
+\centering\footnotesize
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Stage} & \textbf{Rollouts} & \textbf{Critic calls (order)} & \textbf{Shrink-if-needed} \\
+\midrule
+Pilot (200 traj.)
+& 200 $\times$ $n{=}16$ gens
+& $200\cdot 16$ select $+$ $200\cdot m$ audit
+& Cut $n$ or $m$ first \\
+Anchor study
+& Pilot-informed $N_\tau$
+& $\propto N_\tau\cdot(n+m)$
+& Drop WebArena; $m{=}2$ \\
+Full matrix
+& Anchor $\times$ sweeps
+& $\times$ diversity $\times$ $n$-grid
+& Exploratory only; FDR \\
+\bottomrule
+\end{tabular}
+\end{table}
+\noindent Report tokens/GPU-hours, wall time, and \$ cost after the pilot's measured per-trajectory cost.
+If pilot cost or base rate makes the matrix infeasible, keep confirmatory anchor only.
+
+\section{Selection-Pressure Specification}
+
+Best-of-$n$ and top-$K$ are \textbf{not} interchangeable.
+
+\paragraph{Best-of-$n$ (primary pressure axis).}
+Candidate pool size $=n$; retain exactly 1 (argmax of $c_{\mathrm{sel}}$).
+Sweep $n\in\{4,8,16,32\}$.
+Anchor: $n{=}16$ (not paired with a percent).
+
+\paragraph{Top-$K$ filtering (separate experiment).}
+Fix pool size $M{=}64$ candidates; retain integer $K\in\{1,2,4,8\}$.
+Never write ``$k{=}5\%$ of $n{=}16$'' (undefined / sub-integer).
+
+For every pressure cell, the paper will list $(M\text{ or }n,\ \text{retained},\ \text{rule})$.
+
+\section{Diversity vs Critic Quality}
+
+Diversity interventions (seed / data / base / public-zoo) are separate conditions, not one assumed ordinal scale unless the pilot supports ordering.
+
+Before comparing panels on $\DeltaAUROC$:
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item Match or regress on per-critic quality (RewardBench-style accuracy/calibration and/or held-out ranking accuracy on train repos).
+  \item Report per-critic accuracy alongside pairwise error correlation on gold.
+  \item Primary diversity contrast: quality-matched seed panel vs quality-matched base-diverse panel at fixed $m$.
+\end{itemize}
+Default claim language: error correlation is \emph{associated} with residual detection.
+``Mediation'' reserved only if treatment (diversity) is randomized under fixed quality with stated assumptions; otherwise ``mechanism analysis.''
+
+\section{Preregistered Anchor}
+
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item \textbf{Tasks:} SWE-bench Verified; split by repository (70/30, seed 20260922).
+  \item \textbf{Agent scaffold:} mini-swe-agent (commit pinned in \texttt{silentfail\_bench/configs/anchor.yaml} before pilot).
+  \item \textbf{Score rule:} $c$ $=$ selection-critic scalar on the \emph{full} committed trajectory text (messages + patch); BoN ranks full trajectories; no per-step mean.
+  \item \textbf{Selection critic:} Skywork-Reward-V2-Qwen3-8B (HF id in anchor config); $c=c_{\mathrm{sel}}(\tau)$.
+  \item \textbf{Audit panel (disjoint):} $m{=}4$ public RMs listed in anchor config; none equal to $c_{\mathrm{sel}}$.
+  \item \textbf{Selection rule:} best-of-$n$ with $n{=}16$, retain top-1; $T{=}0.7$; max steps 50; timeout 1800s.
+  \item \textbf{$u$:} std.\ of train-fit rank-normalized audit scores.
+  \item \textbf{Combining model:} logistic $M_{c}$, $M_{c{+}u}$; controls $=$ length, step-count, mean entropy.
+  \item \textbf{Compute:} vLLM OpenAI-compatible server and/or hosted API; logistic fit on CPU.
+  \item \textbf{Primary endpoint:} held-out $\DeltaAUROC$ (failure positive).
+  \item \textbf{Primary contrast:} quality-matched diverse vs seed audit panel (disjoint).
+  \item \textbf{CI:} repository-clustered bootstrap 95\%.
+  \item \textbf{Exclusions:} empty candidate pools; critic NaN; timeout; max steps exceeded.
+  \item \textbf{Stage-0 code:} \texttt{silentfail\_bench/} (schema, mock/vLLM runner, pilot report, power helpers).
+\end{itemize}
+
+\section{Experiments}
+
+\begin{table}[h]
+\centering\footnotesize
+\begin{tabular}{@{}lp{0.78\linewidth}@{}}
+\toprule
+\textbf{ID} & \textbf{Maps to / design / metric} \\
+\midrule
+E0 Pilot
+& Vacuousness + power inputs: failure rate, $c$/$u$ dist., $c$--$u$ corr., $M_c$ saturation; go/no-go \\
+E1
+& Confirmatory beyond-score: held-out $\DeltaAUROC$ at anchor; exploratory vs $n\in\{4,8,16,32\}$ \\
+E2
+& Diversity vs seed at fixed quality/$m$; association with error correlation (mechanism) \\
+E3
+& Pressure $\times$ diversity: $\DeltaAUROC$ vs $\log n$ (operational $n$); exploratory \\
+E4
+& Cheap $u$ (dropout / quantile / self-consistency) vs ensemble; exploratory \\
+E5
+& Trajectory failure taxonomy labels; per-class $\DeltaAUROC$; exploratory \\
+E6
+& WebArena / ALFWorld generality; exploratory if compute allows \\
+E7
+& Offline selective verification (not adaptive recovery): fixed budget $b\in\{5\%,10\%,20\%\}$;
+  rank by $M_{c{+}u}$ vs $M_c$ vs $M_u$ vs length/entropy/step-count;
+  report failures caught, false alarms, precision@$b$, recall@$b$, cost per extra failure caught;
+  alert action $=$ queue for human review / alternate critic / stop (simulated) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Controls vs baselines.}
+Length, step-count, and entropy enter $M_c$/$M_{c{+}u}$ as covariates so residual $u$ is not a proxy for verbosity or horizon.
+The same features also appear as operational baselines in E7.
+
+\paragraph{Robustness.}
+Repo holdouts; AUPRC; calibration (ECE); sensitivity to $u$ statistic, normalization, panel composition; report selected-set range restriction ($c$--$u$ corr.) as a result.
+
+\section{Ideal Results (pilot-informed)}
+
+\begin{enumerate}[leftmargin=*,itemsep=1pt]
+  \item Pilot yields a measurable selected-set failure rate with CI (replaces any fixed 10--20\% hope).
+  \item Disjoint-panel held-out $\DeltaAUROC > 0$ at anchor with clustered CI excluding 0 (or a clean null).
+  \item Quality-matched lower error correlation is associated with larger $\DeltaAUROC$.
+  \item Exploratory: flatter $\DeltaAUROC$ decay in $\log n$ for diverse vs seed panels.
+  \item E7: at fixed $b$, $M_{c{+}u}$ catches more failures per review than $M_c$ alone.
+  \item Alt.\ ideal: diverse-panel null $\Rightarrow$ negative-result safety paper~\cite{eisenstein}.
+\end{enumerate}
+
+\section{Limitations and Staging}
+
+Trajectory $g$ does not credit-assign steps; secondary step labels are noisy.
+Offline E7 $\neq$ adaptive recovery.
+Critic scale mismatch mitigated by train-only rank-norm, not eliminated.
+Logging cost may force confirmatory-only scope.
+Range restriction may erase headroom (informative).
+Scaffold/critic hashes must be frozen before Stage 0.
+
+\textbf{Stage 0:} 200-traj.\ pilot + go/no-go + power + cost.
+\textbf{Stage 1:} confirmatory anchor only.
+\textbf{Stage 2:} exploratory matrix as affordable.
+
+\section*{References}
+\begingroup\footnotesize
+\begin{thebibliography}{99}
+\bibitem{lightman} Lightman et al.\ Let's Verify Step by Step. \arx{2305.20050}, 2023.
+\bibitem{mathshepherd} Wang et al.\ Math-Shepherd. \arx{2312.08935}, 2023.
+\bibitem{genver} Zhang et al.\ Generative Verifiers. \arx{2408.15240}, 2024.
+\bibitem{agentprm} AgentPRM. \arx{2511.08325}, 2025.
+\bibitem{reflexion} Shinn et al.\ Reflexion. \arx{2303.11366}, 2023.
+\bibitem{urm} Lou et al.\ Uncertainty-aware Reward Model (URM/URME). \arx{2410.00847}, ICLR 2025.
+\bibitem{coste} Coste et al.\ Reward Model Ensembles Help Mitigate Overoptimization. \arx{2310.02743}, 2023.
+\bibitem{eisenstein} Eisenstein et al.\ Helping or Herding? Reward Model Ensembles. \arx{2312.09244}, 2023.
+\bibitem{gao2023} Gao et al.\ Scaling Laws for Reward Model Overoptimization. \arx{2210.10760}, 2022.
+\bibitem{inferencetimehacking} Khalaf et al.\ Inference-Time Reward Hacking in LLMs. \arx{2506.19248}, 2025.
+\bibitem{caution} Yu, Wu, and Block.\ From Curiosity to Caution: Mitigating Reward Hacking for Best-of-$N$ with Pessimism. \arx{2604.04648}, ICLR 2026.
+\bibitem{minin} Best of mini-N In-loop Sampling (contextual quality / false acceptance under BoN). \arx{2510.04087}, 2025.
+\bibitem{falsesuccess} Advani.\ From Confident Closing to Silent Failure: Characterizing False Success in LLM Agents. \arx{2606.09863}, 2026.
+\bibitem{agentforesight} AgentForesight: Online Auditing for Early Failure Prediction. \arx{2605.08715}, 2026.
+\bibitem{detectrepair} Real-Time Detection and Repair of LLM Agent Failures. \arx{2608.02464}, 2026.
+\bibitem{laststep} Last Step Matters: Early Uncertainty Cannot Predict Failure in Long-Horizon Agents. \arx{2608.29685}, 2026.
+\bibitem{askjudge} Xu et al.\ Ask a Strong LLM Judge when Your Reward Model is Uncertain. NeurIPS 2025.
+  \href{https://neurips.cc/virtual/2025/poster/117907}{poster}.
+\bibitem{rlhffails} When RLHF Fails: Mechanistic Taxonomy of Reward Hacking and Judge Disagreement. \arx{2606.03238}, 2026.
+\end{thebibliography}
+\endgroup
+
+\end{document}

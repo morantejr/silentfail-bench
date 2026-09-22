@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "silentfail_bench/trajectory_log.schema.json",
+  "title": "SilentFail trajectory log row",
+  "description": "Exactly one observation per committed trajectory tau.",
+  "type": "object",
+  "required": [
+    "trajectory_id",
+    "instance_id",
+    "repo",
+    "split",
+    "seed",
+    "n_candidates",
+    "selection_rule",
+    "c",
+    "c_sel_id",
+    "audit_scores",
+    "u",
+    "g",
+    "length_chars",
+    "step_count",
+    "mean_agent_entropy",
+    "excluded",
+    "agent_git_commit",
+    "schema_version"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1.0" },
+    "trajectory_id": { "type": "string" },
+    "instance_id": { "type": "string" },
+    "repo": { "type": "string" },
+    "split": { "type": "string", "enum": ["train", "test", "pilot_unassigned"] },
+    "seed": { "type": "integer" },
+    "n_candidates": { "type": "integer", "minimum": 1 },
+    "selection_rule": { "type": "string", "enum": ["best_of_n"] },
+    "candidate_scores": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "c_sel scores for all n candidates before commit"
+    },
+    "c": {
+      "type": "number",
+      "description": "Selecting critic score of committed trajectory (whole-trajectory)"
+    },
+    "c_sel_id": { "type": "string" },
+    "audit_scores": {
+      "type": "object",
+      "additionalProperties": { "type": "number" },
+      "description": "Raw scores from each disjoint audit critic"
+    },
+    "audit_scores_rank_norm": {
+      "type": "object",
+      "additionalProperties": { "type": "number" }
+    },
+    "u": {
+      "type": "number",
+      "description": "Std of train-fit rank-normalized audit scores"
+    },
+    "g": {
+      "type": "integer",
+      "enum": [0, 1],
+      "description": "1 = trajectory task success (tests pass); 0 = failure. Not step credit."
+    },
+    "length_chars": { "type": "integer", "minimum": 0 },
+    "step_count": { "type": "integer", "minimum": 0 },
+    "mean_agent_entropy": { "type": ["number", "null"] },
+    "excluded": { "type": "boolean" },
+    "exclusion_reason": {
+      "type": ["string", "null"],
+      "enum": [null, "empty_candidate_pool", "critic_score_nan", "timeout", "max_steps_exceeded"]
+    },
+    "agent_git_commit": { "type": "string" },
+    "wall_time_sec": { "type": ["number", "null"] },
+    "backend": { "type": "string", "enum": ["vllm", "openai_compatible", "mock"] }
+  },
+  "additionalProperties": false
+}

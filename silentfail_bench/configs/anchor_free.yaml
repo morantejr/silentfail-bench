@@ -1,0 +1,180 @@
+# SilentFail-Bench — Stage-0 FREE-COMPUTE PILOT overlay
+# Derives from configs/anchor.yaml. Only the keys below differ; anything absent
+# inherits from anchor.yaml and stays frozen per FREEZES.md.
+#
+# PURPOSE: plumbing + observed-failure-rate pilot on free local compute.
+# Host measured 2026-09-22: Apple M4 Pro, 24 GB unified, 91 GB free, Python 3.9.6,
+# no Docker / podman / colima, no CUDA, no API keys.
+#
+# WHAT THIS CONFIG CAN AND CANNOT CLAIM  (read before quoting any number)
+#   CAN: end-to-end schema validity; real executed gold g; observed failure rate
+#        among SELECTED trajectories; AUROC(M_c) headroom check; go/no-go.
+#   CANNOT: the primary estimand. Held-out dAUROC across REPOS is not testable
+#        here (profile A has no repo field, and n=40 has no power). Treat any
+#        dAUROC printed by this profile as a smoke test, never as a result.
+
+stage: 0
+derives_from: configs/anchor.yaml
+profile: A_local_exec          # A_local_exec | B_swebench_colima
+pilot_n_trajectories: 40       # was 200
+
+selection:
+  rule: best_of_n
+  n: 4                         # was 16
+  retain: 1
+  temperature: 0.7
+  max_agent_steps: 3           # was 50 — wall-clock bound on local decode
+  per_trajectory_timeout_sec: 300   # was 1800
+
+# score_rule inherited verbatim from anchor.yaml (whole-trajectory c, no step mean).
+
+# ---------------------------------------------------------------------------
+# GOLD  — the binding constraint, not the models
+# ---------------------------------------------------------------------------
+gold:
+  blocker: >
+    Real SWE-bench Verified gold requires per-instance containers (official
+    harness is Docker-based). This host has no container runtime. Until one is
+    installed there is NO honest path to g on SWE-bench, at any model size.
+    Shrinking n or m does not relieve this; it is orthogonal to compute.
+  resolution_for_profile_A: >
+    Substitute a task family whose gold tests execute locally in-process, so g
+    is REAL (executed unit tests), not mocked. This buys a true failure rate and
+    a true AUROC(M_c) at the cost of the repo-level generalization claim.
+  mock_g_allowed: false        # runner.py hash-based g is CI-only from here on
+
+tasks:
+  family: local_exec_agent
+  dataset: evalplus/humanevalplus   # held-out `plus` tests = gold; base tests visible to agent
+  n_instances: 40
+  split_unit: problem_id       # anchor.yaml uses `repository`; that field does not exist here
+  split_note: >
+    problem_id split is NOT a repo split. It does not test cross-repo
+    generalization. Profile B restores split_unit: repository.
+
+# The agent is a real multi-step loop (edit -> run visible tests -> observe -> revise),
+# so trajectories remain multi-step tool-using, not single-shot completions.
+agent:
+  name: local_exec_agent
+  git_url: null
+  git_commit: PIN_AT_RUN      # this repo's own commit; mini-swe-agent pinned in profile B
+  model_backend: ollama       # OpenAI-compatible at /v1
+  base_url: http://127.0.0.1:11434/v1
+  model_name: qwen2.5-coder:7b      # ~4.7 GB Q4_K_M
+
+execution_sandbox:
+  runtime: subprocess
+  network: disabled
+  cwd: ephemeral_tmpdir
+  rlimits: {cpu_sec: 10, address_space_mb: 2048, nofile: 64}
+  wall_timeout_sec: 15
+  RISK: >
+    This executes model-generated code on the host. rlimits + tmpdir + no network
+    is mitigation, NOT a sandbox. Do not run profile A on a machine holding
+    synced work data without accepting that. Colima (profile B) is the real fix.
+
+# ---------------------------------------------------------------------------
+# CRITICS — honesty label is mandatory
+# ---------------------------------------------------------------------------
+critic_type: llm_judge
+is_true_reward_model: false
+critic_honesty_note: >
+  These are instruction-tuned chat models prompted for a 0-10 scalar, NOT trained
+  reward models. u is therefore judge-prompt disagreement, not RM ensemble
+  disagreement. Every artifact from this profile must say "LLM-as-judge panel".
+  Skywork-Reward-V2 et al. from anchor.yaml are unreachable here: no torch, no
+  CUDA, and Ollama serves chat models, not scalar RM heads.
+
+selection_critic:
+  id: c_sel_llama31_8b
+  hf_id: null
+  ollama_id: llama3.1:8b            # ~4.9 GB
+  role: c_sel
+  backend: ollama
+
+# Disjoint: none may equal selection_critic.ollama_id
+audit_panel:
+  m: 2                              # was 4
+  u_statistic: std_rank_normalized
+  rank_norm_fit: train_split_only   # NOTE: runner.py currently violates this (see report)
+  m_note: >
+    m=2 makes u a 2-point sample std, i.e. |a-b|/sqrt(2) — a disagreement
+    magnitude with no shape information. Adequate to prove plumbing; too thin to
+    interpret. Confirmatory run must return to m>=4.
+  members:
+    - id: audit_0
+      ollama_id: gemma2:9b          # ~5.4 GB
+    - id: audit_1
+      ollama_id: mistral-nemo:12b   # ~7.1 GB
+
+quality_match:
+  metric: SKIPPED_IN_FREE_PILOT
+  reason: >
+    No RewardBench run and no held-out preference slice locally. Panels are
+    therefore NOT quality-matched, so the anchor.yaml primary contrast
+    (diverse vs seed panel) is out of scope for this profile.
+
+split:
+  unit: problem_id
+  train_frac: 0.7
+  split_seed: 20260922
+  hash_fn: sha256_stable            # NOT builtin hash() — see report defect #2
+
+exclusions:                         # inherited + two local ones
+  - empty_candidate_pool
+  - critic_score_nan
+  - timeout
+  - max_steps_exceeded
+  - judge_unparseable_score
+  - sandbox_error
+
+controls:
+  - length_chars
+  - step_count
+  # mean_agent_entropy dropped: Ollama /v1 returns no logprobs, so it is a
+  # constant-zero column (see report defect #5).
+
+paths:
+  instances_file: configs/pilot_instances_free.txt
+  log_dir: data/pilot_free
+  schema: schema/trajectory_log.schema.json
+
+compute:
+  preferred: ollama
+  allow_api: false
+  logistic_device: cpu
+
+budget_estimate:
+  download_gb: 22               # 4 Ollama models, one resident at a time
+  disk_free_gb: 91
+  pipeline_order: staged_by_model   # generate-all -> c_sel-all -> audit_0-all -> audit_1-all
+  pipeline_order_reason: >
+    anchor runner interleaves models per instance; on 24 GB that forces repeated
+    model swaps. Staging by model is required, not an optimization.
+  wall_clock_hours_est: [1.5, 2.5]
+  usd: 0
+
+go_no_go_overrides:
+  min_failures: 12              # not the 15 floor: n=40 cannot support it
+  max_mc_auroc: 0.90            # unchanged
+  power_source: observed_failure_rate
+  power_caveat: >
+    pilot.simulate_power is currently invalid (see report defect #4: ~0.40 false
+    positive rate under the true null). Fix before any power number is reported
+    to mentor.
+
+# ---------------------------------------------------------------------------
+# PROFILE B — restores the real claim; needs one install, still $0
+# ---------------------------------------------------------------------------
+profile_B_swebench_colima:
+  unlocks: real SWE-bench Verified gold, repo-level split, mini-swe-agent scaffold
+  requires: brew install colima docker && colima start --cpu 8 --memory 16 --disk 100
+  arch_caveat: >
+    Many SWE-bench instance images are x86_64 only; on M4 they run under
+    emulation. Budget minutes-per-instance, not seconds.
+  disk_gb_est: [30, 60]
+  overrides:
+    tasks: {family: swebench_verified, split_unit: repository, n_instances: 40}
+    agent: {name: mini-swe-agent, git_commit: PIN_AFTER_CLONE}
+    gold: {mock_g_allowed: false}
+    execution_sandbox: {runtime: colima_container}

@@ -1,0 +1,41 @@
+# --- LaTeX build artifacts ---
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+a1.log
+a2.log
+b1.log
+b2.log
+c1.log
+c2.log
+d1.log
+d2.log
+e1.log
+e2.log
+build.log
+build2.log
+
+# Rendered proposal page images (regenerate from the PDF)
+pages/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+.DS_Store
+
+# --- Derived data (regenerate: scripts/fetch_humaneval.py) ---
+silentfail_bench/data/humaneval/humaneval_plus_merged.json
+
+# --- Run outputs: keep reports, not raw trajectories ---
+silentfail_bench/data/pilot_free/*.jsonl
+silentfail_bench/data/pilot/*.jsonl
