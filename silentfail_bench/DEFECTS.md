@@ -141,3 +141,39 @@ runs to `grad/1e-6`, compounding toward ~1e300. Ridging the intercept at the
 same strength plus a trust region on `|delta|_inf` took it from warning on most
 fits to **1 in 600**, with null calibration unchanged (0.013) and
 power(u=1.5, n=160) = 0.82.
+
+---
+
+## Reward-model throughput on Apple Silicon — a claim corrected twice
+
+First measured at **58–116 s/score**, which suggested true RMs were an
+overnight job. That was **GPU contention**: Ollama was saturating Metal for the
+concurrently-running pilot. Re-measured on an idle GPU it looked like
+**0.3 s/score**, which suggested the opposite. Both readings over-generalized
+from one small model. Measured properly, across models, on the pilot's real
+trajectory lengths (255–4124 chars), warm:
+
+| model | size | s/score | n=2000 × 1 critic |
+|---|---|---|---|
+| Skywork-Reward-V2-Llama-3.2-1B | 1B | 0.75 | 25 min |
+| GRM-gemma2-2B | 2B | 0.72 | 24 min |
+| Skywork-Reward-V2-Qwen3-1.7B | 1.7B | 1.14 | 38 min |
+| GRM-Llama3.2-3B | 3B | 1.75 | 58 min |
+| **Skywork-Reward-V2-Llama-3.1-8B** | 8B | **133.98** | **74 hours** |
+
+The rule is **not** "reward models are fast". It is **"≤3B is fast, 8B
+thrashes"** — 16 GB of fp16 weights on a 24 GB machine pages rather than
+computes. Two lessons worth keeping:
+
+1. Never benchmark while another process holds the GPU.
+2. Never generalize a throughput number from one model size on a synthetic
+   input; the 8B is ~180× slower than the 2B, not ~4× as parameter count
+   would suggest.
+
+**Consequence:** a true-RM panel is viable locally at ≤3B (~2.4 h for n=2000
+across four models), which closes the construct gap for free. Scoring is cheap;
+**generation is the bottleneck**. That favors generation via an inference API
+with scoring on local RMs — an API cannot serve RM heads at all.
+
+Also unusable: `internlm/internlm2-1_8b-reward` — its custom tokenizer fails
+`convert_slow_tokenizer` on transformers 4.57.

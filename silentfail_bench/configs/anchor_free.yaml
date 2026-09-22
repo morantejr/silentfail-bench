@@ -178,3 +178,63 @@ profile_B_swebench_colima:
     agent: {name: mini-swe-agent, git_commit: PIN_AFTER_CLONE}
     gold: {mock_g_allowed: false}
     execution_sandbox: {runtime: colima_container}
+
+# ---------------------------------------------------------------------------
+# PROFILE C — TRUE reward models, all local, still $0
+#
+# Closes the construct gap that profiles A and B leave open: with LLM-as-judge
+# critics u is judge-prompt disagreement, but the proposal theorizes about
+# reward-model ensemble disagreement. These are genuine scalar
+# `*ForSequenceClassification` heads, so u is the quantity the design names.
+#
+# Measured on this host (M4 Pro / 24 GB / MPS), on the pilot's REAL trajectory
+# lengths (255-4124 chars), warm, one model resident at a time:
+#
+#   | model                          | size | s/score | n=2000     |
+#   |--------------------------------|------|---------|------------|
+#   | Skywork-Reward-V2-Llama-3.2-1B | 1B   |   0.75  |  25 min    |
+#   | GRM-gemma2-2B                  | 2B   |   0.72  |  24 min    |
+#   | Skywork-Reward-V2-Qwen3-1.7B   | 1.7B |   1.14  |  38 min    |
+#   | GRM-Llama3.2-3B                | 3B   |   1.75  |  58 min    |
+#   | Skywork-Reward-V2-Llama-3.1-8B | 8B   | 133.98  |  74 HOURS  |  <- unusable
+#
+# The 8B is 16 GB in fp16 on a 24 GB machine: it pages rather than computes.
+# The rule is NOT "reward models are fast" -- it is "<=3B is fast, 8B thrashes".
+# Full panel for n=2000 is ~2.4 h, so scoring is cheap and GENERATION is the
+# bottleneck. That argues for generation via an inference API and scoring via
+# local true RMs -- an API cannot serve RM heads at all.
+profile_C_true_rm:
+  critic_type: reward_model
+  is_true_reward_model: true
+  backend: transformers_mps
+  device: mps
+  dtype: float16
+  max_model_size_b: 3          # hard cap on this host; see table above
+  pipeline_order: staged_by_model
+  selection_critic:
+    id: c_sel_skywork_v2_qwen3_1_7b
+    hf_id: Skywork/Skywork-Reward-V2-Qwen3-1.7B
+    family: qwen3
+  audit_panel:
+    m: 3
+    members:
+      - {id: audit_0, hf_id: Ray2333/GRM-gemma2-2B-rewardmodel-ft,      family: gemma2}
+      - {id: audit_1, hf_id: Ray2333/GRM-Llama3.2-3B-rewardmodel-ft,    family: llama3.2}
+      - {id: audit_2, hf_id: Skywork/Skywork-Reward-V2-Llama-3.2-1B,    family: llama3.2}
+  disjointness:
+    checkpoint_level: honored     # c_sel is not a panel member
+    family_level: >
+      c_sel is the only Qwen3 model, so the selection critic shares no base
+      family with any auditor. audit_1 and audit_2 DO share a Llama-3.2 base
+      (different trainers and sizes). That is within-panel correlation, which
+      u legitimately measures, but it means the panel is less diverse than
+      four independent families and must not be described as fully diverse.
+  known_unusable:
+    - hf_id: internlm/internlm2-1_8b-reward
+      reason: tokenizer conversion fails on transformers 4.57 (convert_slow_tokenizer)
+    - hf_id: Skywork/Skywork-Reward-V2-Llama-3.1-8B
+      reason: 134 s/score on 24 GB (memory thrashing), 74 h for n=2000
+  validated:
+    discriminates: >
+      GRM-gemma2-2B on a worked example: correct +3.42, trivially-wrong -1.98,
+      buggy -9.11. Correct ordering with wide separation.
