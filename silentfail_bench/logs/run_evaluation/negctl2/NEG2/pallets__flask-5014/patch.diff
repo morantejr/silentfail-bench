@@ -1,0 +1,7 @@
+diff --git a/NEGATIVE_CONTROL.txt b/NEGATIVE_CONTROL.txt
+new file mode 100644
+index 0000000..b5c8f7e
+--- /dev/null
++++ b/NEGATIVE_CONTROL.txt
+@@ -0,0 +1 @@
++applies cleanly, fixes nothing
