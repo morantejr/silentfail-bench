@@ -231,3 +231,115 @@ def required_groups_for_power(
         "chosen_n_trajectories": (chosen * rows_per_group) if chosen else None,
         "grid": results,
     }
+
+
+# ---------------------------------------------------------------------------
+# Budgeted-escalation endpoints
+#
+# Global AUROC spends its power on the middle of the score distribution, which
+# no deployment acts on. The decision an escalation policy actually makes is
+# "audit the riskiest k% of selected trajectories", so precision@k and partial
+# AUROC at low FPR are both more decision-relevant AND potentially better
+# powered at fixed n. Whether they ARE better powered is an empirical question
+# -- see tools/endpoint_power_comparison.py.
+# ---------------------------------------------------------------------------
+
+def precision_at_k(y_fail: NDArray, scores: NDArray, k_frac: float = 0.10) -> float:
+    """Fraction of the top-k_frac highest-risk trajectories that really failed."""
+    y = np.asarray(y_fail).astype(int)
+    s = np.asarray(scores, float)
+    n = len(y)
+    k = max(1, int(round(k_frac * n)))
+    top = np.argsort(-s, kind="mergesort")[:k]
+    return float(y[top].mean())
+
+
+def lift_at_k(y_fail: NDArray, scores: NDArray, k_frac: float = 0.10) -> float:
+    """precision@k divided by the base failure rate. 1.0 = no better than random."""
+    base = float(np.asarray(y_fail).astype(int).mean())
+    if base <= 0:
+        return float("nan")
+    return precision_at_k(y_fail, scores, k_frac) / base
+
+
+def partial_auroc(y_fail: NDArray, scores: NDArray, max_fpr: float = 0.20) -> float:
+    """McClish-standardized partial AUROC over FPR in [0, max_fpr].
+
+    0.5 = chance within that region, 1.0 = perfect, so it is read on the same
+    scale as AUROC.
+    """
+    y = np.asarray(y_fail).astype(int)
+    s = np.asarray(scores, float)
+    if y.sum() == 0 or (1 - y).sum() == 0:
+        return float("nan")
+    order = np.argsort(-s, kind="mergesort")
+    y_sorted = y[order]
+    tp = np.cumsum(y_sorted)
+    fp = np.cumsum(1 - y_sorted)
+    tpr = tp / max(1, y.sum())
+    fpr = fp / max(1, (1 - y).sum())
+    tpr = np.concatenate([[0.0], tpr])
+    fpr = np.concatenate([[0.0], fpr])
+    keep = fpr <= max_fpr
+    if keep.sum() < 2:
+        return float("nan")
+    x, yv = fpr[keep], tpr[keep]
+    if x[-1] < max_fpr:                       # extend to the boundary
+        x = np.concatenate([x, [max_fpr]])
+        yv = np.concatenate([yv, [yv[-1]]])
+    area = float(np.trapz(yv, x))
+    # McClish standardization onto [0.5, 1]
+    min_area = 0.5 * max_fpr**2
+    max_area = max_fpr
+    return 0.5 * (1 + (area - min_area) / (max_area - min_area))
+
+
+ENDPOINTS = {
+    "auroc": lambda y, s: auroc_fast(y, s),
+    "precision_at_10pct": lambda y, s: precision_at_k(y, s, 0.10),
+    "precision_at_20pct": lambda y, s: precision_at_k(y, s, 0.20),
+    "partial_auroc_fpr20": lambda y, s: partial_auroc(y, s, 0.20),
+}
+
+
+def cluster_bootstrap_delta(
+    y_fail: NDArray,
+    scores_base: NDArray,
+    scores_aug: NDArray,
+    groups: Sequence,
+    *,
+    endpoint: str = "auroc",
+    n_boot: int = 2000,
+    alpha: float = 0.05,
+    seed: int = 0,
+) -> DeltaTest:
+    """Paired delta for ANY endpoint in ENDPOINTS, with group-clustered CI."""
+    fn = ENDPOINTS[endpoint]
+    y = np.asarray(y_fail).astype(int)
+    sb, sa = np.asarray(scores_base, float), np.asarray(scores_aug, float)
+    g = np.asarray(groups)
+    uniq = np.unique(g)
+    idx_by_group = {k: np.flatnonzero(g == k) for k in uniq}
+
+    a_base, a_aug = fn(y, sb), fn(y, sa)
+    rng = np.random.default_rng(seed)
+    deltas = np.full(n_boot, np.nan)
+    for b in range(n_boot):
+        drawn = rng.choice(uniq, size=len(uniq), replace=True)
+        idx = np.concatenate([idx_by_group[k] for k in drawn])
+        yb = y[idx]
+        if yb.sum() == 0 or yb.sum() == len(yb):
+            continue
+        d = fn(yb, sa[idx]) - fn(yb, sb[idx])
+        if np.isfinite(d):
+            deltas[b] = d
+
+    valid = deltas[~np.isnan(deltas)]
+    if valid.size < 50:
+        return DeltaTest(a_aug - a_base, a_base, a_aug, float("nan"), float("nan"),
+                         float("nan"), float("nan"), int(valid.size), len(uniq), alpha)
+    ci_lo, ci_hi = np.percentile(valid, [100 * alpha / 2, 100 * (1 - alpha / 2)])
+    p_one = float((valid <= 0).mean())
+    p_two = float(2 * min((valid <= 0).mean(), (valid >= 0).mean()))
+    return DeltaTest(a_aug - a_base, a_base, a_aug, float(ci_lo), float(ci_hi),
+                     p_one, min(1.0, p_two), int(valid.size), len(uniq), alpha, valid)

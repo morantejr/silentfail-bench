@@ -87,7 +87,14 @@ def fit_logistic_irls(
     X_aug = np.hstack([np.ones((n, 1)), X])
     beta = np.zeros(p + 1)
     reg_diag = np.full(p + 1, l2)
-    reg_diag[0] = 1e-6                      # near-free intercept, but not free
+    # Ridge the intercept at the same strength. With standardized features the
+    # intercept is just the base log-odds, so this barely biases it, but a
+    # near-free intercept let saturated-W iterations (W ~ 1e-6 once z clips)
+    # produce steps of order grad/1e-6, which compound into ~1e300 and make
+    # matmul overflow -- harmless after clipping, but a sign the solve is
+    # ill-conditioned rather than converging.
+    reg_diag[0] = l2
+    MAX_STEP = 10.0                          # trust region on |delta|_inf
 
     def nll(b):
         z = np.clip(X_aug @ b, -50, 50)
@@ -109,6 +116,9 @@ def fit_logistic_irls(
             delta = np.linalg.lstsq(H, grad, rcond=None)[0]
         if not np.all(np.isfinite(delta)):
             break
+        scale = np.max(np.abs(delta))
+        if scale > MAX_STEP:                 # trust region
+            delta = delta * (MAX_STEP / scale)
         # Step-halving: accept only a finite, non-worsening step.
         step = 1.0
         for _ in range(12):

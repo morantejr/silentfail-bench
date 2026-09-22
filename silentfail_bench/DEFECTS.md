@@ -105,3 +105,39 @@ CPU-limit and wall-clock kills both fire.
 sandbox `getrlimit` still reports unlimited and an 800 MB allocation succeeds
 under a nominal 512 MB cap. Memory is NOT capped on this platform; the CPU and
 wall-clock limits are the real controls.
+
+---
+
+## Endpoint power comparison — a hypothesis that did not survive testing
+
+It seemed likely that a budgeted-escalation endpoint (precision@k) would be
+better powered than global AUROC at fixed n, *and* more decision-relevant.
+Measured at n=400 across 120 sims with the same clustered test
+([`tools/endpoint_power_comparison.py`](tools/endpoint_power_comparison.py)):
+
+| endpoint | null rejection | power (u=0.5) | power (u=1.0) |
+|---|---|---|---|
+| **global AUROC** | 0.008 | **0.258** | **0.850** |
+| precision@10% | 0.000 | 0.000 | 0.175 |
+| precision@20% | 0.000 | 0.033 | 0.342 |
+| partial AUROC (FPR≤20%) | 0.025 | 0.192 | 0.567 |
+
+Global AUROC wins decisively. precision@k is a coarse step function — only the
+top-k ordering moves it, so most bootstrap resamples return an identical value
+and sensitivity collapses. Identical numbers before and after the IRLS trust
+region, so the ordering is not an artifact of the numerics.
+
+**Consequence:** switching the primary endpoint to precision@k would make the
+power problem *worse*. ΔAUROC stays primary; precision@k and lift@k are worth
+logging as secondary, decision-relevant numbers for the `BUSINESS.md` framing,
+but they cannot rescue n=200.
+
+## IRLS instability, second pass
+
+The trust region was added after the first fix still warned. The design matrix
+was perfectly scaled (columns within ±3.5), so the cause was not bad input: once
+`z` clips, `W ≈ 1e-6` everywhere, and with a near-free intercept the Newton step
+runs to `grad/1e-6`, compounding toward ~1e300. Ridging the intercept at the
+same strength plus a trust region on `|delta|_inf` took it from warning on most
+fits to **1 in 600**, with null calibration unchanged (0.013) and
+power(u=1.5, n=160) = 0.82.
