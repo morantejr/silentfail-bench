@@ -1,0 +1,31 @@
+diff --git a/src/flask/blueprints.py b/src/flask/blueprints.py
+index eb50585d..a06846fe 100644
+--- a/src/flask/blueprints.py
++++ b/src/flask/blueprints.py
+@@ -193,6 +193,12 @@ class Blueprint(Scaffold):
+         if "." in name:
+             raise ValueError("'name' may not contain a dot '.' character.")
+ 
++        # Historically an empty blueprint name could lead to confusing
++        # behavior when registering or nesting blueprints. Disallow an
++        # empty name to surface a clear error to the developer early.
++        if not name:
++            raise ValueError("'name' must be a non-empty string")
++
+         self.name = name
+         self.url_prefix = url_prefix
+         self.subdomain = subdomain
+@@ -296,6 +302,13 @@ class Blueprint(Scaffold):
+         """
+         name_prefix = options.get("name_prefix", "")
+         self_name = options.get("name", self.name)
++
++        # Do not allow empty registration names. An empty name would
++        # lead to ambiguous behavior when registering blueprints on
++        # the application, so raise a clear error.
++        if not self_name:
++            raise ValueError("'name' must be a non-empty string")
++
+         name = f"{name_prefix}.{self_name}".lstrip(".")
+ 
+         if name in app.blueprints:

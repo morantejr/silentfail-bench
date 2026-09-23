@@ -166,3 +166,21 @@ one a step limit or a prompt nudge should be trusted to solve at pilot scale.
 scaffold to a submission on this host. Generation for the confirmatory run
 needs a frontier-class model; on a $0 budget that means the free OpenRouter
 tier, gated by its daily request cap (see above).
+
+## GPT-5-mini smoke run — RESOLVED (2026-09-23)
+
+Same instance, native tool calls (`swebench.yaml`), `gpt-5-mini` via OpenAI.
+**23 API calls, $0.0201, real patch, passes the official gold tests.** The
+fix is the empty-blueprint-name `ValueError` in `src/flask/blueprints.py`,
+the same file the gold patch touches. Full profile-B pipeline validated with
+a capable model; pilot repriced at ~$4 for 200 trajectories.
+
+Two traps, both fixed in the orchestrator:
+
+1. **`swebench-single` ends on an interactive prompt** ("Agent wants to
+   finish… Enter to quit") that `-y` does not cover; the run sat on it for
+   90 minutes with `info.submission` unwritten. Batch mode (`mini-extra
+   swebench --filter '^id$'`) is non-interactive and writes `exit_status` and
+   `submission` itself. `--exit-immediately` exists for the single runner.
+2. **With native tool calls the diff lives in `role: "tool"` messages**, not
+   `role: "user"`. Trajectory text and any recovery must include them.

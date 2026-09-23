@@ -17,7 +17,7 @@ Task prompt given to each RM = the instance's problem_statement.
 """
 from __future__ import annotations
 
-import argparse, json, os, subprocess, sys, time, uuid
+import argparse, json, os, re, subprocess, sys, time, uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,6 +37,8 @@ def traj_text(traj: dict) -> str:
         role = m.get("role", "?")
         if role == "system":
             continue
+        # Native tool-call format puts command output under role="tool"; keep it,
+        # it is where the diff lives.
         c = m.get("content")
         if isinstance(c, list):
             c = "\n".join(x.get("text", "") for x in c if isinstance(x, dict))
@@ -63,27 +65,35 @@ def load_instances(ids: list[str]) -> dict[str, dict]:
 
 
 def generate(inst: str, k: int, out_dir: Path, env: dict, mini_cfg: Path, step_limit: int, base_cfg: str) -> list[dict]:
-    """k candidates for one instance, each its own mini-swe-agent run with a distinct seed."""
+    """k candidates for one instance via mini-swe-agent BATCH mode, one run per seed.
+
+    Batch mode (`mini-extra swebench`) is non-interactive and writes
+    info.exit_status / info.submission itself. The single-instance runner
+    drops into an "Agent wants to finish -- Enter to quit" prompt at the end
+    that -y does not cover; a smoke run sat on it for 90 minutes.
+    """
     res = []
     for c in range(k):
-        traj_path = out_dir / "traj" / f"{inst}__{c}.traj.json"
-        traj_path.parent.mkdir(parents=True, exist_ok=True)
+        run_dir = out_dir / "traj" / f"cand{c}"
+        traj_path = run_dir / inst / f"{inst}.traj.json"
         if not traj_path.exists():
+            run_dir.mkdir(parents=True, exist_ok=True)
             t0 = time.time()
-            subprocess.run([str(MINI), "swebench-single", "--subset", "verified", "--split", "test", "-i", inst,
+            subprocess.run([str(MINI), "swebench", "--subset", "verified", "--split", "test",
+                            "--filter", f"^{re.escape(inst)}$", "-o", str(run_dir), "-w", "1", "--redo-existing",
                             "-c", base_cfg, "-c", str(mini_cfg),
-                            "-c", f"model.model_kwargs.seed={1000 + c}", "-c", f"agent.step_limit={step_limit}",
-                            "-y", "-l", "0", "-o", str(traj_path)],
-                           env=env, stdout=open(traj_path.with_suffix(".log"), "w"), stderr=subprocess.STDOUT)
+                            "-c", f"model.model_kwargs.seed={1000 + c}", "-c", f"agent.step_limit={step_limit}"],
+                           env=env, stdout=open(run_dir / f"{inst}.cand{c}.log", "w"), stderr=subprocess.STDOUT)
             print(f"  [gen] {inst} cand {c}: {time.time()-t0:.0f}s", flush=True)
         try:
             d = json.loads(traj_path.read_text())
             res.append({"instance_id": inst, "candidate": c, "text": traj_text(d),
                         "final_solution": d["info"].get("submission") or "",
-                        "exit_status": d["info"].get("exit_status"), "steps": len(d.get("messages", []))})
+                        "exit_status": d["info"].get("exit_status"), "steps": len(d.get("messages", [])),
+                        "cost_usd": (d["info"].get("model_stats") or {}).get("instance_cost")})
         except Exception as e:
             res.append({"instance_id": inst, "candidate": c, "text": "", "final_solution": "",
-                        "exit_status": f"traj_unreadable:{type(e).__name__}", "steps": 0})
+                        "exit_status": f"traj_unreadable:{type(e).__name__}", "steps": 0, "cost_usd": None})
     return res
 
 
