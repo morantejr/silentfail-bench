@@ -39,3 +39,11 @@ silentfail_bench/data/humaneval/humaneval_plus_merged.json
 # --- Run outputs: keep reports, not raw trajectories ---
 silentfail_bench/data/pilot_free/*.jsonl
 silentfail_bench/data/pilot/*.jsonl
+
+# --- SWE-bench pilot run outputs: trajectories, batch logs, harness logs ---
+silentfail_bench/data/*/traj/
+silentfail_bench/data/*/*.log
+silentfail_bench/data/*/preds*.json*
+silentfail_bench/data/*/caffeinate.pid
+silentfail_bench/logs/
+silentfail_bench/*.json
