@@ -114,6 +114,32 @@ def main() -> None:
                                         [240, 480, 960, 1920], n_sims=80, n_boot=200)["chosen_n_trajectories"],
         }
 
+    # Clustering adjustment. The simulation above treats every row as its own
+    # cluster. On SWE-bench Verified the estimand clusters on repo, and the ICC
+    # was measured at 0.033-0.053 across six public mini-swe-agent submissions
+    # (data/icc_public_swebench_verified.json). With 12 repos of very unequal
+    # size, the variance-inflated mean cluster size is 129.2, so the design
+    # effect is 1 + 128.2 * ICC. Required n on SWE-bench is the unclustered
+    # figure multiplied by that.
+    pp = rep.get("power_projection")
+    if pp:
+        m_eff = 129.2
+        adj = {}
+        for icc in (0.033, 0.045, 0.053):
+            deff = 1 + (m_eff - 1) * icc
+            adj[f"icc_{icc}"] = {
+                "design_effect": round(deff, 2),
+                "n_for_delta_auroc_0.045": (round(pp["for_delta_auroc_0.045"] * deff) if pp.get("for_delta_auroc_0.045") else None),
+                "n_for_delta_auroc_0.095": (round(pp["for_delta_auroc_0.095"] * deff) if pp.get("for_delta_auroc_0.095") else None),
+            }
+        rep["power_projection_repo_clustered_swebench"] = {
+            "note": ("Unclustered n x design effect, using the ICC measured from public "
+                     "SWE-bench Verified results. Verified has only 500 instances, so any "
+                     "figure above 500 means the benchmark cannot supply it at all."),
+            "verified_instances_available": 500,
+            **adj,
+        }
+
     txt = json.dumps(rep, indent=2, default=str)
     print(txt)
     out = a.out or a.jsonl.with_name("pilot_report.json")

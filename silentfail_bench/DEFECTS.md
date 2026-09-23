@@ -177,3 +177,26 @@ with scoring on local RMs — an API cannot serve RM heads at all.
 
 Also unusable: `internlm/internlm2-1_8b-reward` — its custom tokenizer fails
 `convert_slow_tokenizer` on transformers 4.57.
+
+---
+
+## Run crash on the 4-RM panel pilot (2026-09-23) — two runner defects
+
+One selection-critic call ran the 8B judge past its 4,096-token context
+(`n_tokens = 2886, truncated = 1`); Ollama hung for the full 600 s timeout and
+returned 500. The runner had no guard, so one bad HTTP call aborted the run
+**after generation had completed** — and the candidates existed only in
+memory, so 17 minutes of generation were lost.
+
+1. **No checkpoint between stages.** Generation is the expensive stage and
+   was never persisted before scoring started. Now each task's candidates are
+   appended to `candidates_raw.jsonl` the moment they finish, and a rerun
+   resumes from that file instead of regenerating.
+2. **No fault tolerance in scoring.** `judge_score` now never raises: a
+   transport error, timeout or unparseable reply returns NaN, which the runner
+   already maps to `judge_unparseable_score` exclusion. The prompt cap dropped
+   from 12,000 to 6,000 chars (~1.5k tokens) so the judge stays inside its
+   context window.
+
+The lesson generalizes: the expensive stage must be durable before the cheap
+stage begins, and the cheap stage must degrade per-item, never per-run.

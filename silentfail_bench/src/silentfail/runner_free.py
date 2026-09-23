@@ -40,11 +40,23 @@ JUDGE_PROMPT = (
 )
 
 
+JUDGE_MAX_CHARS = 6000   # ~1.5k tokens; 12000 pushed an 8B judge past its 4096 ctx
+
+
 def judge_score(backend, traj_text: str, critic_id: str) -> float:
-    """LLM-as-judge scalar. NOT a trained reward model -- see anchor_free.yaml."""
-    out = backend.generate(
-        JUDGE_PROMPT.format(traj=traj_text[:12000]), temperature=0.0, seed=0
-    )
+    """LLM-as-judge scalar. NOT a trained reward model -- see anchor_free.yaml.
+
+    Never raises. A transport error, timeout or unparseable reply returns NaN,
+    which the runner turns into `judge_unparseable_score` exclusion. One bad
+    HTTP call used to abort the whole run after generation had finished.
+    """
+    try:
+        out = backend.generate(
+            JUDGE_PROMPT.format(traj=traj_text[:JUDGE_MAX_CHARS]), temperature=0.0, seed=0
+        )
+    except Exception as e:
+        print(f"[judge:{critic_id}] failed -> NaN ({type(e).__name__})", flush=True)
+        return float("nan")
     m = _NUM.search(out)
     if not m:
         return float("nan")
@@ -71,16 +83,38 @@ def run_pilot_free(anchor_path: Path, out_dir: Path) -> Path:
     print(f"[tasks] {len(chosen)} instances (excluded {len(invalid)} invalid-oracle)")
 
     # ---------------- Stage 1: generation (agent model only) ----------------
+    # Generation is the expensive stage and is checkpointed per task the
+    # moment it finishes. A crash in any later stage resumes from here
+    # instead of regenerating; a run that lost 17 min of candidates to one
+    # failed judge call is why.
+    from silentfail.local_agent import Step
+    ckpt = out_dir / "candidates_raw.jsonl"
+    cands: dict[str, list[Trajectory]] = {}
+    if ckpt.exists():
+        for line in ckpt.read_text().splitlines():
+            d = json.loads(line)
+            tr = Trajectory(task_id=d["task_id"], seed=d["seed"], final_solution=d["final_solution"],
+                            error=d.get("error"), steps=[Step(**st) for st in d["steps"]])
+            cands.setdefault(d["task_id"], []).append(tr)
+        print(f"[gen] resumed {sum(len(v) for v in cands.values())} candidates "
+              f"for {len(cands)} tasks from {ckpt.name}", flush=True)
     agent_be = make_backend("openai_compatible", cfg["agent"]["model_name"], base_url=base_url)
     t0 = time.time()
-    cands: dict[str, list[Trajectory]] = {}
-    for i, t in enumerate(chosen):
-        trs = [run_agent(t, agent_be, max_steps=max_steps, temperature=temp,
-                         seed=seed0 + 1000 * i + k) for k in range(n_cand)]
-        cands[t.task_id] = trs
-        if (i + 1) % 10 == 0:
-            print(f"[gen] {i+1}/{len(chosen)} tasks  ({time.time()-t0:.0f}s)")
-    print(f"[gen] done in {time.time()-t0:.0f}s")
+    with ckpt.open("a") as f:
+        for i, t in enumerate(chosen):
+            if len(cands.get(t.task_id, [])) >= n_cand:
+                continue
+            trs = [run_agent(t, agent_be, max_steps=max_steps, temperature=temp,
+                             seed=seed0 + 1000 * i + k) for k in range(n_cand)]
+            cands[t.task_id] = trs
+            for tr in trs:
+                f.write(json.dumps({"task_id": tr.task_id, "seed": tr.seed, "error": tr.error,
+                                    "final_solution": tr.final_solution,
+                                    "steps": [vars(st) for st in tr.steps]}) + "\n")
+            f.flush()
+            if (i + 1) % 10 == 0:
+                print(f"[gen] {i+1}/{len(chosen)} tasks  ({time.time()-t0:.0f}s)", flush=True)
+    print(f"[gen] done in {time.time()-t0:.0f}s", flush=True)
 
     # ---------------- Stage 2: c_sel scores ALL candidates ------------------
     sel_be = make_backend("openai_compatible", cfg["selection_critic"]["ollama_id"], base_url=base_url)
