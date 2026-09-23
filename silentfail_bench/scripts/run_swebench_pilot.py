@@ -113,8 +113,15 @@ def main() -> None:
     a = ap.parse_args()
     cfg = yaml.safe_load(a.anchor.read_text()); seed0 = int(cfg["split"]["split_seed"])
     a.out.mkdir(parents=True, exist_ok=True)
-    env = dict(os.environ, DOCKER_HOST=f"unix://{Path.home()}/.colima/default/docker.sock",
-               OPENAI_API_KEY="ollama", OPENAI_API_BASE="http://127.0.0.1:11434/v1", MSWEA_COST_TRACKING="ignore_errors")
+    # Only Docker plumbing goes into the agent's environment. The model
+    # endpoint comes from the mini-config alone: an Ollama overlay sets its own
+    # api_base, and the OpenAI overlay must NOT inherit one. Injecting the
+    # Ollama base URL here sent gpt-5-mini to localhost:11434 -> NotFoundError.
+    env = {k: v for k, v in os.environ.items() if k not in ("OPENAI_API_BASE", "OPENAI_BASE_URL")}
+    env["DOCKER_HOST"] = f"unix://{Path.home()}/.colima/default/docker.sock"
+    if "ollama" in str(a.mini_config):
+        env.update(OPENAI_API_KEY="ollama", OPENAI_API_BASE="http://127.0.0.1:11434/v1",
+                   MSWEA_COST_TRACKING="ignore_errors")
     meta = load_instances(a.instances)
 
     # ---- 1. generate (checkpointed per candidate via traj files) ----
