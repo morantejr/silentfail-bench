@@ -111,7 +111,9 @@ def main() -> None:
     ap.add_argument("--step-limit", type=int, default=30)
     ap.add_argument("--out", type=Path, default=ROOT / "data" / "swebench_pilot")
     ap.add_argument("--c-sel-hf-id", default="Skywork/Skywork-Reward-V2-Qwen3-4B")
-    ap.add_argument("--stage", choices=["all", "generate", "score"], default="all")
+    ap.add_argument("--stage", choices=["all", "generate", "rm", "gold", "score"], default="all",
+                    help=("generate: candidates only | rm: selection+audit RMs -> scores.json (run with Colima STOPPED) | "
+                          "gold: harness on committed patches + rows (run with Colima UP) | score = rm+gold | all"))
     a = ap.parse_args()
     if a.instances_file:
         a.instances += [l.strip() for l in a.instances_file.read_text().splitlines() if l.strip() and not l.startswith("#")]
@@ -146,19 +148,33 @@ def main() -> None:
         return
 
     # ---- 2. c_sel over ALL candidates, then 3. audit (one RM resident at a time) ----
-    from silentfail.rm_backend import RewardModel
-    t0 = time.time(); rm = RewardModel.load(a.c_sel_hf_id, "c_sel")
-    scores = {i: [rm.score(meta[i]["problem_statement"], c["text"]) if c["text"] else float("-inf") for c in cs]
-              for i, cs in pool.items()}
-    rm.unload(); print(f"[c_sel] done in {time.time()-t0:.0f}s", flush=True)
-    committed = {i: max(range(len(s)), key=lambda k: s[k]) for i, s in scores.items()}
-    print(f"[select] chosen idx: { {i: committed[i] for i in list(committed)[:12]} }", flush=True)
-    audit: dict[str, dict[str, float]] = {i: {} for i in pool}
-    for m in cfg["audit_panel"]["members"]:
-        t0 = time.time(); rmm = RewardModel.load(m["hf_id"], m["id"])
-        for i in pool:
-            audit[i][m["id"]] = rmm.score(meta[i]["problem_statement"], pool[i][committed[i]]["text"])
-        rmm.unload(); print(f"[{m['id']}] done in {time.time()-t0:.0f}s", flush=True)
+    if a.stage == "gold":
+        sj = json.loads((a.out / "scores.json").read_text())
+        scores, committed, audit = sj["scores"], {k: int(v) for k, v in sj["committed"].items()}, sj["audit"]
+        a.c_sel_hf_id = sj["c_sel_hf_id"]
+        print(f"[gold] loaded scores.json for {len(scores)} instances", flush=True)
+    else:
+      from silentfail.rm_backend import RewardModel
+      t0 = time.time(); rm = RewardModel.load(a.c_sel_hf_id, "c_sel")
+      scores = {i: [rm.score(meta[i]["problem_statement"], c["text"]) if c["text"] else float("-inf") for c in cs]
+                for i, cs in pool.items()}
+      rm.unload(); print(f"[c_sel] done in {time.time()-t0:.0f}s", flush=True)
+      committed = {i: max(range(len(s)), key=lambda k: s[k]) for i, s in scores.items()}
+      print(f"[select] chosen idx: { {i: committed[i] for i in list(committed)[:12]} }", flush=True)
+      audit: dict[str, dict[str, float]] = {i: {} for i in pool}
+      for m in cfg["audit_panel"]["members"]:
+          t0 = time.time(); rmm = RewardModel.load(m["hf_id"], m["id"])
+          for i in pool:
+              audit[i][m["id"]] = rmm.score(meta[i]["problem_statement"], pool[i][committed[i]]["text"])
+          rmm.unload(); print(f"[{m['id']}] done in {time.time()-t0:.0f}s", flush=True)
+
+    scores_path = a.out / "scores.json"
+    if a.stage in ("rm", "score", "all"):
+        scores_path.write_text(json.dumps({"scores": scores, "committed": committed, "audit": audit,
+                                           "c_sel_hf_id": a.c_sel_hf_id}, indent=1))
+        print(f"[rm] wrote {scores_path}", flush=True)
+        if a.stage == "rm":
+            return
 
     # ---- 4. gold: official harness on the committed patches ----
     from silentfail.swebench_gold import gold_from_report, run_evaluation, write_predictions
