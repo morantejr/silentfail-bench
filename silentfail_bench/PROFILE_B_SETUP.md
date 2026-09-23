@@ -184,3 +184,20 @@ Two traps, both fixed in the orchestrator:
    `submission` itself. `--exit-immediately` exists for the single runner.
 2. **With native tool calls the diff lives in `role: "tool"` messages**, not
    `role: "user"`. Trajectory text and any recovery must include them.
+
+## Orchestrator validated — 2026-09-23 18:33
+
+`scripts/run_swebench_pilot.py --stage generate --k 1` on the cached flask
+instance, through the batch runner: `exit_status: Submitted`, 1,219-char
+patch to `src/flask/blueprints.py`, **$0.014, 101 s, 31 messages.** This is
+the exact code path the pilot runs.
+
+One more trap fixed on the way: the orchestrator had been injecting the
+Ollama endpoint into the agent's environment from the profile-A days, which
+sent `gpt-5-mini` to `localhost:11434` (NotFoundError). The environment now
+carries only Docker plumbing; the endpoint comes from the mini-config.
+
+**Pilot launch plan.** Generation first (`--stage generate`, API-bound,
+~6 h, ~$3–4, ≤ $50 under the $0.25/trajectory cap), then scoring + gold as a
+separate stage so the 8 GB selection RM never shares memory with the
+container VM. Every trajectory is checkpointed; the split is free.
