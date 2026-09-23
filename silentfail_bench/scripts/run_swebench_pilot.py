@@ -61,7 +61,7 @@ def generate(inst: str, k: int, out_dir: Path, env: dict, mini_cfg: Path, step_l
         if not traj_path.exists():
             t0 = time.time()
             subprocess.run([str(MINI), "swebench-single", "--subset", "verified", "--split", "test", "-i", inst,
-                            "-c", "swebench.yaml", "-c", str(mini_cfg),
+                            "-c", "swebench_backticks.yaml", "-c", str(mini_cfg),
                             "-c", f"model.model_kwargs.seed={1000 + c}", "-c", f"agent.step_limit={step_limit}",
                             "-y", "-l", "0", "-o", str(traj_path)],
                            env=env, stdout=open(traj_path.with_suffix(".log"), "w"), stderr=subprocess.STDOUT)

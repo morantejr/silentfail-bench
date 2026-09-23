@@ -1,5 +1,5 @@
 # mini-swe-agent overlay for SilentFail profile B on this host.
-# Merged on top of the built-in benchmarks/swebench.yaml (pass both with -c).
+# Merged on top of the built-in benchmarks/swebench_backticks.yaml (text-based; pass both with -c).
 agent:
   step_limit: 30        # 7B model; bound the loop (spec says 50, smoke test uses 30)
   cost_limit: 0         # litellm has no price for a local model; 0 disables the guard
@@ -13,7 +13,7 @@ environment:
   timeout: 120          # commands under emulation are slower
 model:
   model_name: openai/qwen2.5-coder:7b     # litellm -> OpenAI-compatible -> Ollama
-  model_class: litellm
+  model_class: litellm_textbased   # 7B via Ollama does not emit native tool calls -> RepeatedFormatError; parse ```bash fences instead
   cost_tracking: ignore_errors   # litellm has no price entry for a local model; the tracker raised after call 1
   model_kwargs:
     api_base: http://127.0.0.1:11434/v1

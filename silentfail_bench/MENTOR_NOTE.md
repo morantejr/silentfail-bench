@@ -383,3 +383,22 @@ The silent failures themselves: pilot 2 had {HumanEval/101, HumanEval/76, HumanE
 - The pre-registration stands as written, amendment included. The next run
   that can test P1–P3 is one with ≥10 silent failures, which this task family
   will not produce at n=40.
+
+
+---
+
+# 11. SWE-bench smoke test (2026-09-23) — pipeline validated, 7B agent is not
+
+Profile B ran end to end on a real instance: mini-swe-agent inside the x86
+image under Rosetta, driven by the local 7B coder, trajectory captured in the
+schema. The agent executed real shell commands, then looped and hit the step
+limit with an empty patch (elapsed=109s, 30 calls, 3 distinct
+commands out of 30).
+
+This is the expected result and it settles the last open question about
+where the cost lives: **on SWE-bench, generation is capability-bound.** A 7B
+model cannot drive the scaffold; every public mini-swe-agent result uses a
+frontier model. Scoring and gold are local and cheap. The confirmatory run
+therefore needs a capable generation model — via API — with selection,
+audit and gold staying on this machine. That is the architecture, and it is
+now the only remaining decision that costs money.

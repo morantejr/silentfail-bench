@@ -101,3 +101,28 @@ SWE-bench Verified is 500 instances over **12 repos**, django alone being 46%.
 Because the primary estimand clusters on repo, effective n is ~67–140, not 500.
 See `MENTOR_NOTE.md` §8 — that limit binds harder than n and more trajectories
 do not relieve it.
+
+
+## Agent smoke run — 2026-09-23
+
+`mini-swe-agent 2.4.6` → Ollama `qwen2.5-coder:7b` → x86 container under
+Rosetta, on `pallets__flask-5014`. Three attempts; each failure was a config
+trap, now fixed in `configs/mini_swe_ollama.yaml`:
+
+| attempt | died at | cause | fix |
+|---|---|---|---|
+| 1 | 57 s, 1 API call | litellm cost tracker has no price for a local model and raises | `cost_tracking: ignore_errors` |
+| 2 | 3 API calls | default config needs native tool calls; 7B via Ollama emits none → `RepeatedFormatError` | `swebench_backticks.yaml` + `model_class: litellm_textbased` |
+| 3 | elapsed=109s, 30 calls | **pipeline works** — real commands executed in the container — but the model looped (`3/30` distinct commands) and hit `step_limit=30` with **no patch** | not a config problem |
+
+**Verdict.** The profile-B pipeline is validated end to end: image resolution
+on arm64, model routing, text-based tool calling, command execution under
+emulation, trajectory capture. What is *not* viable is a 7B coder as the
+SWE-bench agent: it navigates in circles and submits nothing, and an empty
+patch is an excluded row, so the yield is zero usable trajectories. That is
+consistent with the public leaderboard, where every mini-swe-agent entry
+uses a frontier model. **Generation is the bottleneck, and on this task it is
+a model-capability bottleneck, not a compute one.**
+
+Timing for sizing: ~109s for one 30-step candidate at 7B; a
+capable model would use fewer, longer steps.
