@@ -1,0 +1,24 @@
+# mini-swe-agent overlay: frontier generation via OpenRouter; selection, audit
+# and gold stay local. Merge on top of benchmarks/swebench_backticks.yaml.
+#
+# Key: NOT in this file, NOT in the repo. mini-swe-agent reads OPENROUTER_API_KEY
+# from its global .env, set once with:
+#   .venv-swebench/bin/mini-extra config set OPENROUTER_API_KEY <key>
+agent:
+  step_limit: 50        # proposal spec; a frontier model does not loop like the 7B did
+  cost_limit: 0.75      # USD per trajectory; hard stop so a runaway can't spend the pilot budget
+  mode: yolo
+environment:
+  environment_class: docker
+  run_args: ["--rm", "--platform", "linux/amd64"]
+  pull_timeout: 900
+  timeout: 120
+model:
+  model_class: openrouter_textbased     # same ```mswea_bash_command parser validated with the 7B
+  model_name: openai/gpt-5-mini         # cheap; one of the six public submissions used for the ICC
+  model_kwargs:
+    temperature: 0.7
+    # Reproducibility: OpenRouter routes across providers with different
+    # quantization. Refuse fallbacks so a model id means one backend.
+    provider:
+      allow_fallbacks: false
