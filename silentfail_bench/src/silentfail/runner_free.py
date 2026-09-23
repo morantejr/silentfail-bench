@@ -142,6 +142,21 @@ def run_pilot_free(anchor_path: Path, out_dir: Path) -> Path:
     # A member with `backend: rm` is a true scalar reward model (profile C),
     # loaded on MPS and unloaded before the next; otherwise an Ollama judge.
     audit_raw: dict[str, dict[str, float]] = {t.task_id: {} for t in chosen}
+    if any(m.get("backend") == "rm" for m in cfg["audit_panel"]["members"]):
+        # Ollama keeps the last chat model resident for ~5 min. Sharing the
+        # GPU with it made the first two RMs score ~4x slower than benchmarked
+        # (3.3 s vs 0.72 s); the two that ran after it unloaded were on-spec.
+        try:
+            import urllib.request
+            urllib.request.urlopen(urllib.request.Request(
+                f"{base_url}/chat/completions", method="POST",
+                headers={"Content-Type": "application/json"},
+                data=json.dumps({"model": cfg["selection_critic"]["ollama_id"],
+                                 "messages": [{"role": "user", "content": "x"}],
+                                 "keep_alive": 0, "max_tokens": 1}).encode()), timeout=60).read()
+            print("[audit] released Ollama resident model", flush=True)
+        except Exception as e:
+            print(f"[audit] could not release Ollama model ({type(e).__name__}); continuing", flush=True)
     for member in cfg["audit_panel"]["members"]:
         mid = member["id"]
         t0 = time.time()

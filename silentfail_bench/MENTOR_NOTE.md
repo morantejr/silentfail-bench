@@ -226,3 +226,77 @@ Two things this settles:
 2. **SWE-bench supplies failures.** 24–44% failure rates versus 20% on
    HumanEval+ — the failure-starvation that produced the first NO_GO does not
    recur here. Repos, not failures, are the scarce resource.
+
+
+---
+
+# 9. Second pilot — 4 true reward models (2026-09-23)
+
+Same 40 tasks, same seeds, same selection critic. The **only** change is the
+audit panel: 2 LLM judges → 4 true scalar reward models across three base
+families. Gold outcomes reproduced exactly (8 failures, the same 3 silent
+ones), so the comparison isolates the panel.
+
+## The aggregate looked wrong — and was hiding the signal
+
+Mean `u` for failures was *lower* than for successes in both pilots. That
+number conflates two kinds of failure that behave oppositely:
+
+| stratum | n | mean u, 2 judges | mean u, 4 RMs |
+|---|---|---|---|
+| obvious failure — visible tests FAIL, gold FAIL | 5 | 0.094 | **0.018** |
+| **silent failure — visible PASS, gold FAIL** | 3 | 0.279 | **0.206** |
+| success — visible PASS, gold PASS | 32 | 0.189 | 0.171 |
+
+On obvious failures the panel *agrees* — there is nothing to disagree about,
+the agent's own tests already caught it — so `u` collapses toward zero and
+drags the failure mean down. That is correct behaviour, not a miss. The
+silent failures, the cell this whole project is about, sit **above** the
+successes in both pilots.
+
+## The selection-conditional cell
+
+Restricting to trajectories that passed their own visible tests (n=35, of
+which 3 are silent failures), and asking whether a signal ranks the silent
+failures above the successes:
+
+| signal | AUROC, 2 judges | AUROC, 4 true RMs |
+|---|---|---|
+| selecting critic score `c` (low = risky) | 0.391 | **0.406** |
+| audit-panel disagreement `u` | 0.562 | **0.688** |
+
+Two things to see. First, **`c` is below chance in this cell** — the
+selecting critic rates the silent failures as *more* likely correct than the
+genuine successes. That is the Goodhart signature from §L24/§L37 of the
+proposal, measured. Second, `u` moved from near-useless to 0.688 when the
+panel became real reward models, and the per-critic breakdown shows why: on
+each silent failure the four RMs genuinely split (e.g. `HumanEval/76`:
+0.79 / 0.58 / 0.18 / 0.48 rank-normalized). The disagreement is real, not
+one outlier.
+
+## What this is and is not
+
+- **3 positives against 32 negatives.** 0.688 is 66 of 96 pairwise wins. No
+  test reaches significance here and none should be run. This is a signal to
+  *design around*, not a result.
+- **The visible-pass stratification was chosen after seeing the data.** It is
+  well-motivated — it is the selection-conditional cell in the most literal
+  sense, the agent's own verification passed — but it must be **pre-registered**
+  for the confirmatory run, not presented as a finding of this one.
+- `corr(c, u)` rose from 0.05 to **0.45** with true RMs. `u` is less
+  independent of `c` than the judge-based `u` was; the frozen logistic with
+  `c` as a covariate handles this, but it is worth watching.
+- Still **NO_GO** on the original gates, for the same reasons as pilot 1
+  (failure count; AUROC=1.000 on a 7-row split, an artifact).
+
+## Recommendation for the design
+
+1. Pre-register the visible-pass (or, on SWE-bench, "agent's own tests
+   pass") stratum as the primary analysis population. It is where the
+   phenomenon lives and where `c` is demonstrably blind.
+2. Panel = true reward models, m ≥ 4, three or more base families. The judge
+   panel was not measuring the construct; the RM panel is, and it costs
+   ~6 min per 40 trajectories.
+3. Move to SWE-bench for failure supply (24–44% vs 20%), accepting the
+   12-repo clustering limit from §8 and choosing the generalization claim
+   accordingly.
