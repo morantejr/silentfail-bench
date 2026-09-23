@@ -300,3 +300,86 @@ one outlier.
 3. Move to SWE-bench for failure supply (24–44% vs 20%), accepting the
    12-repo clustering limit from §8 and choosing the generalization claim
    accordingly.
+
+
+---
+
+# 10. Pilots 3 and 3b — selection pressure, and a correction (2026-09-23)
+
+## Pilot 3 (n=16, LLM-judge c_sel) did not apply selection
+
+The judge emitted only {5, 6, 8} over 640 candidates; on 21/40 tasks all 16
+tied at the max and argmax took index 0. **39/40 committed trajectories were
+byte-identical to the n=4 run.** P3 was untested. Pre-registration Amendment 1
+swapped `c_sel` to a true reward model (Skywork-Reward-V2-Qwen3-4B) and
+changed nothing else.
+
+## Pilot 3b (n=16, true-RM c_sel) — selection happened, and the signal went away
+
+Chosen-index histogram spread across all 16 slots. Only 8/40 committed
+trajectories match pilot 2. This is the first run in which "best-of-n" meant
+what it says.
+
+| | pilot 2 (n=4, judge c) | pilot 3b (n=16, RM c) |
+|---|---|---|
+| total failures | 8 | **6** |
+| visible-pass rate | 87.5% | 92.5% |
+| silent failures / visible-pass | 3/35 = 8.6% | 3/37 = **8.1%** |
+| corr(c, u) | 0.46 | 0.27 |
+
+Pre-registered primary, visible-pass population (n=37, **3 positives**):
+
+| metric | registered m=4 | robustness m=3 |
+|---|---|---|
+| M1 `AUROC(u)` | **0.520** | 0.495 |
+| M2 `AUROC(−c)` | **0.647** | 0.647 |
+| M3 `u − (−c)` | −0.127, CI [−0.50, 0.37], p=0.75 | −0.152 |
+
+**Per the <10-positives rule, no conclusion is drawn.** But the point
+estimates run against all three predictions: `u` is at chance, `c` is *above*
+chance, and the silent-failure rate did not rise with pressure.
+
+## The correction
+
+§9 said the Goodhart signature had been "measured": `c` below chance at 0.406
+while `u` reached 0.688. **That was over-read, and I am withdrawing it.** Both
+numbers came from 3 positives scored by a critic with three output values,
+on trajectories that had not actually been selected. Against a critic with
+no resolution, `−c` at 0.41 is noise, and `u` looking good *relative to it* is
+not evidence for `u`. With a functioning critic and genuine selection, `c`
+does modestly discriminate (0.65) and `u` does not (0.52). The swing from
+0.69 to 0.52 is entirely within what three positives can produce, which is
+exactly why the pre-registration forbids concluding from it in either
+direction — and it would have forbidden §9's framing too, had it existed
+then.
+
+The silent failures themselves: pilot 2 had {HumanEval/101, HumanEval/76, HumanEval/91}; 3b has
+{HumanEval/101, HumanEval/50, HumanEval/76}; overlap {HumanEval/101, HumanEval/76}.
+
+## What the three pilots establish, stated conservatively
+
+1. **The instrument now works end to end** with a real reward-model critic,
+   a real reward-model panel, real executed gold, and selection that
+   actually selects. That was not true before today.
+2. **On this task family the silent-failure rate is ~8% and flat in n.** Forty
+   tasks yield three positives at any pressure tried. HumanEval+ cannot
+   supply the positives the primary analysis needs; ~120 tasks would be
+   required for ten, and even that is thin.
+3. **A functioning critic improves the selected set** (8 → 6 failures). The
+   first-order effect of selection is the expected one. The winner's-curse
+   *concentration* effect — P3 — was not visible here. It may need harder
+   tasks, stronger pressure, or both; it is not refuted at n=3.
+4. **No evidence for H1 yet, and no evidence against it.** Three positives
+   cannot carry either claim. Everything before pilot 3b that looked like
+   evidence was an artifact of a critic that could not rank.
+
+## What changes for the design
+
+- `c_sel` must be a true RM. This is now demonstrated, not argued: a coarse
+  judge silently turns best-of-n into first-draw.
+- Positives in the visible-pass cell are the scarce resource on HumanEval+.
+  SWE-bench (24–44% failure) is the fix for supply; the 12-repo clustering
+  bound (§8) is the price.
+- The pre-registration stands as written, amendment included. The next run
+  that can test P1–P3 is one with ≥10 silent failures, which this task family
+  will not produce at n=40.
