@@ -44,6 +44,16 @@ def traj_text(traj: dict) -> str:
     return "\n\n".join(parts)
 
 
+def image_for(inst: str) -> str:
+    return f"docker.io/swebench/sweb.eval.x86_64.{inst.replace('__', '_1776_')}:latest".lower()
+
+
+def prune_image(inst: str, env: dict) -> None:
+    """Each instance image is ~4.2 GB and the VM holds ~19 GB; keep nothing
+    between instances. Gold re-pulls later (two passes, ~42 s each)."""
+    subprocess.run(["docker", "rmi", "-f", image_for(inst)], env=env, capture_output=True)
+
+
 def load_instances(ids: list[str]) -> dict[str, dict]:
     code = ("from datasets import load_dataset; import json,sys; ids=set(json.loads(sys.argv[1]));"
             "print(json.dumps({r['instance_id']:{'problem_statement':r['problem_statement'],'repo':r['repo']} "
@@ -52,7 +62,7 @@ def load_instances(ids: list[str]) -> dict[str, dict]:
     return json.loads(out.stdout.strip().splitlines()[-1])
 
 
-def generate(inst: str, k: int, out_dir: Path, env: dict, mini_cfg: Path, step_limit: int) -> list[dict]:
+def generate(inst: str, k: int, out_dir: Path, env: dict, mini_cfg: Path, step_limit: int, base_cfg: str) -> list[dict]:
     """k candidates for one instance, each its own mini-swe-agent run with a distinct seed."""
     res = []
     for c in range(k):
@@ -61,7 +71,7 @@ def generate(inst: str, k: int, out_dir: Path, env: dict, mini_cfg: Path, step_l
         if not traj_path.exists():
             t0 = time.time()
             subprocess.run([str(MINI), "swebench-single", "--subset", "verified", "--split", "test", "-i", inst,
-                            "-c", "swebench_backticks.yaml", "-c", str(mini_cfg),
+                            "-c", base_cfg, "-c", str(mini_cfg),
                             "-c", f"model.model_kwargs.seed={1000 + c}", "-c", f"agent.step_limit={step_limit}",
                             "-y", "-l", "0", "-o", str(traj_path)],
                            env=env, stdout=open(traj_path.with_suffix(".log"), "w"), stderr=subprocess.STDOUT)
@@ -80,7 +90,10 @@ def generate(inst: str, k: int, out_dir: Path, env: dict, mini_cfg: Path, step_l
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--anchor", type=Path, default=ROOT / "configs" / "anchor_free_rm4_n16.yaml")
-    ap.add_argument("--mini-config", type=Path, default=ROOT / "configs" / "mini_swe_ollama.yaml")
+    ap.add_argument("--mini-config", type=Path, default=ROOT / "configs" / "mini_swe_openai.yaml")
+    ap.add_argument("--mini-base-config", default="swebench.yaml",
+                    help="swebench.yaml = native tool calls (frontier); swebench_backticks.yaml = text-based (local 7B/14B)")
+    ap.add_argument("--keep-images", action="store_true", help="skip pruning (needs a big disk)")
     ap.add_argument("--instances", nargs="+", required=True)
     ap.add_argument("--k", type=int, default=4)
     ap.add_argument("--step-limit", type=int, default=30)
@@ -98,7 +111,9 @@ def main() -> None:
     cand_path = a.out / "candidates.jsonl"
     pool: dict[str, list[dict]] = {}
     for inst in a.instances:
-        pool[inst] = generate(inst, a.k, a.out, env, a.mini_config, a.step_limit)
+        pool[inst] = generate(inst, a.k, a.out, env, a.mini_config, a.step_limit, a.mini_base_config)
+        if not a.keep_images:
+            prune_image(inst, env)
     cand_path.write_text("".join(json.dumps(c) + "\n" for cs in pool.values() for c in cs))
     empty = sum(1 for cs in pool.values() for c in cs if not c["final_solution"].strip())
     print(f"[gen] {sum(len(v) for v in pool.values())} candidates; empty patches: {empty}", flush=True)
@@ -129,6 +144,9 @@ def main() -> None:
     if not ev["report"]:
         print("[gold] harness produced no report:\n", ev["stderr_tail"][-1500:], flush=True); sys.exit(2)
     g = gold_from_report(ev["report"], list(pool))
+    if not a.keep_images:
+        for i in pool:
+            prune_image(i, env)
     print(f"[gold] failures {sum(1 for v in g.values() if v == 0)}/{len(g)}  (resolved: {ev['report'].get('resolved_instances')})", flush=True)
 
     # ---- 5. rows ----

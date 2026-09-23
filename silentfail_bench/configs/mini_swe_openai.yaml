@@ -1,0 +1,19 @@
+# mini-swe-agent overlay: GPT-5-mini via OpenAI directly (prompt caching applies).
+# Merge on top of the DEFAULT benchmarks/swebench.yaml (native tool calls --
+# the configuration gpt-5-mini is on the public leaderboard with).
+#
+# Key: OPENAI_API_KEY in mini-swe-agent's global .env, never in the repo.
+agent:
+  step_limit: 40
+  cost_limit: 0.50      # USD per trajectory, enforced -- litellm knows gpt-5-mini's prices
+  mode: yolo
+environment:
+  environment_class: docker
+  run_args: ["--rm", "--platform", "linux/amd64"]
+  pull_timeout: 900
+  timeout: 120
+model:
+  model_class: litellm
+  model_name: gpt-5-mini
+  model_kwargs:
+    drop_params: true   # reasoning models reject some sampling params; drop rather than fail
