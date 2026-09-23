@@ -105,14 +105,25 @@ def run_pilot_free(anchor_path: Path, out_dir: Path) -> Path:
         committed[t.task_id] = (cands[t.task_id][best], float(scores[best]))
 
     # ---------------- Stage 4: audit panel, one model at a time -------------
+    # A member with `backend: rm` is a true scalar reward model (profile C),
+    # loaded on MPS and unloaded before the next; otherwise an Ollama judge.
     audit_raw: dict[str, dict[str, float]] = {t.task_id: {} for t in chosen}
     for member in cfg["audit_panel"]["members"]:
-        mid, mname = member["id"], member["ollama_id"]
-        be = make_backend("openai_compatible", mname, base_url=base_url)
+        mid = member["id"]
         t0 = time.time()
-        for i, t in enumerate(chosen):
-            audit_raw[t.task_id][mid] = judge_score(be, committed[t.task_id][0].text, mid)
-        print(f"[{mid}:{mname}] done in {time.time()-t0:.0f}s")
+        if member.get("backend") == "rm":
+            from silentfail.rm_backend import RewardModel
+            rm = RewardModel.load(member["hf_id"], mid)
+            for t in chosen:
+                audit_raw[t.task_id][mid] = rm.score(t.prompt, committed[t.task_id][0].text)
+            rm.unload()
+            print(f"[{mid}:{member['hf_id']}] (true RM) done in {time.time()-t0:.0f}s")
+        else:
+            mname = member["ollama_id"]
+            be = make_backend("openai_compatible", mname, base_url=base_url)
+            for t in chosen:
+                audit_raw[t.task_id][mid] = judge_score(be, committed[t.task_id][0].text, mid)
+            print(f"[{mid}:{mname}] done in {time.time()-t0:.0f}s")
 
     # ---------------- Stage 5: real gold on committed trajectories ----------
     gold: dict[str, tuple[int, str]] = {}
@@ -153,14 +164,16 @@ def run_pilot_free(anchor_path: Path, out_dir: Path) -> Path:
             visible_pass=bool(tr.steps[-1].visible_pass) if tr.steps else False,
             length_chars=len(tr.text),
             step_count=tr.step_count,
+            trajectory_text=tr.text,            # kept: a trajectory that is not logged cannot be re-audited
+            final_solution=tr.final_solution,
             mean_agent_entropy=None,
             excluded=excluded,
             exclusion_reason=reason,
             agent_git_commit=str(cfg["agent"].get("git_commit", "UNPINNED")),
             wall_time_sec=None,
             backend="ollama",
-            critic_type="llm_judge",
-            is_true_reward_model=False,
+            critic_type=cfg.get("critic_type", "llm_judge"),
+            is_true_reward_model=bool(cfg.get("is_true_reward_model", False)),
         ))
 
     train_raw: dict[str, list[float]] = {m["id"]: [] for m in cfg["audit_panel"]["members"]}
@@ -175,6 +188,13 @@ def run_pilot_free(anchor_path: Path, out_dir: Path) -> Path:
             rn, u = apply_panel_u(r["audit_scores"], fits)
             r["audit_scores_rank_norm"] = rn
             r["u"] = u
+
+    with (out_dir / "candidates.jsonl").open("w") as f:
+        for t in chosen:
+            for k, tr in enumerate(cands[t.task_id]):
+                f.write(json.dumps({"instance_id": t.task_id, "candidate": k,
+                                    "c": cand_scores[t.task_id][k], "text": tr.text,
+                                    "final_solution": tr.final_solution}) + "\n")
 
     path = out_dir / "pilot_free_scored.jsonl"
     with path.open("w") as f:

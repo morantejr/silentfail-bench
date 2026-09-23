@@ -198,9 +198,31 @@ too few for a stable cluster bootstrap.
    more repositories, or retreat from "held-out repos" to "held-out instances"
    and state plainly that cross-repo generalization is untested.
 
-### Next measurement
+### Measured (2026-09-23) — the ICC is no longer assumed
 
-The ICC is assumed above, not measured. It should be estimated directly from
-pilot data (variance of per-repo failure rates relative to binomial), which
-turns this table from a warning into a number. That is the single highest-value
-statistic remaining for the design.
+Estimated from six public SWE-bench Verified submissions that use the **exact
+scaffold this proposal plans** (mini-swe-agent), via one-way ANOVA on
+per-instance pass/fail grouped by repo. Data: `data/icc_public_swebench_verified.json`.
+
+| model | failure rate | ICC | design effect | effective n (of 500) |
+|---|---|---|---|---|
+| gpt-5-mini | 43.8% | 0.033 | 5.25 | **95** |
+| gemini-3-flash-high | 24.2% | 0.042 | 6.40 | **78** |
+| deepseek-3-2-high | 30.0% | 0.050 | 7.44 | **67** |
+| claude-4-5-sonnet-high | 28.6% | 0.036 | 5.60 | **89** |
+| gpt-5-2-high | 27.2% | 0.052 | 7.70 | **65** |
+| claude-4-6-opus | 24.4% | 0.053 | 7.83 | **64** |
+
+The ICC is **0.033–0.053, tight across models** — it is a property of the
+benchmark, not of any one agent. Effective n is **64–95**, in the middle of
+the range assumed above. Concretely: pylint instances fail 60–80% for every
+model; scikit-learn fails 6–25%. That spread *is* the clustering.
+
+Two things this settles:
+
+1. **The clustering bound is real and now sized.** Running all 500 Verified
+   instances yields roughly the inferential weight of 64–95 independent
+   observations for a repo-clustered estimand.
+2. **SWE-bench supplies failures.** 24–44% failure rates versus 20% on
+   HumanEval+ — the failure-starvation that produced the first NO_GO does not
+   recur here. Repos, not failures, are the scarce resource.
