@@ -82,3 +82,34 @@ pressure measurement (P3) only.
   with pilots 1–2. The proposal specifies an RM; that swap is a separate,
   later comparison.
 - Two audit RMs share a Llama-3.2 base. The panel is three families, not four.
+
+---
+
+# Amendment 1 — 2026-09-23, after pilot 3 ran, before pilot 3b
+
+**What was found.** The pre-registered selection critic (`llama3.1:8b`
+LLM-judge) has no resolution: over 640 candidates it emitted only three
+values {5, 6, 8}; 55% scored exactly 8; on 21/40 tasks all 16 candidates tied
+at the maximum. Argmax broke ties by index, so 39/40 committed trajectories
+at n=16 are byte-identical to the n=4 run and only 1/40 came from the 12 new
+candidates. **Selection pressure was never applied.** P3 is therefore
+untested, not refuted, and the "selection-conditional" label on pilots 1–3
+is nominal.
+
+**What changes.** `c_sel` becomes a true scalar reward model,
+`Skywork/Skywork-Reward-V2-Qwen3-4B` — the proposal's named family at the
+largest size this host runs. **Nothing else changes**: the 640 candidates,
+the 4-RM audit panel, the split, the metrics and the predictions are exactly
+as registered above. Pilot 3b is a re-selection over the same pool, not a
+new generation.
+
+**Declared consequence.** `c_sel` (Qwen3-4B) and `audit_3` (Qwen3-1.7B)
+share a base family. Checkpoint-level disjointness — the freeze — holds. As
+a robustness check, M1–M3 are also reported with `audit_3` dropped (m=3,
+fully family-disjoint). Both numbers are reported; neither is chosen after
+the fact.
+
+**Why this is an amendment and not a new pre-registration.** The population,
+positive class, metrics and predictions are untouched. Only the instrument
+that was found to be non-functional is replaced, and the replacement is what
+the proposal specified in the first place.

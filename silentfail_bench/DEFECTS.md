@@ -200,3 +200,28 @@ memory, so 17 minutes of generation were lost.
 
 The lesson generalizes: the expensive stage must be durable before the cheap
 stage begins, and the cheap stage must degrade per-item, never per-run.
+
+---
+
+## A coarse selection critic silently disables best-of-n (2026-09-23)
+
+The LLM-judge `c_sel` asked for "a number from 0 to 10" and, over 640
+candidates, returned only **{5, 6, 8}** — 55% of them exactly 8. On 21 of 40
+tasks all 16 candidates tied at the max; argmax then took index 0. Raising
+selection pressure from n=4 to n=16 changed the committed trajectory on
+**1 of 40 tasks**.
+
+| | n=4 | n=16 |
+|---|---|---|
+| committed trajectory identical to n=4 run | — | **39/40** |
+| selected from the 12 new candidates | — | 1/40 |
+| silent failures | 3 | 3 |
+
+So pilots 1–3 were not selection-conditional in any meaningful sense: "best
+of n" was "first draw". This is the sharpest case for the proposal's own
+specification — `c_sel` must be a continuous scalar reward model, not a chat
+model emitting integers — and it was found only because the candidate pool
+was checkpointed with full text and could be inspected after the fact.
+
+Fix: `scripts/reselect_from_candidates.py` re-runs selection over the
+existing pool with a true RM. Pre-registration Amendment 1 records the swap.
