@@ -104,13 +104,21 @@ def main() -> None:
     ap.add_argument("--mini-base-config", default="swebench.yaml",
                     help="swebench.yaml = native tool calls (frontier); swebench_backticks.yaml = text-based (local 7B/14B)")
     ap.add_argument("--keep-images", action="store_true", help="skip pruning (needs a big disk)")
-    ap.add_argument("--instances", nargs="+", required=True)
+    ap.add_argument("--instances", nargs="*", default=[])
+    ap.add_argument("--instances-file", type=Path, default=None,
+                    help="one instance id per line, # comments allowed; avoids shell word-splitting (zsh does not split $VAR)")
     ap.add_argument("--k", type=int, default=4)
     ap.add_argument("--step-limit", type=int, default=30)
     ap.add_argument("--out", type=Path, default=ROOT / "data" / "swebench_pilot")
     ap.add_argument("--c-sel-hf-id", default="Skywork/Skywork-Reward-V2-Qwen3-4B")
     ap.add_argument("--stage", choices=["all", "generate", "score"], default="all")
     a = ap.parse_args()
+    if a.instances_file:
+        a.instances += [l.strip() for l in a.instances_file.read_text().splitlines() if l.strip() and not l.startswith("#")]
+    if not a.instances:
+        ap.error("no instances: pass --instances-file or --instances")
+    if any(" " in i for i in a.instances):
+        ap.error("an instance id contains a space: the shell passed several ids as one argument")
     cfg = yaml.safe_load(a.anchor.read_text()); seed0 = int(cfg["split"]["split_seed"])
     a.out.mkdir(parents=True, exist_ok=True)
     # Only Docker plumbing goes into the agent's environment. The model
