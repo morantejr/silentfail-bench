@@ -126,3 +126,21 @@ a model-capability bottleneck, not a compute one.**
 
 Timing for sizing: ~109s for one 30-step candidate at 7B; a
 capable model would use fewer, longer steps.
+
+## OpenRouter free tier — 2026-09-23
+
+Generation via `qwen/qwen3.8-27b:free` and `z-ai/glm-5.2:free` both returned
+**HTTP 429 on the very first request**, from two different providers. A 429 on
+request #1 is not the per-minute window (some calls would succeed); it is the
+**key's daily free-request cap** (~50/day without purchased credits) already
+consumed. mini-swe-agent backs off 4→8→16→…60 s for 10 attempts, then aborts.
+
+Consequences for a $0 run:
+- One 40-step trajectory needs ~40 requests: it fits the no-credit daily cap
+  only on a fresh day, and a multi-instance pilot does not fit at all.
+- Free models cost $0 per request regardless; what the cap gates is *count*.
+  OpenRouter raises the free-model cap to ~1000/day once an account has
+  ≥ $10 of lifetime credits, which remain unspent on `:free` models — but
+  buying them is a real $10 outlay, not a free action.
+- The transport itself is fine: auth accepted, model ids valid, the text-based
+  parser is the one validated with the 7B. Only the quota is blocking.

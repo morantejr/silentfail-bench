@@ -19,7 +19,7 @@ environment:
   timeout: 120
 model:
   model_class: openrouter_textbased     # same ```mswea_bash_command parser validated with the 7B
-  model_name: qwen/qwen3.8-27b:free     # only free coder-class model with a long context (262k); glm-5.2:free is 32k
+  model_name: z-ai/glm-5.2:free          # probe: different free provider; qwen3.8-27b:free 429d on request 1
   cost_tracking: ignore_errors          # OpenRouter returns cost=0 for free models; the class raises on <=0 otherwise
   model_kwargs:
     temperature: 0.7
