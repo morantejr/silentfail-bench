@@ -102,11 +102,15 @@ def run_pilot_free(anchor_path: Path, out_dir: Path) -> Path:
     t0 = time.time()
     with ckpt.open("a") as f:
         for i, t in enumerate(chosen):
-            if len(cands.get(t.task_id, [])) >= n_cand:
+            have = len(cands.get(t.task_id, []))
+            if have >= n_cand:
                 continue
+            # Seed is a pure function of (task index, candidate index), so a
+            # checkpoint at n=4 is exactly candidates 0-3 of an n=16 run.
+            # Raising selection pressure only generates the missing ones.
             trs = [run_agent(t, agent_be, max_steps=max_steps, temperature=temp,
-                             seed=seed0 + 1000 * i + k) for k in range(n_cand)]
-            cands[t.task_id] = trs
+                             seed=seed0 + 1000 * i + k) for k in range(have, n_cand)]
+            cands.setdefault(t.task_id, []).extend(trs)
             for tr in trs:
                 f.write(json.dumps({"task_id": tr.task_id, "seed": tr.seed, "error": tr.error,
                                     "final_solution": tr.final_solution,

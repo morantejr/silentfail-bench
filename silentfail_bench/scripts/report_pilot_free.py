@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from silentfail.combine import _design_matrix, fit_models  # noqa: E402
-from silentfail.stats import cluster_bootstrap_delta_auroc, required_groups_for_power  # noqa: E402
+from silentfail.stats import cluster_bootstrap_delta_auroc, cluster_bootstrap_delta, auroc_fast, required_groups_for_power  # noqa: E402
 
 
 def main() -> None:
@@ -113,6 +113,37 @@ def main() -> None:
             "for_delta_auroc_0.095": required_groups_for_power(rate, 0.75, 1, 0.8,
                                         [240, 480, 960, 1920], n_sims=80, n_boot=200)["chosen_n_trajectories"],
         }
+
+    # ------------------------------------------------------------------
+    # PRE-REGISTERED PRIMARY (PREREGISTRATION.md, 2026-09-23).
+    # Population: committed trajectories whose agent-visible tests passed.
+    # Positive class: g=0 within that population (silent failure).
+    # Stage-0 metric: raw-score AUROC of u and of -c in the stratum, with a
+    # group-clustered bootstrap CI. The fitted-model dAUROC is confirmatory
+    # and only reported when the stratum has >=10 positives in test.
+    # ------------------------------------------------------------------
+    strat = [r for r in usable if r.get("visible_pass")]
+    y_s = np.array([1 if r["g"] == 0 else 0 for r in strat], int)
+    pos, neg = int(y_s.sum()), int((1 - y_s).sum())
+    pre = {"population": "visible_pass", "n": len(strat), "silent_failures": pos, "successes": neg}
+    if pos >= 1 and neg >= 1:
+        u_s = np.array([r["u"] for r in strat], float)
+        c_s = np.array([r["c"] for r in strat], float)
+        grp = [r["repo"] for r in strat]
+        pre["AUROC_u"] = auroc_fast(y_s, u_s)
+        pre["AUROC_neg_c"] = auroc_fast(y_s, -c_s)
+        t = cluster_bootstrap_delta(y_s, -c_s, u_s, grp, endpoint="auroc", n_boot=4000, seed=1)
+        pre["delta_AUROC_u_minus_negc"] = t.delta
+        pre["delta_CI95"] = [t.ci_lo, t.ci_hi]
+        pre["p_one_sided_u_gt_negc"] = t.p_one_sided
+        # P2 (Goodhart): is -c at or below chance in the stratum?
+        tc = cluster_bootstrap_delta(y_s, np.zeros_like(c_s), -c_s, grp, endpoint="auroc", n_boot=4000, seed=2)
+        pre["negc_below_chance_p"] = 1.0 - tc.p_one_sided
+        pre["inference_status"] = ("underpowered: <10 positives; report point estimates only"
+                                   if pos < 10 else "eligible for confirmatory test")
+    rep["prereg_primary_visible_pass"] = pre
+    # selection-pressure diagnostic for P3
+    rep["silent_failure_rate_among_visible_pass"] = (pos / len(strat)) if strat else None
 
     # Clustering adjustment. The simulation above treats every row as its own
     # cluster. On SWE-bench Verified the estimand clusters on repo, and the ICC
