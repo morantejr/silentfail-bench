@@ -1,0 +1,22 @@
+# mini-swe-agent overlay for SilentFail profile B on this host.
+# Merged on top of the built-in benchmarks/swebench.yaml (pass both with -c).
+agent:
+  step_limit: 30        # 7B model; bound the loop (spec says 50, smoke test uses 30)
+  cost_limit: 0         # litellm has no price for a local model; 0 disables the guard
+  mode: yolo
+environment:
+  environment_class: docker
+  # SWE-bench images are x86_64-only; without this the client asks for arm64
+  # and gets "no matching manifest". Rosetta handles the rest.
+  run_args: ["--rm", "--platform", "linux/amd64"]
+  pull_timeout: 900     # 4.2 GB per image
+  timeout: 120          # commands under emulation are slower
+model:
+  model_name: openai/qwen2.5-coder:7b     # litellm -> OpenAI-compatible -> Ollama
+  model_class: litellm
+  cost_tracking: ignore_errors   # litellm has no price entry for a local model; the tracker raised after call 1
+  model_kwargs:
+    api_base: http://127.0.0.1:11434/v1
+    api_key: ollama
+    temperature: 0.7
+    drop_params: true
