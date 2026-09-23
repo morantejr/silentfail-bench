@@ -395,6 +395,11 @@ schema. The agent executed real shell commands, then looped and hit the step
 limit with an empty patch (elapsed=109s, 30 calls, 3 distinct
 commands out of 30).
 
+A 14B local model was then tried on the same instance under the same
+limits: it found the exact validation site the fix needs, then echoed its
+conclusion 22 times without editing a file. Nine distinct commands, still no
+patch. Local models up to 14B are exhausted on this host.
+
 This is the expected result and it settles the last open question about
 where the cost lives: **on SWE-bench, generation is capability-bound.** A 7B
 model cannot drive the scaffold; every public mini-swe-agent result uses a

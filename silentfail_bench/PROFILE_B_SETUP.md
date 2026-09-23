@@ -144,3 +144,25 @@ Consequences for a $0 run:
   buying them is a real $10 outlay, not a free action.
 - The transport itself is fine: auth accepted, model ids valid, the text-based
   parser is the one validated with the 7B. Only the quota is blocking.
+
+## Local model ladder on one instance — 2026-09-23
+
+Same instance (`pallets__flask-5014`), same text-based config, same 30-step
+limit. The correct fix is a one-line `ValueError` when a Blueprint name
+contains a dot.
+
+| model | elapsed | distinct commands / 30 | what it did | patch |
+|---|---|---|---|---|
+| qwen2.5-coder:7b | 109 s | 3 | `cd src && ls` / `cd flask && ls`, alternating | none |
+| qwen2.5-coder:14b | ~4 min | 9 | grep'd `Blueprint`, **found the exact validation site**, then `echo`'d its own conclusion 22× | none |
+
+The 14B is qualitatively different — it located the fix — and identically
+useless for the pipeline, because an empty patch is an excluded row. The
+failure moved from *navigation* to *acting*: it narrated the answer instead
+of editing the file. That is a well-known small-model agent failure and not
+one a step limit or a prompt nudge should be trusted to solve at pilot scale.
+
+**Conclusion of the ladder:** local models up to 14B cannot drive this
+scaffold to a submission on this host. Generation for the confirmatory run
+needs a frontier-class model; on a $0 budget that means the free OpenRouter
+tier, gated by its daily request cap (see above).
