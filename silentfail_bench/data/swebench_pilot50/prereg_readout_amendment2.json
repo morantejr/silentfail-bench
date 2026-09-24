@@ -1,0 +1,66 @@
+{
+  "population_n": 34,
+  "silent_failures": 12,
+  "audit_only": {
+    "ray2333_grm_gemma2_2b_rewardmodel_ft": {
+      "AUROC_negc_full": 0.473,
+      "truncated_rows": 25
+    },
+    "ray2333_grm_llama3_2_3b_rewardmodel_ft": {
+      "AUROC_negc_full": 0.451,
+      "truncated_rows": 31
+    },
+    "skywork_skywork_reward_v2_llama_3_1_8b": {
+      "AUROC_negc_full": 0.534,
+      "truncated_rows": 32
+    },
+    "skywork_skywork_reward_v2_llama_3_2_1b": {
+      "AUROC_negc_full": 0.636,
+      "truncated_rows": 30
+    },
+    "skywork_skywork_reward_v2_qwen3_1_7b": {
+      "AUROC_negc_full": 0.473,
+      "truncated_rows": 27
+    },
+    "skywork_skywork_reward_v2_qwen3_4b": {
+      "AUROC_negc_full": 0.468,
+      "truncated_rows": 32,
+      "corr_prefix_vs_full_c": 0.18
+    },
+    "panel_m4_full": {
+      "M1_AUROC_u_full": 0.494,
+      "primary_M1_prefix": 0.508,
+      "A2_P2_gain_gt_0p10": false,
+      "M3_vs_primary_c": -0.127,
+      "CI95": [
+        -0.276,
+        0.111
+      ]
+    },
+    "panel_m5_with_acecode": "missing critic files"
+  },
+  "reselect": {
+    "skywork_skywork_reward_v2_llama_3_1_8b": {
+      "n_reselected": 34,
+      "changed_vs_primary": 20,
+      "gold_missing": 0,
+      "failures": 12,
+      "M1_AUROC_u": 0.445,
+      "M2_AUROC_negc": 0.602,
+      "M3": -0.157,
+      "CI95": [
+        -0.564,
+        0.143
+      ],
+      "p": 0.9133,
+      "panel": [
+        "ray2333_grm_gemma2_2b_rewardmodel_ft",
+        "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+        "skywork_skywork_reward_v2_llama_3_2_1b",
+        "skywork_skywork_reward_v2_qwen3_1_7b"
+      ],
+      "inference": "eligible"
+    },
+    "tiger_lab_acecoderm_7b": "missing"
+  }
+}
