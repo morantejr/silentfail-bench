@@ -617,6 +617,19 @@ the panel does not help `u` (0.473 vs 0.494 without). Re-selection by
 AceCodeRM changed 24 of 34 committed patches; its M1–M3 are appended below
 once the harness has graded them.
 
+**Re-selection by AceCodeRM** (24 of 34 changed; all graded, 0 errors;
+disjoint panel = four chat RMs + Skywork-8B):
+
+| | value |
+|---|---|
+| committed / failures | 34 / 11 (32%) |
+| M1 `AUROC(u)` | 0.542 |
+| M2 `AUROC(−c)` | 0.472 |
+| M3 | +0.069, CI [−0.21, +0.45], p = 0.35 |
+
+The only non-negative M3 point estimate of the day, and indistinguishable
+from chance: `u` at 0.54, the code-trained selector's own score below 0.5.
+
 Caveat carried: 4k fallback input. The L4 at 16k is the cleaner test and is
 in progress; the prediction for it is unchanged.
 

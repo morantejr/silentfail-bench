@@ -78,9 +78,24 @@
     "tiger_lab_acecoderm_7b": {
       "n_reselected": 34,
       "changed_vs_primary": 24,
-      "gold_missing": 17
+      "gold_missing": 0,
+      "failures": 11,
+      "M1_AUROC_u": 0.542,
+      "M2_AUROC_negc": 0.472,
+      "M3": 0.069,
+      "CI95": [
+        -0.208,
+        0.452
+      ],
+      "p": 0.3475,
+      "panel": [
+        "ray2333_grm_gemma2_2b_rewardmodel_ft",
+        "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+        "skywork_skywork_reward_v2_llama_3_2_1b",
+        "skywork_skywork_reward_v2_qwen3_1_7b",
+        "skywork_skywork_reward_v2_llama_3_1_8b"
+      ],
+      "inference": "eligible"
     }
-  },
-  "needs_gold_file": "data/swebench_pilot50/gpu_scores/needs_gold.jsonl",
-  "needs_gold_n": 17
+  }
 }
