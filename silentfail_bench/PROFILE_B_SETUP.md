@@ -265,3 +265,38 @@ Tally for the day: the dry run of never-executed stages caught **four**
 failures that would each have stopped the unattended chain at ~3:30 AM —
 missing torch in the venv, the stale summary line, the harness flags, and
 the dataset id. Cost of the dry run: about ten minutes.
+
+## Pilot generation stalled at 41/50 — disk exhaustion, 2026-09-24 01:10
+
+**What happened.** Generation ran cleanly for 6.5 h (164 candidates, $3.63,
+zero errors) and stalled at 01:10, right after instance 41 completed. Host
+free space had reached ~0. The 05:39 hourly report — itself 3.5 h late,
+because the watcher's own loop was starved — showed 1.4 GB free and swap at
+44 of 45 GB.
+
+**Cause.** Not the pipeline's own data (674 MB) and not the VM file (capped
+at 40 GB as planned). macOS **swap**: it had grown from 31 GB to 45 GB by
+adding swapfiles, consuming the remaining free disk. At 22:13 I measured the
+drift at ~5 GB/h and projected ~21 GB free at completion. That
+extrapolation was wrong: swap growth is not linear, and a machine holding
+a 6 GB VM plus a day of stale torch pages will grow it until disk is gone.
+
+**Recovery.** Stopping the VM alone freed 33 GB (swap drained from 44 to
+32 GB). `colima delete` does **not** remove its named data disk — the 40 GB
+`_lima/_disks/colima/datadisk` survives and `limactl disk delete` returned
+without removing it; `rm -rf` on the disks directory was required. Host free
+after: 85 GB.
+
+**Consequence for the pilot.** 41 complete instances (all 4 candidates each),
+not the 50 pre-registered. This is a **declared deviation**: the missing 9
+were determined by the instance order in the seeded list and the time the
+disk ran out, not by anything about the instances. The analysis population,
+metrics and predictions are unchanged; the repo count in the 41 is reported
+in the readout.
+
+**Rules, revised.**
+- Before an unattended run: free disk must exceed **VM virtual size + 2×
+  current swap + 20 GB**, not "VM cap + a margin".
+- Watchers must report *elapsed since last trajectory*, not just counts — a
+  stalled run looks "alive" by process count.
+- `colima delete` is not enough: remove `_lima/_disks/<name>` explicitly.
