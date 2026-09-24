@@ -238,3 +238,30 @@ Rules of thumb:
   the space back.
 - Model caches accumulate silently across experiments; audit them before
   every unattended run.
+
+## Post-generation chain validated — 2026-09-23 20:40
+
+`--stage rm` → `--stage gold` → readout, run through the orchestrator on the
+one-candidate smoke directory under the venv: selection 30 s, four audits,
+`scores.json` written; gold `resolved 1/1`, row `g=1`, not excluded. The
+unattended chain (`data/swebench_pilot50/postgen.sh`) runs this exact code
+after generation completes.
+
+Two more traps caught by the dry run, both fixed:
+
+1. **`swebench_gold.run_evaluation` used pre-5.x flags** (`--cache_level`,
+   `--namespace`). The harness rejected them with a usage error in 12 s and
+   produced no report. The wrapper had only ever been bypassed by hand-run
+   harness commands.
+2. **Dataset id.** `princeton-nlp/SWE-bench_Verified` lacks the `image` field
+   the 5.x harness reads in `make_test_spec` → `KeyError: 'image'`. Use
+   `SWE-bench/SWE-bench_Verified`.
+
+Reading the smoke row: `u = 0.000` there is expected, not a bug — with one
+train row the rank-normalization collapses every audit score to the same
+percentile. It is meaningful only at pilot scale (≈35 train rows).
+
+Tally for the day: the dry run of never-executed stages caught **four**
+failures that would each have stopped the unattended chain at ~3:30 AM —
+missing torch in the venv, the stale summary line, the harness flags, and
+the dataset id. Cost of the dry run: about ten minutes.
