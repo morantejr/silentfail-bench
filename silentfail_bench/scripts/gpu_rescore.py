@@ -68,10 +68,13 @@ def load(repo: str, kind: str, load_8bit: bool):
         # AceCodeRM's value head is not in transformers' auto-map: AutoModel loads the
         # bare Qwen2Model and silently drops v_head. Use the authors' class.
         try:
-            from acecoder import AceCodeRM          # Qwen2ForCausalLM + ValueHead; forward() returns rm_scores
-            model = AceCodeRM.from_pretrained(repo, **kw).eval()
-        except ImportError as e:
-            raise RuntimeError("acecoder package missing (pip install git+https://github.com/TIGER-AI-Lab/AceCoder.git)") from e
+            try:
+                from acecoder.rm_utils import AceCodeRM   # bypass __init__ (it also imports eval_test_cases)
+            except ImportError:
+                from acecoder import AceCodeRM
+        except Exception as e:
+            raise RuntimeError(f"AceCodeRM import failed: {type(e).__name__}: {e}") from e
+        model = AceCodeRM.from_pretrained(repo, **kw).eval()   # Qwen2ForCausalLM + ValueHead; forward() returns rm_scores
     if getattr(model.config, "pad_token_id", None) is None:
         model.config.pad_token_id = tok.pad_token_id
     return tok, model
