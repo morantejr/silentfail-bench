@@ -1,0 +1,102 @@
+{
+  "file": "data/swebench_pilot50/pilot_free_scored.jsonl",
+  "prereg": "PREREGISTRATION_SWEBENCH_PILOT.md",
+  "M0a_candidates": {
+    "n": 164,
+    "exit_statuses": {
+      "Submitted": 138,
+      "LimitsExceeded": 26
+    },
+    "empty_patch": 29,
+    "exclusion_rate": 0.177,
+    "cost_usd_total": 3.65
+  },
+  "M0b_committed": {
+    "n_committed": 41,
+    "n_excluded": 7,
+    "n_usable": 34,
+    "failures": 12,
+    "failure_rate": 0.353,
+    "failure_rate_CI95": [
+      0.215,
+      0.521
+    ]
+  },
+  "M0c_population": {
+    "n": 34,
+    "silent_failures": 12,
+    "silent_failure_rate": 0.353,
+    "silent_failure_rate_CI95": [
+      0.215,
+      0.521
+    ],
+    "P3_exceeds_humaneval_8pct": true
+  },
+  "M0d_icc_by_repo": {
+    "icc": 0.184,
+    "n_repos": 9,
+    "caveat": "9 repos: unstable by construction; public reference 0.033-0.053",
+    "per_repo_failure_rate": {
+      "astropy__astropy": 0.5,
+      "django__django": 0.35,
+      "matplotlib__matplotlib": 1.0,
+      "pydata__xarray": 0.0,
+      "pylint-dev__pylint": 1.0,
+      "pytest-dev__pytest": 1.0,
+      "scikit-learn__scikit-learn": 0.0,
+      "sphinx-doc__sphinx": 0.0,
+      "sympy__sympy": 0.33
+    }
+  },
+  "watch_items": {
+    "selected_index_histogram": {
+      "0": 15,
+      "1": 11,
+      "2": 10,
+      "3": 5
+    },
+    "corr_c_u": 0.11
+  },
+  "registered_m4": {
+    "panel": "m=4 (registered)",
+    "n_population": 34,
+    "silent_failures": 12,
+    "successes": 22,
+    "M1_AUROC_u": 0.508,
+    "M2_AUROC_negc": 0.621,
+    "M3_delta": -0.114,
+    "M3_CI95_repo_clustered": [
+      -0.373,
+      0.219
+    ],
+    "M3_p_one_sided": 0.793,
+    "n_repos_in_population": 9,
+    "P1_M1_gt_0p5": true,
+    "P2_M2_le_0p5": false,
+    "inference": "eligible"
+  },
+  "robustness_m3_drop_audit_3": {
+    "panel": "m=3 (audit_3 dropped)",
+    "n_population": 34,
+    "silent_failures": 12,
+    "successes": 22,
+    "M1_AUROC_u": 0.545,
+    "M2_AUROC_negc": 0.621,
+    "M3_delta": -0.076,
+    "M3_CI95_repo_clustered": [
+      -0.389,
+      0.231
+    ],
+    "M3_p_one_sided": 0.709,
+    "n_repos_in_population": 9,
+    "P1_M1_gt_0p5": true,
+    "P2_M2_le_0p5": false,
+    "inference": "eligible"
+  },
+  "projected_silent_failures_at_500": 146,
+  "go_no_go": {
+    "decision": "GO",
+    "reasons": [],
+    "note": "AUROC(M_c) headroom check applies only if a held-out logistic is computable (>=10 test positives)"
+  }
+}

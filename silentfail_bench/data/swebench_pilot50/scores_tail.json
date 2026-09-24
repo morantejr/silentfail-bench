@@ -1,0 +1,294 @@
+{
+ "c_tail": {
+  "astropy__astropy-14539": 13.640625,
+  "astropy__astropy-14598": 4.91796875,
+  "django__django-10914": 13.9609375,
+  "django__django-11206": 13.640625,
+  "django__django-11265": -0.62646484375,
+  "django__django-12406": 14.1328125,
+  "django__django-12754": 12.75,
+  "django__django-13028": 11.9375,
+  "django__django-13417": 7.140625,
+  "django__django-13513": 11.6640625,
+  "django__django-13590": 14.1796875,
+  "django__django-14017": 7.1796875,
+  "django__django-14034": 14.15625,
+  "django__django-14155": 11.875,
+  "django__django-15037": 13.109375,
+  "django__django-15128": 9.453125,
+  "django__django-15278": 9.2109375,
+  "django__django-15569": 10.7734375,
+  "django__django-15863": 13.15625,
+  "django__django-16899": 8.59375,
+  "django__django-16901": 9.40625,
+  "django__django-9296": 14.09375,
+  "matplotlib__matplotlib-20488": 7.99609375,
+  "matplotlib__matplotlib-25960": 2.6015625,
+  "matplotlib__matplotlib-26208": -0.0066375732421875,
+  "pydata__xarray-6744": 6.078125,
+  "pylint-dev__pylint-4661": 4.0234375,
+  "pylint-dev__pylint-8898": 1.162109375,
+  "pytest-dev__pytest-5840": 11.6484375,
+  "scikit-learn__scikit-learn-10844": 0.587890625,
+  "scikit-learn__scikit-learn-13328": 1.4267578125,
+  "scikit-learn__scikit-learn-26323": 2.5390625,
+  "sphinx-doc__sphinx-10449": 4.2734375,
+  "sphinx-doc__sphinx-10673": 10.5546875,
+  "sphinx-doc__sphinx-11445": -0.30224609375,
+  "sphinx-doc__sphinx-8269": 12.078125,
+  "sphinx-doc__sphinx-9591": 2.42578125,
+  "sympy__sympy-13091": 5.84375,
+  "sympy__sympy-16886": -0.455810546875,
+  "sympy__sympy-17318": -1.78515625,
+  "sympy__sympy-24539": -0.912109375
+ },
+ "audit_tail": {
+  "astropy__astropy-14539": {
+   "audit_0": -9.3984375,
+   "audit_1": -8.1875,
+   "audit_2": 4.15625,
+   "audit_3": 4.58203125
+  },
+  "astropy__astropy-14598": {
+   "audit_0": -5.1796875,
+   "audit_1": -12.3671875,
+   "audit_2": 1.193359375,
+   "audit_3": -4.00390625
+  },
+  "django__django-10914": {
+   "audit_0": -5.14453125,
+   "audit_1": -5.69921875,
+   "audit_2": 3.173828125,
+   "audit_3": 6.25
+  },
+  "django__django-11206": {
+   "audit_0": -7.51953125,
+   "audit_1": -6.6640625,
+   "audit_2": 5.35546875,
+   "audit_3": 5.14453125
+  },
+  "django__django-11265": {
+   "audit_0": -10.15625,
+   "audit_1": -7.5,
+   "audit_2": 1.9599609375,
+   "audit_3": 3.18359375
+  },
+  "django__django-12406": {
+   "audit_0": -7.0,
+   "audit_1": -6.4296875,
+   "audit_2": 2.76953125,
+   "audit_3": 4.6171875
+  },
+  "django__django-12754": {
+   "audit_0": -6.609375,
+   "audit_1": -6.08984375,
+   "audit_2": 5.05078125,
+   "audit_3": 4.20703125
+  },
+  "django__django-13028": {
+   "audit_0": -2.30078125,
+   "audit_1": -6.5390625,
+   "audit_2": 3.294921875,
+   "audit_3": 4.57421875
+  },
+  "django__django-13417": {
+   "audit_0": -8.296875,
+   "audit_1": -8.359375,
+   "audit_2": 3.296875,
+   "audit_3": 0.533203125
+  },
+  "django__django-13513": {
+   "audit_0": -7.3515625,
+   "audit_1": -7.26171875,
+   "audit_2": 3.8984375,
+   "audit_3": 3.283203125
+  },
+  "django__django-13590": {
+   "audit_0": -6.42578125,
+   "audit_1": -6.34765625,
+   "audit_2": 5.2265625,
+   "audit_3": 5.1796875
+  },
+  "django__django-14017": {
+   "audit_0": -5.60546875,
+   "audit_1": -8.015625,
+   "audit_2": 4.01171875,
+   "audit_3": 1.962890625
+  },
+  "django__django-14034": {
+   "audit_0": -9.90625,
+   "audit_1": -7.58984375,
+   "audit_2": 3.046875,
+   "audit_3": 4.85546875
+  },
+  "django__django-14155": {
+   "audit_0": -5.85546875,
+   "audit_1": -6.4375,
+   "audit_2": 5.25390625,
+   "audit_3": 4.77734375
+  },
+  "django__django-15037": {
+   "audit_0": -9.234375,
+   "audit_1": -6.5859375,
+   "audit_2": 2.228515625,
+   "audit_3": 1.5400390625
+  },
+  "django__django-15128": {
+   "audit_0": -7.984375,
+   "audit_1": -7.20703125,
+   "audit_2": 3.25,
+   "audit_3": 1.5283203125
+  },
+  "django__django-15278": {
+   "audit_0": -3.26171875,
+   "audit_1": -6.92578125,
+   "audit_2": 4.171875,
+   "audit_3": 3.02734375
+  },
+  "django__django-15569": {
+   "audit_0": -6.0390625,
+   "audit_1": -6.43359375,
+   "audit_2": 5.59375,
+   "audit_3": 2.81640625
+  },
+  "django__django-15863": {
+   "audit_0": -7.18359375,
+   "audit_1": -6.60546875,
+   "audit_2": 4.7421875,
+   "audit_3": 3.8671875
+  },
+  "django__django-16899": {
+   "audit_0": -7.83203125,
+   "audit_1": -7.171875,
+   "audit_2": 4.0390625,
+   "audit_3": 2.060546875
+  },
+  "django__django-16901": {
+   "audit_0": -4.19921875,
+   "audit_1": -7.09375,
+   "audit_2": 5.36328125,
+   "audit_3": 3.7890625
+  },
+  "django__django-9296": {
+   "audit_0": -5.0234375,
+   "audit_1": -6.09375,
+   "audit_2": 5.08984375,
+   "audit_3": 5.09765625
+  },
+  "matplotlib__matplotlib-20488": {
+   "audit_0": -5.796875,
+   "audit_1": -8.890625,
+   "audit_2": 2.166015625,
+   "audit_3": 2.01953125
+  },
+  "matplotlib__matplotlib-25960": {
+   "audit_0": -8.1484375,
+   "audit_1": -15.109375,
+   "audit_2": 0.69482421875,
+   "audit_3": 3.7890625
+  },
+  "matplotlib__matplotlib-26208": {
+   "audit_0": -8.3828125,
+   "audit_1": -10.046875,
+   "audit_2": 1.958984375,
+   "audit_3": -3.015625
+  },
+  "pydata__xarray-6744": {
+   "audit_0": -10.5078125,
+   "audit_1": -5.96484375,
+   "audit_2": 4.6875,
+   "audit_3": -3.478515625
+  },
+  "pylint-dev__pylint-4661": {
+   "audit_0": -2.98046875,
+   "audit_1": -8.21875,
+   "audit_2": 1.98046875,
+   "audit_3": -1.2255859375
+  },
+  "pylint-dev__pylint-8898": {
+   "audit_0": -7.078125,
+   "audit_1": -9.703125,
+   "audit_2": -0.7060546875,
+   "audit_3": 0.22998046875
+  },
+  "pytest-dev__pytest-5840": {
+   "audit_0": -7.5625,
+   "audit_1": -8.4609375,
+   "audit_2": 2.51171875,
+   "audit_3": 2.197265625
+  },
+  "scikit-learn__scikit-learn-10844": {
+   "audit_0": -7.328125,
+   "audit_1": -11.0625,
+   "audit_2": 1.609375,
+   "audit_3": 4.7578125
+  },
+  "scikit-learn__scikit-learn-13328": {
+   "audit_0": -5.9296875,
+   "audit_1": -17.765625,
+   "audit_2": 1.0,
+   "audit_3": -4.671875
+  },
+  "scikit-learn__scikit-learn-26323": {
+   "audit_0": -6.25,
+   "audit_1": -10.6953125,
+   "audit_2": -0.4912109375,
+   "audit_3": 0.191162109375
+  },
+  "sphinx-doc__sphinx-10449": {
+   "audit_0": -8.109375,
+   "audit_1": -14.1015625,
+   "audit_2": 2.330078125,
+   "audit_3": -0.340576171875
+  },
+  "sphinx-doc__sphinx-10673": {
+   "audit_0": -9.7578125,
+   "audit_1": -6.64453125,
+   "audit_2": 2.69140625,
+   "audit_3": -0.260498046875
+  },
+  "sphinx-doc__sphinx-11445": {
+   "audit_0": -6.9921875,
+   "audit_1": -7.4609375,
+   "audit_2": 4.3359375,
+   "audit_3": -1.0341796875
+  },
+  "sphinx-doc__sphinx-8269": {
+   "audit_0": -6.62890625,
+   "audit_1": -8.3046875,
+   "audit_2": 4.203125,
+   "audit_3": 2.568359375
+  },
+  "sphinx-doc__sphinx-9591": {
+   "audit_0": -8.4140625,
+   "audit_1": -11.0234375,
+   "audit_2": 0.927734375,
+   "audit_3": -3.341796875
+  },
+  "sympy__sympy-13091": {
+   "audit_0": -7.640625,
+   "audit_1": -5.88671875,
+   "audit_2": 4.4296875,
+   "audit_3": -0.02691650390625
+  },
+  "sympy__sympy-16886": {
+   "audit_0": -6.890625,
+   "audit_1": -6.52734375,
+   "audit_2": 5.74609375,
+   "audit_3": 0.056121826171875
+  },
+  "sympy__sympy-17318": {
+   "audit_0": -12.640625,
+   "audit_1": -9.328125,
+   "audit_2": 1.8583984375,
+   "audit_3": 0.1402587890625
+  },
+  "sympy__sympy-24539": {
+   "audit_0": -5.9140625,
+   "audit_1": -8.3125,
+   "audit_2": 2.6015625,
+   "audit_3": 1.5439453125
+  }
+ },
+ "window_chars": 12000
+}

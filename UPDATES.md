@@ -115,4 +115,27 @@ the repo bound before any larger run; "GO" answers powering, not design.
 
 ---
 
-## Next entry (pending): exploratory tail-window rescoring
+## Stage 0 · Exploratory rescoring with the patch in view — 2026-09-24
+
+**Done.** Pre-declared before gold: same 34 trajectories and 12 positives,
+same critics, input = final diff + last 3,000 tokens instead of the
+4,096-token prefix (`MENTOR_NOTE.md` §13).
+
+**Learned.**
+- The null is **not** a truncation artifact. With the patch in view,
+  AUROC(u) fell to **0.46** and AUROC(−c) to **0.53** — both at or below
+  chance. The critic's prefix score and window score are uncorrelated (0.03).
+- The prefix's modest 0.62 was probably a *difficulty* signal from the
+  problem statement, not a judgment of the solution.
+- **Chat-preference reward models carry ~no information about patch
+  correctness on SWE-bench trajectories**, in either window.
+
+**Changed.** H1 is closed *for this class of critic on this task*. The
+confirmatory run of this design is not worth its $40. The open question moves
+to critics that actually score code — execution-feedback or process reward
+models — which is a different instrument. That is the decision for the
+mentor: pivot the critic class, or write the negative result.
+
+---
+
+## Next entry (pending): mentor decision — pivot critic class, or negative-result paper

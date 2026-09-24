@@ -487,3 +487,49 @@ stall, not by the instances (§ PROFILE_B_SETUP.md).
   same 34 with the patch in view (§13), then deciding whether `u` deserves a
   confirmatory run at all.
 - Cost of this pilot: **$3.65 in API, ~14 h wall clock, one disk incident.**
+
+---
+
+# 13. Exploratory: scoring the submission window instead of the prefix (2026-09-24)
+
+Pre-declared in Amendment 1 before any gold existed. Same 34 trajectories,
+same 12 positives, same critics, same committed indices; input = final diff
++ last ~3,000 tokens. **Reported as evidence about the instrument, not H1.**
+
+| | prefix (registered primary) | submission window (exploratory) |
+|---|---|---|
+| M1 `AUROC(u)` | 0.508 | **0.458** |
+| M2 `AUROC(−c)` | 0.621 | **0.530** |
+| M3 | −0.114 [−0.37, +0.22] | −0.072 [−0.35, +0.13] |
+| corr(prefix score, window score) | `c`: **0.03** · `u`: 0.30 | |
+
+## Reading
+
+1. **The null is not a truncation artifact.** Showing the critics the patch
+   made both signals *worse*. `u` is now below chance; `c` fell from 0.62 to
+   near chance.
+2. **The prefix and window scores of `c` are uncorrelated (0.03).** The same
+   reward model, on the same trajectory, gives unrelated scores depending on
+   which end it sees. That is not what a critic with a stable view of quality
+   looks like.
+3. **A plausible mechanism for the prefix's 0.62:** the prefix is mostly the
+   problem statement, so `c` there is a *difficulty* score — harder-looking
+   problems fail more — not a judgment of the solution. Once the input is
+   the solution, the signal disappears.
+4. Together: **chat-preference reward models carry ~no information about
+   patch correctness on SWE-bench trajectories**, in either window. The
+   design's premise — that an audit panel of RMs sees something about
+   correctness that selection did not exhaust — does not hold *for this class
+   of critic on this task*.
+
+## What it closes and what it does not
+
+- **Closed (for this instrument):** H1 with chat-preference RMs as critics
+  on SWE-bench. Two scoring windows, 12 positives, both point estimates
+  against, CIs excluding large positive effects.
+- **Not closed:** H1 with critics that actually score code — execution-
+  feedback RMs, process reward models trained on agent trajectories, or an
+  LLM verifier that runs the tests it can see. That is the pivot, and it is a
+  different instrument, not a bigger run of this one.
+- The $40 confirmatory run of *this* design would measure this null more
+  precisely. It should not be spent on this design.
