@@ -47,3 +47,7 @@ silentfail_bench/data/*/preds*.json*
 silentfail_bench/data/*/caffeinate.pid
 silentfail_bench/logs/
 silentfail_bench/*.json
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/build.log
