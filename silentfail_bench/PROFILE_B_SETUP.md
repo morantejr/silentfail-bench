@@ -201,3 +201,18 @@ carries only Docker plumbing; the endpoint comes from the mini-config.
 ~6 h, ~$3–4, ≤ $50 under the $0.25/trajectory cap), then scoring + gold as a
 separate stage so the 8 GB selection RM never shares memory with the
 container VM. Every trajectory is checkpointed; the split is free.
+
+## Two interpreters — 2026-09-23 20:35 (caught by dry run, before the overnight chain reached it)
+
+The orchestrator runs under `.venv-swebench` (CPython 3.12, because
+`swebench>=5` needs it), but torch/transformers had only ever been installed
+into the system Python 3.9. Every reward-model run so far had been launched
+with `python3` directly, so `--stage rm` inside the orchestrator was the
+first time `rm_backend` was imported from the venv — `ModuleNotFoundError:
+torch`. Fixed by installing the torch stack into the venv; **one interpreter
+for the whole pipeline** is the rule from here.
+
+Why it matters: the unattended chain would have hit this at ~3:30 AM, logged
+"RM stage FAILED", and stopped. The dry run of never-executed stages on a
+one-candidate directory is cheap insurance and should precede every
+unattended run.
