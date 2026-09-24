@@ -68,12 +68,19 @@ def load(repo: str, kind: str, load_8bit: bool):
         # AceCodeRM's value head is not in transformers' auto-map: AutoModel loads the
         # bare Qwen2Model and silently drops v_head. Use the authors' class.
         try:
+            from acecoder.rm_utils import AceCodeRM
+        except Exception as e1:
+            # The package __init__ imports eval_test_cases -> evalplus. Load
+            # rm_utils.py by file path instead; it needs only torch+transformers.
+            import importlib.util, importlib.metadata
             try:
-                from acecoder.rm_utils import AceCodeRM   # bypass __init__ (it also imports eval_test_cases)
-            except ImportError:
-                from acecoder import AceCodeRM
-        except Exception as e:
-            raise RuntimeError(f"AceCodeRM import failed: {type(e).__name__}: {e}") from e
+                pkg_dir = Path(next(f for f in importlib.metadata.files("acecoder") if f.name == "rm_utils.py").locate()).parent
+                spec = importlib.util.spec_from_file_location("acecoder_rm_utils", pkg_dir / "rm_utils.py")
+                mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+                AceCodeRM = mod.AceCodeRM
+                print("  (loaded AceCodeRM from rm_utils.py by path; package __init__ bypassed)", flush=True)
+            except Exception as e2:
+                raise RuntimeError(f"AceCodeRM import failed: {type(e1).__name__}: {e1} / by-path: {type(e2).__name__}: {e2}") from e2
         model = AceCodeRM.from_pretrained(repo, **kw).eval()   # Qwen2ForCausalLM + ValueHead; forward() returns rm_scores
     if getattr(model.config, "pad_token_id", None) is None:
         model.config.pad_token_id = tok.pad_token_id

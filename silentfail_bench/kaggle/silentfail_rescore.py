@@ -4,6 +4,8 @@ subprocess.run([sys.executable, "-m", "pip", "install", "-q", "-U", "transformer
 # acecoder is not on PyPI; install from source, NON-fatal: if it fails only AceCodeRM is skipped.
 r = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "git+https://github.com/TIGER-AI-Lab/AceCoder.git"], check=False)
 print("acecoder install:", "ok" if r.returncode == 0 else f"FAILED (rc={r.returncode}); AceCodeRM will be skipped", flush=True)
+r2 = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "evalplus"], check=False)   # acecoder/__init__ imports it
+print("evalplus install:", "ok" if r2.returncode == 0 else "FAILED (rm_utils will be loaded by path instead)", flush=True)
 subprocess.run([sys.executable, "-m", "pip", "show", "acecoder"], check=False)
 subprocess.run([sys.executable, "-c", "import traceback\ntry:\n    import acecoder.rm_utils as m; print('acecoder.rm_utils OK:', m.__file__)\nexcept Exception:\n    traceback.print_exc()"], check=False)
 print("input tree:", flush=True)
