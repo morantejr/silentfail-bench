@@ -202,7 +202,7 @@ def main() -> None:
             for i in chunk:
                 prune_image(i, env)
     (a.out / "gold_errors.json").write_text(json.dumps(gold_err))
-    print(f"[gold] failures {sum(1 for v in g.values() if v == 0)}/{len(g)}  (resolved: {ev['report'].get('resolved_instances')})", flush=True)
+    print(f"[gold] failures {sum(1 for v in g.values() if v == 0)}/{len(g)}  gold_error {len(gold_err)}", flush=True)
 
     # ---- 5. rows ----
     rows = []

@@ -60,14 +60,16 @@ def run_evaluation(
         "--run_id", run_id,
         "--max_workers", str(max_workers),
         "--timeout", str(timeout),
-        "--cache_level", "env",          # keep env images, drop instance images
     ]
-    if namespace:
-        cmd += ["--namespace", namespace]
+    # swebench 5.x has no --cache_level / --namespace; images are pulled from
+    # the swebench/ Docker Hub namespace by default and are x86_64-only, so the
+    # caller sets DOCKER_DEFAULT_PLATFORM=linux/amd64 (done below).
     if instance_ids:
         cmd += ["--instance_ids", *instance_ids]
 
-    proc = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True, timeout=timeout * 4)
+    import os
+    env = dict(os.environ, DOCKER_DEFAULT_PLATFORM="linux/amd64")
+    proc = subprocess.run(cmd, cwd=str(ROOT), capture_output=True, text=True, timeout=timeout * 4, env=env)
     report = None
     for cand in sorted(ROOT.glob(f"*.{run_id}.json")) + sorted(ROOT.glob(f"**/*{run_id}*.json")):
         try:
