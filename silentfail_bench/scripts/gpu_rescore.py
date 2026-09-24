@@ -35,12 +35,13 @@ def slug(repo: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", repo.lower()).strip("_")
 
 
-def build_input(tok, problem: str, text: str):
+def build_input(tok, problem: str, text: str, max_tokens: int = MAX_TOKENS):
     """Chat-formatted (user=problem, assistant=trajectory); long tails keep head+tail, flagged."""
     ids = tok(text, add_special_tokens=False)["input_ids"]
-    truncated = len(ids) > MAX_TOKENS
+    truncated = len(ids) > max_tokens
     if truncated:
-        text = tok.decode(ids[:HEAD]) + "\n\n[... middle of trajectory omitted ...]\n\n" + tok.decode(ids[-TAIL:])
+        head, tail = max_tokens // 4, max_tokens - max_tokens // 4
+        text = tok.decode(ids[:head]) + "\n\n[... middle of trajectory omitted ...]\n\n" + tok.decode(ids[-tail:])
     msgs = [{"role": "user", "content": problem}, {"role": "assistant", "content": text}]
     try:
         s = tok.apply_chat_template(msgs, tokenize=False)
@@ -53,7 +54,9 @@ def load(repo: str, kind: str, load_8bit: bool):
     tok = AutoTokenizer.from_pretrained(repo, trust_remote_code=True)
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
-    kw = dict(trust_remote_code=True, device_map="auto")
+    # sdpa = PyTorch memory-efficient attention: O(L) memory instead of the O(L^2)
+    # map eager attention materializes (16k tokens -> 8-32 GiB per model on a T4).
+    kw = dict(trust_remote_code=True, device_map="auto", attn_implementation="sdpa")
     if load_8bit:
         from transformers import BitsAndBytesConfig
         kw["quantization_config"] = BitsAndBytesConfig(load_in_8bit=True)
@@ -62,8 +65,13 @@ def load(repo: str, kind: str, load_8bit: bool):
     if kind == "seqcls":
         model = AutoModelForSequenceClassification.from_pretrained(repo, num_labels=1, **kw).eval()
     else:
-        from transformers import AutoModel
-        model = AutoModel.from_pretrained(repo, **kw).eval()
+        # AceCodeRM's value head is not in transformers' auto-map: AutoModel loads the
+        # bare Qwen2Model and silently drops v_head. Use the authors' class.
+        try:
+            from acecoder import Qwen2ForCausalRM
+            model = Qwen2ForCausalRM.from_pretrained(repo, **kw).eval()
+        except ImportError as e:
+            raise RuntimeError("pip install acecoder (AceCodeRM needs its own model class)") from e
     if getattr(model.config, "pad_token_id", None) is None:
         model.config.pad_token_id = tok.pad_token_id
     return tok, model
@@ -75,7 +83,7 @@ def score(model, kind: str, enc) -> float:
     if kind == "seqcls":
         return float(out.logits[0].float().flatten()[0])
     # AceCodeRM (Qwen2ForCausalRM): probe the common reward-output conventions.
-    for attr in ("rewards", "reward", "score", "scores", "logits"):
+    for attr in ("end_scores", "rewards", "reward", "score", "scores", "values", "value", "logits"):
         v = getattr(out, attr, None)
         if v is None and isinstance(out, dict): v = out.get(attr)
         if v is not None:
@@ -111,9 +119,15 @@ def main() -> None:
         # self-test: 2 candidates, must produce two finite, distinct-or-equal floats
         try:
             for c in cands[:2]:
-                s, _ = build_input(tok, c["problem_statement"], c["text"])
-                enc = tok(s, return_tensors="pt", truncation=True, max_length=MAX_TOKENS + 512).to(dev)
-                v = score(model, kind, enc); assert v == v
+                ok = False
+                for cap in (MAX_TOKENS, 8_000, 4_000):
+                    s, _ = build_input(tok, c["problem_statement"], c["text"], cap)
+                    enc = tok(s, return_tensors="pt", truncation=True, max_length=cap + 512).to(dev)
+                    try:
+                        v = score(model, kind, enc); assert v == v; ok = True; break
+                    except torch.cuda.OutOfMemoryError:
+                        del enc; gc.collect(); torch.cuda.empty_cache()
+                if not ok: raise RuntimeError("OOM even at 4k tokens")
             print(f"[ok] {repo} loaded in {time.time()-t0:.0f}s, self-test passed", flush=True)
         except Exception as e:
             print(f"[FAIL self-test] {repo}: {type(e).__name__}: {str(e)[:300]}", flush=True)
@@ -121,13 +135,16 @@ def main() -> None:
         res = {}
         t1 = time.time()
         for k, c in enumerate(cands):
-            s, trunc = build_input(tok, c["problem_statement"], c["text"])
-            enc = tok(s, return_tensors="pt", truncation=True, max_length=MAX_TOKENS + 512).to(dev)
-            try:
-                v = score(model, kind, enc)
-            except torch.cuda.OutOfMemoryError:
-                torch.cuda.empty_cache(); v = float("nan"); print(f"  OOM on {c['instance_id']}#{c['candidate']}", flush=True)
-            res[f"{c['instance_id']}#{c['candidate']}"] = {"score": v, "truncated": trunc, "n_tokens": int(enc['input_ids'].shape[1])}
+            v, used, trunc, ntok = float("nan"), None, None, None
+            for cap in (MAX_TOKENS, 8_000, 4_000):          # fall back on OOM, record the cap that worked
+                s, trunc = build_input(tok, c["problem_statement"], c["text"], cap)
+                enc = tok(s, return_tensors="pt", truncation=True, max_length=cap + 512).to(dev)
+                try:
+                    v = score(model, kind, enc); used = cap; ntok = int(enc["input_ids"].shape[1]); break
+                except torch.cuda.OutOfMemoryError:
+                    del enc; gc.collect(); torch.cuda.empty_cache()
+            if used is None: print(f"  OOM at every cap: {c['instance_id']}#{c['candidate']}", flush=True)
+            res[f"{c['instance_id']}#{c['candidate']}"] = {"score": v, "truncated": trunc, "n_tokens": ntok, "max_tokens_used": used}
             if (k + 1) % 20 == 0:
                 print(f"  {repo.split('/')[-1]}: {k+1}/{len(cands)} ({(time.time()-t1)/(k+1):.1f}s each)", flush=True)
         dest.write_text(json.dumps({"critic": repo, "kind": kind, "max_tokens": MAX_TOKENS, "head": HEAD, "tail": TAIL,
