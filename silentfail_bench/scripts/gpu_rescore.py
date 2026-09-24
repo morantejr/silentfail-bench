@@ -111,6 +111,7 @@ def score(model, kind: str, enc) -> float:
 
 
 def main() -> None:
+    global MAX_TOKENS
     ap = argparse.ArgumentParser()
     ap.add_argument("--bundle", type=Path, required=True)
     ap.add_argument("--out", type=Path, default=Path("gpu_scores"))
@@ -118,7 +119,9 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=None, help="smoke test on the first N candidates")
     ap.add_argument("--only", nargs="*", default=None, help="subset of critic repos")
     ap.add_argument("--include-32b", action="store_true", help="also score AceCodeRM-32B in 4-bit (24 GB GPU)")
+    ap.add_argument("--max-tokens", type=int, default=MAX_TOKENS, help="Amendment 4d ladder point (default 16000)")
     a = ap.parse_args()
+    MAX_TOKENS = a.max_tokens
     a.out.mkdir(parents=True, exist_ok=True)
     cands = [json.loads(l) for l in a.bundle.read_text().splitlines() if l.strip()]
     if a.limit: cands = cands[: a.limit]

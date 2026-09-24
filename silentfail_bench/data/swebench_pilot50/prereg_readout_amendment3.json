@@ -1,0 +1,100 @@
+{
+  "population_n": 34,
+  "silent_failures": 12,
+  "critics_loaded": [
+    "ray2333_grm_gemma2_2b_rewardmodel_ft",
+    "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+    "skywork_skywork_reward_v2_llama_3_1_8b",
+    "skywork_skywork_reward_v2_llama_3_2_1b",
+    "skywork_skywork_reward_v2_qwen3_1_7b",
+    "skywork_skywork_reward_v2_qwen3_4b",
+    "tiger_lab_acecoderm_7b"
+  ],
+  "n_windows_median": 2.0,
+  "u_max": {
+    "AUROC": 0.686,
+    "vs_primary_c": 0.064,
+    "CI95": [
+      -0.11,
+      0.333
+    ],
+    "p_perm": 0.0407,
+    "p_perm_within_repo": 0.2059
+  },
+  "u_mean": {
+    "AUROC": 0.678,
+    "vs_primary_c": 0.057,
+    "CI95": [
+      -0.125,
+      0.298
+    ],
+    "p_perm": 0.043,
+    "p_perm_within_repo": 0.1382
+  },
+  "u_last": {
+    "AUROC": 0.61,
+    "vs_primary_c": -0.011,
+    "CI95": [
+      -0.312,
+      0.298
+    ],
+    "p_perm": 0.1505,
+    "p_perm_within_repo": 0.4851
+  },
+  "u_max_robustness": {
+    "jackknife_min_max": [
+      0.657,
+      0.731
+    ],
+    "leave_one_repo_out_min_max": [
+      0.648,
+      0.803
+    ],
+    "n_single_window_rows": 6,
+    "frac_multiwindow_rows_max_not_in_last_window": 0.429
+  },
+  "per_critic_window_aggregates_EXPLORATORY": {
+    "ray2333_grm_gemma2_2b_rewardmodel_ft": {
+      "AUROC_negmean": 0.576,
+      "AUROC_negmin": 0.627,
+      "AUROC_neglast": 0.557
+    },
+    "ray2333_grm_llama3_2_3b_rewardmodel_ft": {
+      "AUROC_negmean": 0.515,
+      "AUROC_negmin": 0.572,
+      "AUROC_neglast": 0.564
+    },
+    "skywork_skywork_reward_v2_llama_3_1_8b": {
+      "AUROC_negmean": 0.652,
+      "AUROC_negmin": 0.67,
+      "AUROC_neglast": 0.693
+    },
+    "skywork_skywork_reward_v2_llama_3_2_1b": {
+      "AUROC_negmean": 0.701,
+      "AUROC_negmin": 0.678,
+      "AUROC_neglast": 0.777
+    },
+    "skywork_skywork_reward_v2_qwen3_1_7b": {
+      "AUROC_negmean": 0.527,
+      "AUROC_negmin": 0.5,
+      "AUROC_neglast": 0.718
+    },
+    "skywork_skywork_reward_v2_qwen3_4b": {
+      "AUROC_negmean": 0.545,
+      "AUROC_negmin": 0.538,
+      "AUROC_neglast": 0.629
+    },
+    "tiger_lab_acecoderm_7b": {
+      "AUROC_negmean": 0.36,
+      "AUROC_negmin": 0.432,
+      "AUROC_neglast": 0.405
+    }
+  },
+  "A3_P1_beats_ruler_0p665": true,
+  "A3_P2_gain_over_prefix_gt_0p10": true,
+  "named_critic_mean_window": {
+    "AUROC_negc": 0.652,
+    "A3_P3_gain_over_0p534_gt_0p10": true
+  },
+  "caveat": "u_max is a max of noisy statistics: biased upward under the null; 12 positives; point estimates."
+}

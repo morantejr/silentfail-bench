@@ -1,0 +1,99 @@
+{
+ "analysis": "Amendment 4a (pre-registered): leave-one-repo-out out-of-fold AUROC; in-sample not computed",
+ "population_n": 34,
+ "silent_failures": 12,
+ "n_repos": 9,
+ "univariate_AUROC": {
+  "patch_added_lines": 0.665,
+  "patch_chars": 0.619,
+  "patch_files_touched": 0.455,
+  "step_count": 0.657,
+  "difficulty_public_solve_rate": 0.055,
+  "c": 0.621,
+  "u": 0.508
+ },
+ "oof": {
+  "M_base": {
+   "features": [
+    "patch_added_lines",
+    "step_count",
+    "patch_chars",
+    "patch_files_touched",
+    "difficulty_public_solve_rate"
+   ],
+   "AUROC_oof": 0.977,
+   "rows_scored": 34,
+   "folds_skipped": []
+  },
+  "M_base+c": {
+   "features": [
+    "patch_added_lines",
+    "step_count",
+    "patch_chars",
+    "patch_files_touched",
+    "difficulty_public_solve_rate",
+    "c"
+   ],
+   "AUROC_oof": 0.989,
+   "rows_scored": 34,
+   "folds_skipped": []
+  },
+  "M_base+u": {
+   "features": [
+    "patch_added_lines",
+    "step_count",
+    "patch_chars",
+    "patch_files_touched",
+    "difficulty_public_solve_rate",
+    "u"
+   ],
+   "AUROC_oof": 0.973,
+   "rows_scored": 34,
+   "folds_skipped": []
+  },
+  "M_base+c+u": {
+   "features": [
+    "patch_added_lines",
+    "step_count",
+    "patch_chars",
+    "patch_files_touched",
+    "difficulty_public_solve_rate",
+    "c",
+    "u"
+   ],
+   "AUROC_oof": 0.989,
+   "rows_scored": 34,
+   "folds_skipped": []
+  }
+ },
+ "deltas": {
+  "M_base+u - M_base": {
+   "prediction": "A4a-P1",
+   "delta_AUROC_oof": -0.004,
+   "CI95_repo_clustered": [
+    -0.011,
+    0.0
+   ],
+   "reading": "no incremental value (<=0.02)"
+  },
+  "M_base+c - M_base": {
+   "prediction": "A4a-P2",
+   "delta_AUROC_oof": 0.011,
+   "CI95_repo_clustered": [
+    0.0,
+    0.04
+   ],
+   "reading": "no incremental value (<=0.02)"
+  },
+  "M_base+c+u - M_base": {
+   "prediction": "extra",
+   "delta_AUROC_oof": 0.011,
+   "CI95_repo_clustered": [
+    0.0,
+    0.04
+   ],
+   "reading": "no incremental value (<=0.02)"
+  }
+ },
+ "note": "CI is a cluster bootstrap over pooled out-of-fold predictions; models are not refit per draw."
+}

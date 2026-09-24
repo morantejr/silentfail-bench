@@ -1,0 +1,103 @@
+{
+ "analysis": "Amendment 4a [SENSITIVITY (post-hoc): exclude_run=[] no_difficulty=True]: leave-one-repo-out out-of-fold AUROC; in-sample not computed",
+ "public_runs_used": [
+  "20260217_mini-v2.0.0_gpt-5-mini",
+  "20260217_mini-v2.0.0_gemini-3-flash-high",
+  "20260217_mini-v2.0.0_deepseek-3-2-high",
+  "20260217_mini-v2.0.0_claude-4-5-sonnet-high",
+  "20260217_mini-v2.0.0_gpt-5-2-high",
+  "20260217_mini-v2.0.0_claude-4-6-opus"
+ ],
+ "population_n": 34,
+ "silent_failures": 12,
+ "n_repos": 9,
+ "univariate_AUROC": {
+  "patch_added_lines": 0.665,
+  "patch_chars": 0.619,
+  "patch_files_touched": 0.455,
+  "step_count": 0.657,
+  "difficulty_public_solve_rate": 0.055,
+  "c": 0.621,
+  "u": 0.508
+ },
+ "oof": {
+  "M_base": {
+   "features": [
+    "patch_added_lines",
+    "step_count",
+    "patch_chars",
+    "patch_files_touched"
+   ],
+   "AUROC_oof": 0.614,
+   "rows_scored": 34,
+   "folds_skipped": []
+  },
+  "M_base+c": {
+   "features": [
+    "patch_added_lines",
+    "step_count",
+    "patch_chars",
+    "patch_files_touched",
+    "c"
+   ],
+   "AUROC_oof": 0.633,
+   "rows_scored": 34,
+   "folds_skipped": []
+  },
+  "M_base+u": {
+   "features": [
+    "patch_added_lines",
+    "step_count",
+    "patch_chars",
+    "patch_files_touched",
+    "u"
+   ],
+   "AUROC_oof": 0.58,
+   "rows_scored": 34,
+   "folds_skipped": []
+  },
+  "M_base+c+u": {
+   "features": [
+    "patch_added_lines",
+    "step_count",
+    "patch_chars",
+    "patch_files_touched",
+    "c",
+    "u"
+   ],
+   "AUROC_oof": 0.61,
+   "rows_scored": 34,
+   "folds_skipped": []
+  }
+ },
+ "deltas": {
+  "M_base+u - M_base": {
+   "prediction": "A4a-P1",
+   "delta_AUROC_oof": -0.034,
+   "CI95_repo_clustered": [
+    -0.083,
+    0.043
+   ],
+   "reading": "no incremental value (<=0.02)"
+  },
+  "M_base+c - M_base": {
+   "prediction": "A4a-P2",
+   "delta_AUROC_oof": 0.019,
+   "CI95_repo_clustered": [
+    -0.095,
+    0.208
+   ],
+   "reading": "no incremental value (<=0.02)"
+  },
+  "M_base+c+u - M_base": {
+   "prediction": "extra",
+   "delta_AUROC_oof": -0.004,
+   "CI95_repo_clustered": [
+    -0.111,
+    0.167
+   ],
+   "reading": "no incremental value (<=0.02)"
+  }
+ },
+ "note": "CI is a cluster bootstrap over pooled out-of-fold predictions; models are not refit per draw."
+}

@@ -1,0 +1,86 @@
+{
+  "population_n": 34,
+  "silent_failures": 12,
+  "audit_only": {
+    "ray2333_grm_gemma2_2b_rewardmodel_ft": {
+      "AUROC_negc_full": 0.441,
+      "truncated_rows": 20
+    },
+    "ray2333_grm_llama3_2_3b_rewardmodel_ft": {
+      "AUROC_negc_full": 0.489,
+      "truncated_rows": 15
+    },
+    "skywork_skywork_reward_v2_llama_3_1_8b": {
+      "AUROC_negc_full": 0.591,
+      "truncated_rows": 15
+    },
+    "skywork_skywork_reward_v2_llama_3_2_1b": {
+      "AUROC_negc_full": 0.712,
+      "truncated_rows": 15
+    },
+    "skywork_skywork_reward_v2_qwen3_1_7b": {
+      "AUROC_negc_full": 0.572,
+      "truncated_rows": 17
+    },
+    "skywork_skywork_reward_v2_qwen3_4b": {
+      "AUROC_negc_full": 0.587,
+      "truncated_rows": 17,
+      "corr_prefix_vs_full_c": 0.346
+    },
+    "tiger_lab_acecoderm_7b": {
+      "AUROC_negc_full": 0.428,
+      "truncated_rows": 31
+    },
+    "panel_m4_full": {
+      "M1_AUROC_u_full": 0.439,
+      "primary_M1_prefix": 0.508,
+      "A2_P2_gain_gt_0p10": false,
+      "M3_vs_primary_c": -0.182,
+      "CI95": [
+        -0.384,
+        0.171
+      ]
+    },
+    "panel_m5_with_acecode": {
+      "M1_AUROC_u_full": 0.475,
+      "primary_M1_prefix": 0.508,
+      "A2_P2_gain_gt_0p10": false,
+      "M3_vs_primary_c": -0.146,
+      "CI95": [
+        -0.371,
+        0.302
+      ]
+    }
+  },
+  "reselect": {
+    "skywork_skywork_reward_v2_llama_3_1_8b": {
+      "n_reselected": 34,
+      "changed_vs_primary": 24,
+      "gold_missing": 9
+    },
+    "tiger_lab_acecoderm_7b": {
+      "n_reselected": 34,
+      "changed_vs_primary": 24,
+      "gold_missing": 0,
+      "failures": 11,
+      "M1_AUROC_u": 0.589,
+      "M2_AUROC_negc": 0.482,
+      "M3": 0.107,
+      "CI95": [
+        -0.127,
+        0.571
+      ],
+      "p": 0.25,
+      "panel": [
+        "ray2333_grm_gemma2_2b_rewardmodel_ft",
+        "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+        "skywork_skywork_reward_v2_llama_3_2_1b",
+        "skywork_skywork_reward_v2_qwen3_1_7b",
+        "skywork_skywork_reward_v2_llama_3_1_8b"
+      ],
+      "inference": "eligible"
+    }
+  },
+  "needs_gold_file": "data/swebench_pilot50/l4/out/gpu_scores_16k/needs_gold.jsonl",
+  "needs_gold_n": 9
+}
