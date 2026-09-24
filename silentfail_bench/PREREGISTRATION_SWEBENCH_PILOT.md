@@ -157,3 +157,12 @@ paper.
 **Reporting.** Point estimates with counts; <10 positives in any committed
 set → no conclusion for that set. Same script, same bootstrap, nothing else.
 Declared with zero GPU scores computed.
+
+**Amendment 2, clarification (same day, before any GPU scores).** Gold exists
+only for the 34 patches the *primary* critic committed. Therefore:
+(i) the **audit-only** analysis — every new critic as a detector on the
+primary committed set, and `u` from the full-length panel — needs no new
+gold and is the first thing reported; (ii) **re-selection** by a new critic
+commits some different candidates, whose patches must be graded by the
+harness before M1–M3 for that set can be computed. `needs_gold.jsonl` lists
+them; nothing about those rows is looked at before the harness has run.
