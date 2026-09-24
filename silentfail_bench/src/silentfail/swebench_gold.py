@@ -86,6 +86,21 @@ def run_evaluation(
 
 
 def gold_from_report(report: dict[str, Any], instance_ids: list[str]) -> dict[str, int]:
-    """g = 1 iff the instance is in `resolved_ids`. Everything else is failure."""
+    """g=1 iff resolved; g=0 iff the harness COMPLETED and did not resolve.
+
+    Instances the harness errored on, skipped as empty, or never completed
+    are returned as -1 (gold_error) and must be EXCLUDED by the caller --
+    treating them as failures manufactured a 41/41 failure rate when every
+    image pull failed on a fresh VM.
+    """
     resolved = set(report.get("resolved_ids", []) or [])
-    return {iid: (1 if iid in resolved else 0) for iid in instance_ids}
+    unresolved = set(report.get("unresolved_ids", []) or [])
+    out: dict[str, int] = {}
+    for iid in instance_ids:
+        if iid in resolved:
+            out[iid] = 1
+        elif iid in unresolved:
+            out[iid] = 0
+        else:
+            out[iid] = -1
+    return out

@@ -319,3 +319,29 @@ design, and it must be fixed for the confirmatory run (score the final
 diff + a summary, or a tail window, or chunk-and-aggregate). It applies
 equally to every row, so it does not bias the comparison between `c` and
 `u`, but it bounds what either can be expected to detect.
+
+## Gold: 0/41 resolved — manufactured, not measured (2026-09-24 06:30)
+
+The first gold pass reported 41/41 failures in 499 s (~12 s per instance).
+Real evaluations take ~30 s. The batch reports said it plainly: **34 errors,
+7 empty patches, 0 unresolved, 0 completed.** Every image pull had failed on
+the fresh VM with the arm64-manifest 404.
+
+Two defects combined:
+
+1. **The harness pulls through the Docker SDK, which ignores
+   `DOCKER_DEFAULT_PLATFORM`.** Only the CLI honours it. Earlier gold runs
+   worked because the image was already cached by a manual
+   `docker pull --platform`; the dry run passed for the same reason. The
+   orchestrator now pre-pulls each batch's images through the CLI with the
+   platform set, so the harness finds them present.
+2. **`gold_from_report` mapped everything not resolved to failure** —
+   including harness errors and empty patches. It now returns 1 (resolved),
+   0 (harness completed, unresolved) or −1 (error / empty / never completed),
+   and −1 is a `gold_error` exclusion, never a counted failure.
+
+Third time this session an instrument produced a uniform failure rate that
+looked like a finding (numpy under `-S`; NotFoundError from the Ollama
+endpoint; this). The tell is always the same: **a rate of exactly 0% or 100%
+with suspiciously fast timing.** Check the harness's own error count before
+believing any gold number.

@@ -189,9 +189,22 @@ def main() -> None:
     for b in range(0, len(ids), BATCH):
         chunk = ids[b:b + BATCH]
         run_id = f"sf_{int(time.time())}_{b // BATCH}"
+        # The harness pulls through the Docker SDK, which ignores
+        # DOCKER_DEFAULT_PLATFORM; on a fresh VM every pull then fails on the
+        # arm64 manifest in ~12 s. Pre-pull through the CLI with an explicit
+        # platform so the harness finds the image already present.
+        for i in chunk:
+            pr = subprocess.run(["docker", "pull", "--platform", "linux/amd64", image_for(i)], env=env, capture_output=True, text=True)
+            if pr.returncode != 0:
+                print(f"[gold] pre-pull FAILED {i}: {pr.stderr.strip()[-200:]}", flush=True)
         ev = run_evaluation(preds, run_id, instance_ids=chunk, max_workers=1, namespace=None)
         if ev["report"]:
-            g.update(gold_from_report(ev["report"], chunk))
+            gg = gold_from_report(ev["report"], chunk)
+            for i, v in gg.items():
+                if v == -1:
+                    gold_err.append(i); g[i] = 0
+                else:
+                    g[i] = v
             print(f"[gold] batch {b // BATCH + 1}/{(len(ids) + BATCH - 1) // BATCH}: "
                   f"resolved {ev['report'].get('resolved_instances')}/{len(chunk)}", flush=True)
         else:
