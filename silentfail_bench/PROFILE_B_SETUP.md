@@ -300,3 +300,22 @@ in the readout.
 - Watchers must report *elapsed since last trajectory*, not just counts — a
   stalled run looks "alive" by process count.
 - `colima delete` is not enough: remove `_lima/_disks/<name>` explicitly.
+
+## Reward-model stage on the 41 — 2026-09-24 06:20
+
+`--stage rm` with the VM down: **2,150 s** total. Selection over 164
+candidates took 1,453 s (**8.9 s/score**, versus 0.31 s on the smoke
+benchmark), the four audits 87–256 s each. Selection genuinely selected:
+chosen indices spread across 0/1/2 rather than collapsing to 0.
+
+**Measurement caveat, declared before gold is seen.** `RewardModel.score`
+truncates input at `max_length=4096` tokens. SWE-bench trajectories run
+~40k characters, so every critic — selection and audit alike — scores a
+trajectory's **prefix**: the problem statement and the agent's early steps,
+not the later steps where the patch is written and submitted. `c` and `u`
+in this pilot are therefore judgments of *how the agent started*, not of the
+patch. This is a limitation of the pilot's instrument, not a property of the
+design, and it must be fixed for the confirmatory run (score the final
+diff + a summary, or a tail window, or chunk-and-aggregate). It applies
+equally to every row, so it does not bias the comparison between `c` and
+`u`, but it bounds what either can be expected to detect.
