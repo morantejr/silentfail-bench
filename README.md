@@ -12,10 +12,12 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: Stage 0, first real pilot complete (2026-09-24).** 41 SWE-bench
-> Verified instances with official gold: supply solved (35% silent failures),
-> H1 not supported at 12 positives (AUROC(u)=0.51 vs AUROC(−c)=0.62), with a
-> declared scoring-input caveat. See [`UPDATES.md`](UPDATES.md).
+> **Status: Stage 0 complete (2026-09-24).** 41 SWE-bench Verified instances
+> with official gold, six reward-model critics including the proposal's own,
+> two selection regimes, patch in view: **H1 not supported** at 12 positives
+> (panel `u` 0.45–0.51 vs the critic's own score 0.53–0.62), and two
+> integers off the diff (added lines 0.665) outrank every critic. Open:
+> code-trained critics. See [`UPDATES.md`](UPDATES.md).
 
 ## Layout
 

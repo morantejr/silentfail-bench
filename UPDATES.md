@@ -138,4 +138,29 @@ mentor: pivot the critic class, or write the negative result.
 
 ---
 
-## Next entry (pending): mentor decision — pivot critic class, or negative-result paper
+## Stage 0 · Amendment 2 — GPU rescoring, the design as written — 2026-09-24
+
+**Done.** Six reward models on Kaggle's free 2×T4, patch in view (4k
+fallback declared), including the proposal's named Skywork-8B critic for
+the first time. Re-selection by that critic; 20 changed patches graded by the
+harness. Exploratory covariate baseline (`MENTOR_NOTE.md` §14).
+
+**Learned.**
+- Audit-only: every chat RM at or below chance on the 12 silent failures;
+  panel `u` 0.49. The primary critic's prefix and patch scores correlate at
+  0.18.
+- **The proposal's own design** — 8B named critic selecting, disjoint panel
+  auditing, real gold — gives `u` = 0.445, `−c` = 0.602, M3 = −0.157
+  (CI [−0.56, +0.14]). Not supported.
+- **A ruler beats the critics:** lines added (0.665) and step count (0.657)
+  outrank every reward model tested.
+- AceCodeRM-7B (code-trained): pending kernel v8.
+
+**Changed.** The negative result now holds across input window, model size,
+critic identity and selection regime. The confirmatory run of this design is
+not warranted. Open: code-trained critics; multi-window `u_max` (Amendment 3,
+proposed, undecided).
+
+---
+
+## Next entry (pending): AceCodeRM result; mentor decision on Amendment 3 vs negative-result paper

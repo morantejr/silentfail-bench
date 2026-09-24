@@ -533,3 +533,86 @@ same 12 positives, same critics, same committed indices; input = final diff
   different instrument, not a bigger run of this one.
 - The $40 confirmatory run of *this* design would measure this null more
   precisely. It should not be spent on this design.
+
+---
+
+# 14. Amendment 2 — GPU rescoring on Kaggle (2026-09-24)
+
+Pre-registered before any GPU score existed. Same 164 candidates, same 34
+usable committed trajectories, same 12 positives. Six critics scored on
+Kaggle's free 2×T4 (`kaggle/`, eight kernel versions to get there — every
+failure and fix is in the commit log). Full JSON:
+`data/swebench_pilot50/prereg_readout_amendment2.json`.
+
+**Instrument fact, declared:** the T4s could not hold 16k tokens even with
+memory-efficient attention, so most rows were scored at the 4k fallback
+(head 1k + tail 3k, patch included; 8B critic: 161/164 rows at 4k). This is
+*patch in view*, not *whole trajectory*.
+
+## Audit-only: every critic as a detector of the 12 known silent failures
+
+| critic | AUROC |
+|---|---|
+| Skywork-Reward-V2-**Llama-3.1-8B** — the proposal's named critic | **0.534** |
+| Skywork-Reward-V2-Qwen3-4B — the primary's critic, now with the patch | **0.468** (0.621 on the prefix) |
+| GRM-gemma2-2B / GRM-Llama3.2-3B / Skywork-Qwen3-1.7B | 0.473 / 0.451 / 0.473 |
+| Skywork-Llama-3.2-1B | 0.636 (1 of 6, 12 positives — noise-consistent) |
+| **panel `u`, patch in view (m=4)** | **0.494** (0.508 on the prefix) |
+
+- **A2-P2 fails:** panel gain −0.014 (needed +0.10). M3 vs primary `c`:
+  −0.127, CI [−0.28, +0.11].
+- **A2-P3 fails:** prefix-vs-patch correlation of the primary critic's `c`
+  is **0.18** — the same model, same trajectory, nearly unrelated scores.
+
+## Re-selection by the proposal's named critic — the design as written
+
+Skywork-8B re-selected over the 4 candidates per instance: **20 of 34
+committed trajectories changed.** Their patches were graded by the official
+harness (0 errors). Disjoint panel = the four small RMs.
+
+| | value |
+|---|---|
+| committed / failures | 34 / **12** (35%, unchanged) |
+| M1 `AUROC(u)` | **0.445** |
+| M2 `AUROC(−c)` | **0.602** |
+| M3 | **−0.157**, CI [−0.56, +0.14], p = 0.91 |
+
+Twelve positives — inference eligible. **This is the proposal's own
+selection critic, its own disjoint-panel design, real selection and real
+gold, and it does not support H1.** The critic carries modest signal; panel
+disagreement sits below chance.
+
+## Exploratory covariate baseline (not pre-registered; see `covariate_baseline.json`)
+
+| signal | AUROC |
+|---|---|
+| **lines added in the patch** | **0.665** |
+| **step count** | **0.657** |
+| best chat RM, patch in view | 0.636 |
+| Skywork-8B (named critic) | 0.534 |
+| panel `u` | 0.49–0.51 |
+
+**A ruler beats the critics.** Two integers read off the diff and the
+transcript rank silent failures at least as well as every reward model
+tested and better than panel disagreement. Paired gap over `u`: +0.16,
+CI [−0.11, +0.36] — a point estimate on 12 positives, but the kind that
+reframes the paper: the critics are not merely failing to add signal; they
+add less than patch size.
+
+## A2-P1 — code-trained critic (AceCodeRM-7B)
+
+PENDING: kernel v8 (cross-GPU gather patched). To be filled in below.
+
+## What Amendment 2 settles
+
+1. **The null is not about truncation, model size, or which chat RM.** Prefix
+   or patch-in-view, 1B to 8B, six critics, two selection regimes, the
+   proposal's own named model: panel disagreement never rises above chance.
+2. **The proposal's design, run as specified, does not support its
+   hypothesis** at 12 positives, with confidence intervals that exclude
+   large effects.
+3. **Structural covariates are the baseline any critic must beat**, and none
+   has.
+4. **What remains genuinely open:** critics trained on code with execution
+   feedback (AceCodeRM, pending), and multi-window auditing with `u_max`
+   (proposed as Amendment 3 — not yet run, not yet decided).
