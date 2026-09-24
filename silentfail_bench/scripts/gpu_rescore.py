@@ -68,10 +68,10 @@ def load(repo: str, kind: str, load_8bit: bool):
         # AceCodeRM's value head is not in transformers' auto-map: AutoModel loads the
         # bare Qwen2Model and silently drops v_head. Use the authors' class.
         try:
-            from acecoder import Qwen2ForCausalRM
-            model = Qwen2ForCausalRM.from_pretrained(repo, **kw).eval()
+            from acecoder import AceCodeRM          # Qwen2ForCausalLM + ValueHead; forward() returns rm_scores
+            model = AceCodeRM.from_pretrained(repo, **kw).eval()
         except ImportError as e:
-            raise RuntimeError("pip install acecoder (AceCodeRM needs its own model class)") from e
+            raise RuntimeError("acecoder package missing (pip install git+https://github.com/TIGER-AI-Lab/AceCoder.git)") from e
     if getattr(model.config, "pad_token_id", None) is None:
         model.config.pad_token_id = tok.pad_token_id
     return tok, model
@@ -82,6 +82,8 @@ def score(model, kind: str, enc) -> float:
     out = model(**enc)
     if kind == "seqcls":
         return float(out.logits[0].float().flatten()[0])
+    if isinstance(out, torch.Tensor):               # AceCodeRM returns rm_scores directly
+        return float(out.float().flatten()[0])
     # AceCodeRM (Qwen2ForCausalRM): probe the common reward-output conventions.
     for attr in ("end_scores", "rewards", "reward", "score", "scores", "values", "value", "logits"):
         v = getattr(out, attr, None)
