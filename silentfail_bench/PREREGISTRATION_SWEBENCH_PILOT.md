@@ -86,3 +86,32 @@ with the binding reason named.
   checkpoint-level disjointness holds; M1–M3 are also reported with
   `audit_3` dropped (m=3).
 - The reward models were trained on chat preferences, not code trajectories.
+
+---
+
+# Amendment 1 — 2026-09-24 06:22, after RM scoring, **before any gold**
+
+**Finding that motivates it.** `RewardModel.score` truncates at 4,096 tokens
+and SWE-bench trajectories run ~40k characters, so `c` and `u` as computed
+score each trajectory's *prefix* (problem statement + early steps), not the
+steps where the patch is written. This applies uniformly to every row and
+so does not bias `c` versus `u`, but it limits what either can detect.
+
+**What is NOT changed.** The primary analysis (population, positive class,
+M0–M3, predictions, go/no-go) runs on the scores already computed and
+frozen in `scores.json`. Nothing about it is altered by this amendment.
+
+**What is added, as EXPLORATORY.** A second scoring pass, labelled
+exploratory and reported separately:
+
+- Input to every critic = the **final submitted diff** followed by the
+  **last 3,000 tokens** of the trajectory (the submission window), same
+  models, same rank-normalization fit on train repos only.
+- Report M1–M3 on that input, alongside the primary. If the exploratory
+  numbers differ materially from the primary, that is evidence about the
+  *instrument* (where in a trajectory the signal lives), not evidence for or
+  against H1, and will be described that way.
+- It can inform the confirmatory design's scoring input; it cannot be
+  promoted to primary for this pilot.
+
+Declared with zero gold computed so it cannot be selected on the results.
