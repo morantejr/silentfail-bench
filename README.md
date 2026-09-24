@@ -12,9 +12,10 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: Stage-0.** Not a result. This repo currently holds the frozen
-> design, a working harness, and a free-compute pilot used to decide whether
-> Stage 1 is worth running.
+> **Status: Stage 0, first real pilot complete (2026-09-24).** 41 SWE-bench
+> Verified instances with official gold: supply solved (35% silent failures),
+> H1 not supported at 12 positives (AUROC(u)=0.51 vs AUROC(−c)=0.62), with a
+> declared scoring-input caveat. See [`UPDATES.md`](UPDATES.md).
 
 ## Layout
 
@@ -24,9 +25,9 @@ about are exactly where its blind spots collect. **A null result is publishable*
 | [`silentfail_bench/FREEZES.md`](silentfail_bench/FREEZES.md) | Locked Stage-0 decisions, plus what the free-compute path cannot honor |
 | [`silentfail_bench/DEFECTS.md`](silentfail_bench/DEFECTS.md) | Defects found before the first real run, and the verified sandbox posture |
 | [`silentfail_bench/MENTOR_NOTE.md`](silentfail_bench/MENTOR_NOTE.md) | Current open decisions |
-| `SilentFail_AAAI_Proposal.tex` | The active proposal |
-| `Agent_Silent_Failures_Proposal.tex` | Earlier draft of the same idea |
-| `Research_Proposals_Morante.tex`, `xtail_spec.tex` | Reward-model uncertainty at the top tail — the parent research line |
+| [`UPDATES.md`](UPDATES.md) | **Research log — one entry per stage: done / learned / changed** |
+| `SilentFail_AAAI_Proposal.pdf` / `.tex` | The current proposal (the only PDF in the repo) |
+| [`archive/drafts/`](archive/drafts/) | Earlier drafts and write-ups, kept for the record |
 
 ## Two things a reader should know up front
 
