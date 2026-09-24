@@ -407,3 +407,83 @@ frontier model. Scoring and gold are local and cheap. The confirmatory run
 therefore needs a capable generation model — via API — with selection,
 audit and gold staying on this machine. That is the architecture, and it is
 now the only remaining decision that costs money.
+
+---
+
+# 12. SWE-bench Stage-0 pilot — RESULT (2026-09-24, 41 instances, real gold)
+
+Pre-registered analysis (`PREREGISTRATION_SWEBENCH_PILOT.md`), executed
+mechanically by `scripts/prereg_readout_swebench.py`. Full JSON:
+`data/swebench_pilot50/prereg_readout.json`. **Declared deviation:** 41
+instances, not 50 — generation stalled at 01:10 when macOS swap exhausted the
+host disk; the missing 9 were determined by list order and the time of the
+stall, not by the instances (§ PROFILE_B_SETUP.md).
+
+## What the instrument delivered
+
+| | |
+|---|---|
+| candidates generated | 164 (gpt-5-mini, n=4, step limit 40) — **$3.65** |
+| exclusion rate (capped / empty patch) | 29/164 = **17.7%** (bound: 40%) |
+| committed → usable | 41 → 34 |
+| gold | official harness: 34 completed, **22 resolved, 12 unresolved, 0 errors** |
+| selection | chosen index {0:15, 1:11, 2:10, 3:5} — best-of-4 genuinely selected |
+| corr(c, u) | 0.11 |
+
+## Measurements (M0)
+
+- **Failure rate among usable committed trajectories: 35.3%** [21.5, 52.1].
+- **Silent-failure rate** (agent said Submitted, tests disagree): **35.3%**,
+  the same 12 — on SWE-bench every usable committed trajectory is one the
+  agent believed finished, so the population is the usable set. **P3 holds:**
+  far above the 8% on HumanEval+. Supply is solved: projected **~146
+  positives at 500 instances.**
+- **ICC by repo: 0.18** on 9 repos — unstable by construction (per-repo n of
+  1–8; matplotlib/pylint/pytest at 100%, xarray/sklearn/sphinx at 0%), and
+  above the public 0.033–0.053. Read as an upper bound, but it points the
+  same way as §8: clustering is at least as bad as feared.
+
+## Pre-registered primary (M1–M3), population n=34, **12 positives — inference eligible**
+
+| metric | registered m=4 | robustness m=3 |
+|---|---|---|
+| M1 `AUROC(u)` | **0.508** | 0.545 |
+| M2 `AUROC(−c)` | **0.621** | 0.621 |
+| M3 = M1 − M2 | **−0.114**, CI [−0.37, +0.22], p = 0.79 | −0.076, p = 0.71 |
+
+- **P1 (H1):** M1 > 0.5 — 0.508 is technically above, and honestly at chance.
+- **P2 (Goodhart):** M2 ≤ 0.5 — **fails.** The selecting critic is a *better*
+  detector of its own silent failures than the audit panel's disagreement.
+- **P3:** holds, decisively.
+
+## What this means, stated carefully
+
+1. **First inference-eligible test of H1, and it does not support it.**
+   Panel disagreement is at chance; the selection critic's own score carries
+   modest signal (0.62). The CI on the difference is wide — a moderate
+   positive effect is not excluded — but the point estimate is against, and
+   the m=3 panel agrees.
+2. **The "Goodhart signature" is not there with a real critic.** §10 withdrew
+   it on HumanEval+; SWE-bench confirms: with a true reward model selecting,
+   `c` is above chance, not below. The selected set is enriched for the
+   critic's mistakes (35% of what it chose fails), but the critic's score
+   still ranks those mistakes slightly *lower* than its successes.
+3. **Instrument caveat that bounds this result:** every critic scored a
+   4,096-token *prefix* of a ~40k-character trajectory — the problem and the
+   opening moves, not the patch. Both `c` and `u` are handicapped equally,
+   so the comparison is fair, but neither was shown the thing being graded.
+   The pre-declared exploratory pass rescores on the final diff + last 3,000
+   tokens and is reported in §13 as evidence about the *instrument*, not H1.
+4. **GO on the pre-registered rule** — exclusion rate and positive supply
+   both clear. But GO answers "can a confirmatory run be powered?", not
+   "should it be run as designed?" — and points 1–3 say the design's scoring
+   input and its clustering assumption both need revisiting first.
+
+## For the mentor conversation
+
+- Failures are no longer scarce. **Repos and scoring input are the
+  constraints.**
+- The cheap next experiment is not more instances: it is rescoring these
+  same 34 with the patch in view (§13), then deciding whether `u` deserves a
+  confirmatory run at all.
+- Cost of this pilot: **$3.65 in API, ~14 h wall clock, one disk incident.**
