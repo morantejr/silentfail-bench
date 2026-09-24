@@ -180,14 +180,28 @@ def main() -> None:
     from silentfail.swebench_gold import gold_from_report, run_evaluation, write_predictions
     preds = write_predictions([{"instance_id": i, "model_patch": pool[i][committed[i]]["final_solution"],
                                 "model_name_or_path": "silentfail"} for i in pool], a.out / "predictions.jsonl")
-    run_id = f"sf_{int(time.time())}"
-    ev = run_evaluation(preds, run_id, instance_ids=list(pool), max_workers=1, namespace=None)
-    if not ev["report"]:
-        print("[gold] harness produced no report:\n", ev["stderr_tail"][-1500:], flush=True); sys.exit(2)
-    g = gold_from_report(ev["report"], list(pool))
-    if not a.keep_images:
-        for i in pool:
-            prune_image(i, env)
+    # The harness pulls each instance image (~4.2 GB) and the VM holds ~19 GB,
+    # so evaluate in small batches and prune between them. Each batch is its
+    # own run_id; results are merged. A batch with no report marks its
+    # instances as gold_error rather than aborting the stage.
+    ids = list(pool); g: dict[str, int] = {}; gold_err: list[str] = []
+    BATCH = 3
+    for b in range(0, len(ids), BATCH):
+        chunk = ids[b:b + BATCH]
+        run_id = f"sf_{int(time.time())}_{b // BATCH}"
+        ev = run_evaluation(preds, run_id, instance_ids=chunk, max_workers=1, namespace=None)
+        if ev["report"]:
+            g.update(gold_from_report(ev["report"], chunk))
+            print(f"[gold] batch {b // BATCH + 1}/{(len(ids) + BATCH - 1) // BATCH}: "
+                  f"resolved {ev['report'].get('resolved_instances')}/{len(chunk)}", flush=True)
+        else:
+            gold_err += chunk
+            for i in chunk: g[i] = 0
+            print(f"[gold] batch {b // BATCH + 1}: NO REPORT -> {chunk} marked gold_error\n{ev['stderr_tail'][-600:]}", flush=True)
+        if not a.keep_images:
+            for i in chunk:
+                prune_image(i, env)
+    (a.out / "gold_errors.json").write_text(json.dumps(gold_err))
     print(f"[gold] failures {sum(1 for v in g.values() if v == 0)}/{len(g)}  (resolved: {ev['report'].get('resolved_instances')})", flush=True)
 
     # ---- 5. rows ----
@@ -203,7 +217,8 @@ def main() -> None:
             audit_scores=audit[i], u=float("nan"), g=g[i],
             visible_pass=(c["exit_status"] == "Submitted"),     # agent believed it was done
             length_chars=len(c["text"]), step_count=c["steps"], mean_agent_entropy=None,
-            excluded=not c["final_solution"].strip(), exclusion_reason=("empty_patch" if not c["final_solution"].strip() else None),
+            excluded=(not c["final_solution"].strip()) or (i in gold_err),
+            exclusion_reason=("empty_patch" if not c["final_solution"].strip() else ("gold_error" if i in gold_err else None)),
             agent_git_commit="mini-swe-agent==2.4.6", wall_time_sec=None, backend="mini-swe-agent+ollama+transformers_mps",
             critic_type="reward_model", is_true_reward_model=True, trajectory_text=c["text"], final_solution=c["final_solution"],
         ))
