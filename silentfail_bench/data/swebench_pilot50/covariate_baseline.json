@@ -1,0 +1,31 @@
+{
+  "analysis": "EXPLORATORY covariate-only baseline (not pre-registered; length/step_count were registered as controls, not baselines)",
+  "population_n": 34,
+  "silent_failures": 12,
+  "date": "2026-09-24",
+  "single_covariate_AUROC": {
+    "patch_added_lines": 0.665,
+    "step_count": 0.657,
+    "patch_chars": 0.619,
+    "length_chars": 0.549,
+    "n_candidates_with_patch": 0.523,
+    "patch_files_touched": 0.545
+  },
+  "reference": {
+    "primary_c_prefix": 0.621,
+    "best_chat_rm_patch_in_view": 0.636,
+    "best_is_one_of_six_on_12_positives": true,
+    "panel_u_prefix": 0.508,
+    "panel_u_full": 0.494,
+    "skywork_8b_named_critic": 0.534
+  },
+  "paired_best_covariate_minus_u": {
+    "delta": 0.157,
+    "CI95_repo_clustered": [
+      -0.11,
+      0.36
+    ],
+    "p_one_sided": 0.086
+  },
+  "reading": "Two integers read off the diff and the transcript (added lines, step count) rank silent failures at least as well as any reward model tested, including the proposal's named 8B critic, and better than panel disagreement. Exploratory, 12 positives, CI includes zero."
+}
