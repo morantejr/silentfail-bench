@@ -154,12 +154,14 @@ harness. Exploratory covariate baseline (`MENTOR_NOTE.md` §14).
   (CI [−0.56, +0.14]). Not supported.
 - **A ruler beats the critics:** lines added (0.665) and step count (0.657)
   outrank every reward model tested.
-- AceCodeRM-7B (code-trained): pending kernel v8.
+- **AceCodeRM-7B (code-trained, execution-feedback preferences): 0.405** —
+  below chance on the 12 silent failures. A2-P1 fails. Adding it to the
+  panel leaves `u` at 0.473.
 
 **Changed.** The negative result now holds across input window, model size,
-critic identity and selection regime. The confirmatory run of this design is
-not warranted. Open: code-trained critics; multi-window `u_max` (Amendment 3,
-proposed, undecided).
+critic identity, selection regime, **and critic class** — the code-trained
+critic fails too. The confirmatory run of this design is not warranted. Open:
+multi-window `u_max` (Amendment 3, pre-registered, running on the L4).
 
 ---
 

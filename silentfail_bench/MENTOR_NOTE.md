@@ -599,9 +599,26 @@ CI [−0.11, +0.36] — a point estimate on 12 positives, but the kind that
 reframes the paper: the critics are not merely failing to add signal; they
 add less than patch size.
 
-## A2-P1 — code-trained critic (AceCodeRM-7B)
+## A2-P1 — code-trained critic (AceCodeRM-7B) — FAILS
 
-PENDING: kernel v8 (cross-GPU gather patched). To be filled in below.
+Kaggle kernel v8 (eight versions: mount path, attention memory, a package
+not on PyPI, a missing dependency, a cross-GPU gather in the model's own
+code — each in the commit log). 164 candidates scored; 161 at the 4k
+fallback with the patch in view.
+
+| | AUROC on the 12 silent failures |
+|---|---|
+| **AceCodeRM-7B** — trained on code with execution-feedback preferences | **0.405** |
+| panel m=5 (four chat RMs + AceCodeRM) `u` | 0.473 |
+
+**A2-P1 fails** (prediction: > 0.6). The one critic class that *should* see
+patch correctness scores below chance on these silent failures. Adding it to
+the panel does not help `u` (0.473 vs 0.494 without). Re-selection by
+AceCodeRM changed 24 of 34 committed patches; its M1–M3 are appended below
+once the harness has graded them.
+
+Caveat carried: 4k fallback input. The L4 at 16k is the cleaner test and is
+in progress; the prediction for it is unchanged.
 
 ## What Amendment 2 settles
 

@@ -27,6 +27,10 @@
       "truncated_rows": 32,
       "corr_prefix_vs_full_c": 0.18
     },
+    "tiger_lab_acecoderm_7b": {
+      "AUROC_negc_full": 0.405,
+      "truncated_rows": 32
+    },
     "panel_m4_full": {
       "M1_AUROC_u_full": 0.494,
       "primary_M1_prefix": 0.508,
@@ -37,7 +41,16 @@
         0.111
       ]
     },
-    "panel_m5_with_acecode": "missing critic files"
+    "panel_m5_with_acecode": {
+      "M1_AUROC_u_full": 0.473,
+      "primary_M1_prefix": 0.508,
+      "A2_P2_gain_gt_0p10": false,
+      "M3_vs_primary_c": -0.148,
+      "CI95": [
+        -0.296,
+        0.104
+      ]
+    }
   },
   "reselect": {
     "skywork_skywork_reward_v2_llama_3_1_8b": {
@@ -45,22 +58,29 @@
       "changed_vs_primary": 20,
       "gold_missing": 0,
       "failures": 12,
-      "M1_AUROC_u": 0.445,
+      "M1_AUROC_u": 0.455,
       "M2_AUROC_negc": 0.602,
-      "M3": -0.157,
+      "M3": -0.148,
       "CI95": [
-        -0.564,
-        0.143
+        -0.486,
+        0.26
       ],
-      "p": 0.9133,
+      "p": 0.8455,
       "panel": [
         "ray2333_grm_gemma2_2b_rewardmodel_ft",
         "ray2333_grm_llama3_2_3b_rewardmodel_ft",
         "skywork_skywork_reward_v2_llama_3_2_1b",
-        "skywork_skywork_reward_v2_qwen3_1_7b"
+        "skywork_skywork_reward_v2_qwen3_1_7b",
+        "tiger_lab_acecoderm_7b"
       ],
       "inference": "eligible"
     },
-    "tiger_lab_acecoderm_7b": "missing"
-  }
+    "tiger_lab_acecoderm_7b": {
+      "n_reselected": 34,
+      "changed_vs_primary": 24,
+      "gold_missing": 17
+    }
+  },
+  "needs_gold_file": "data/swebench_pilot50/gpu_scores/needs_gold.jsonl",
+  "needs_gold_n": 17
 }
