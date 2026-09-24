@@ -216,3 +216,25 @@ Why it matters: the unattended chain would have hit this at ~3:30 AM, logged
 "RM stage FAILED", and stopped. The dry run of never-executed stages on a
 one-candidate directory is cheap insurance and should precede every
 unattended run.
+
+## Host disk: the VM image only grows — 2026-09-23 20:45
+
+Mid-pilot, host free space fell from 32 GB to 12 GB. Cause: the Colima VM
+disk is a sparse file that grows as images are pulled and **does not shrink
+when they are pruned inside the guest** — it was 31 GB on the host while the
+guest reported 1.2 GB in use. `fstrim` inside the guest reclaimed 484 MB, so
+discard is not propagating usefully under vz. The file is bounded by the
+virtual size (40 GB), not by what the guest uses.
+
+Reclaimed 46 GB from caches nothing in the pipeline touches: all Ollama
+models (generation is OpenAI, scoring is HF reward models) and the two HF
+reward models proven unusable (Skywork-Reward-V2-8B, internlm2-1.8b). All
+re-downloadable. Host free after: 58 GB, so the 40 GB cap fits.
+
+Rules of thumb:
+- Budget **the VM's virtual disk size**, not its guest usage, against host
+  free space before a multi-instance run.
+- After a pilot, `colima delete` + recreate is the only reliable way to hand
+  the space back.
+- Model caches accumulate silently across experiments; audit them before
+  every unattended run.
