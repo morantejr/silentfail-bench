@@ -17,3 +17,4 @@ data/*/*
 !data/*/candidates.jsonl
 !data/*/gold_errors.json
 !data/*.json
+!data/*/rescoring_bundle.jsonl

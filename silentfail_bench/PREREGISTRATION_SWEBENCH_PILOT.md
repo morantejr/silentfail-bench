@@ -115,3 +115,45 @@ exploratory and reported separately:
   promoted to primary for this pilot.
 
 Declared with zero gold computed so it cannot be selected on the results.
+
+---
+
+# Amendment 2 — 2026-09-24, before any GPU rescoring
+
+**Motivation.** §12–13 found chat-preference reward models carry ~no
+information about patch correctness in either a 4,096-token prefix or a
+3,000-token submission window. Two instrument limits remain untested: the
+critic *class* (chat-preference vs code-trained) and the input *length*
+(truncated vs full trajectory). A GPU removes both.
+
+**What is NOT changed.** The 164 candidates, the 41 instances, the gold
+labels, the 12 positives, the population definition, and the metrics M1–M3
+with their repo-clustered bootstrap. The primary result (§12) stands as
+registered and is not superseded by this amendment.
+
+**What is added — EXPLORATORY, reported beside the primary.**
+
+| | primary (§12) | Amendment 2 |
+|---|---|---|
+| input | 4,096-token prefix | **full trajectory** (up to 16k tokens; longer ones take head 4k + tail 12k, declared per row) |
+| selection critic | Skywork-Reward-V2-Qwen3-4B | (a) **Skywork-Reward-V2-Llama-3.1-8B** — the proposal's named critic, now runnable; (b) **TIGER-Lab/AceCodeRM-7B** — trained on code with execution feedback |
+| audit panel | 4 chat-preference RMs | the same 4, rescored on full input; plus AceCodeRM-7B as a fifth auditor when it is not the selector |
+
+Two selection critics means two committed sets; each is analysed with the
+panel that excludes it (disjointness preserved).
+
+**Predictions, stated so they can fail.**
+- **A2-P1:** with AceCodeRM-7B as a critic, `AUROC(−c)` on the population
+  exceeds 0.6 (a code-trained critic sees correctness).
+- **A2-P2:** `AUROC(u)` from the full-length panel exceeds the prefix
+  panel's 0.508 by more than 0.10.
+- **A2-P3:** the prefix-vs-full-length correlation of `c` exceeds 0.5 for
+  the code-trained critic (a critic with a stable view of quality).
+
+**What would count against the pivot.** All three fail → the null holds
+across critic class and input length, and the negative-result paper is the
+paper.
+
+**Reporting.** Point estimates with counts; <10 positives in any committed
+set → no conclusion for that set. Same script, same bootstrap, nothing else.
+Declared with zero GPU scores computed.
