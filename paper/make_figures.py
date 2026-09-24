@@ -28,7 +28,7 @@ ax.text(0.667, len(rows) - 0.55, "the ruler:\nlines added\nin the patch\n(0.665)
 ax.set_yticks(y); ax.set_yticklabels([r[0] for r in rows], fontsize=7.5)
 ax.set_xlim(0.35, 0.75); ax.set_xlabel("AUROC for silent failure (12 positives / 22 successes)")
 ax.plot([], [], "o", color=BLUE, label="panel disagreement $u$"); ax.plot([], [], "s", color=GRAY, label="selecting critic's own score $-c$")
-ax.legend(loc="lower right", fontsize=7.5, frameon=False); fig.tight_layout(); fig.savefig(OUT / "fig_ladder.pdf"); plt.close(fig)
+ax.legend(loc="upper left", fontsize=7.5, frameon=False); fig.tight_layout(); fig.savefig(OUT / "fig_ladder.pdf"); plt.close(fig)
 
 # ---------- Fig 2: critic instability across input windows ----------
 tail = [json.loads(l) for l in (D / "pilot_free_scored_tail.jsonl").read_text().splitlines() if l.strip()]
