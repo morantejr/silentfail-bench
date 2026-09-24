@@ -6,6 +6,13 @@ r = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "git+https://g
 print("acecoder install:", "ok" if r.returncode == 0 else f"FAILED (rc={r.returncode}); AceCodeRM will be skipped", flush=True)
 r2 = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "evalplus"], check=False)   # acecoder/__init__ imports it
 print("evalplus install:", "ok" if r2.returncode == 0 else "FAILED (rm_utils will be loaded by path instead)", flush=True)
+# rm_utils gathers the last-token reward with an index on the input device; with the model
+# split across two GPUs the value head is on the other one. Move the index to value.device.
+import glob as _g
+for f in _g.glob("/usr/local/lib/python3*/dist-packages/acecoder/rm_utils.py"):
+    src = open(f).read()
+    src2 = src.replace("index=(attention_mask.sum(dim=-1, keepdim=True) - 1)", "index=(attention_mask.sum(dim=-1, keepdim=True) - 1).to(value.device)")
+    open(f, "w").write(src2); print("patched rm_utils gather device:", src != src2, flush=True)
 subprocess.run([sys.executable, "-m", "pip", "show", "acecoder"], check=False)
 subprocess.run([sys.executable, "-c", "import traceback\ntry:\n    import acecoder.rm_utils as m; print('acecoder.rm_utils OK:', m.__file__)\nexcept Exception:\n    traceback.print_exc()"], check=False)
 print("input tree:", flush=True)

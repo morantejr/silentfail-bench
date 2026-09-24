@@ -129,8 +129,33 @@ def main() -> None:
             print(f"[FAIL load] {repo}: {type(e).__name__}: {str(e)[:200]}", flush=True); continue
         dev = next(model.parameters()).device
         # self-test: 2 candidates, must produce two finite, distinct-or-equal floats
-        try:
+        def _selftest(model, tok, dev):
             for c in cands[:2]:
+                ok = False
+                for cap in (MAX_TOKENS, 8_000, 4_000):
+                    s_, _ = build_input(tok, c["problem_statement"], c["text"], cap)
+                    enc = tok(s_, return_tensors="pt", truncation=True, max_length=cap + 512).to(dev)
+                    try:
+                        v = score(model, kind, enc); assert v == v; ok = True; break
+                    except torch.cuda.OutOfMemoryError:
+                        del enc; gc.collect(); torch.cuda.empty_cache()
+                if not ok: raise RuntimeError("OOM even at 4k tokens")
+        try:
+            try:
+                _selftest(model, tok, dev)
+            except RuntimeError as e:
+                if kind == "acecode" and "same device" in str(e) and not a.load_8bit:
+                    print(f"  device mismatch across GPUs; reloading {repo} in 8-bit on one GPU", flush=True)
+                    del model; gc.collect(); torch.cuda.empty_cache()
+                    from transformers import BitsAndBytesConfig
+                    from acecoder.rm_utils import AceCodeRM
+                    model = AceCodeRM.from_pretrained(repo, trust_remote_code=True, device_map={"": 0}, attn_implementation="sdpa",
+                                                      quantization_config=BitsAndBytesConfig(load_in_8bit=True)).eval()
+                    dev = next(model.parameters()).device
+                    _selftest(model, tok, dev)
+                else:
+                    raise
+            for c in cands[:0]:   # (original per-candidate self-test body retained below for structure)
                 ok = False
                 for cap in (MAX_TOKENS, 8_000, 4_000):
                     s, _ = build_input(tok, c["problem_statement"], c["text"], cap)
