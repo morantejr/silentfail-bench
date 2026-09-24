@@ -222,3 +222,119 @@ result and is not overwritten; the 16k run is reported beside it and is the
 one carried forward. `TIGER-Lab/AceCodeRM-32B` (4-bit) is added to A2-P1 as
 the stronger code-trained critic, with the same prediction. Amendment 3 runs
 unchanged. Bars unchanged: 0.665.
+
+---
+
+# Amendment 4 — 2026-09-24, declared before any of the quantities below exist
+
+**Motivation.** A skeptical-reviewer pass on draft v0.1 identified four ways
+the null could be an artifact of scope rather than a property of the panel:
+(a) the structural "ruler" may only be a proxy for task difficulty, and the
+critics may add signal *conditional* on structure that the marginal AUROC
+hides; (b) the mechanism sentence ("critics hold no stable judgment", from
+cross-window r = 0.03–0.18) cannot distinguish critic noise from windows
+legitimately containing different information; (c) only reward models were
+tested, so "AI-critic disagreement" is broader than the evidence; (d) the
+length ladder has two points. Each gets one pre-specified test. Everything
+below is reported regardless of outcome; nothing is selected among
+perturbations, judges, or feature sets after the fact.
+
+**Population, gold, positive class: unchanged** (primary committed set,
+n=34, 12 silent failures, repo-clustered bootstrap, 0.665 bar where a bar
+applies).
+
+## A4-a  Incremental value beyond structure and difficulty
+
+- **Features.** `struct` = {patch_added_lines, step_count, patch_chars,
+  patch_files_touched} (all read off the committed diff/transcript).
+  `difficulty` = public solve rate: the fraction of six independent public
+  mini-swe-agent v2.0.0 runs on SWE-bench Verified (gpt-5-mini,
+  gemini-3-flash-high, deepseek-3-2-high, claude-4-5-sonnet-high,
+  gpt-5-2-high, claude-4-6-opus; `SWE-bench/experiments`, fetched
+  2026-09-24) that resolved the instance. None of those runs are ours.
+- **Models** (ridge-IRLS logistic, standardizer fit on the training fold):
+  `M_base` = struct + difficulty; `M_base+c` (primary c); `M_base+u`
+  (primary u); `M_base+c+u`.
+- **Evaluation.** Leave-one-repo-out (9 folds). Out-of-fold probabilities
+  are pooled; AUROC on the pooled vector. In-sample AUROCs are not results.
+  CI: repo-clustered bootstrap over the pooled out-of-fold predictions
+  (approximation — models are not refit inside each draw; stated as such).
+- **Predictions.** A4a-P1: `AUROC(M_base+u) − AUROC(M_base) ≥ 0.05` → u
+  carries signal conditional on structure (a genuine, if modest, positive
+  finding that must be reported). `≤ 0.02` → no incremental value; the
+  ruler claim becomes "no incremental value," its defensible form. A4a-P2:
+  the same for c. Also reported: AUROC(difficulty) alone, AUROC(M_base).
+- **Overfit guard.** 34 rows, 5–7 features: out-of-fold only.
+
+## A4-b  Test–retest stability of window scores
+
+- **Input.** The Amendment 3 pruned windows (same `prune`/windowing code) on
+  the 34 committed trajectories.
+- **Perturbations, content-preserving, fixed now.**
+  `P_fmt`: role headers re-cased (`## user` → `## User`, etc.), the pruning
+  marker reworded (`[... N lines omitted ...]` → `[N lines elided]`), and one
+  neutral line `(trajectory excerpt)` prepended. Zero information change.
+  `P_shift`: window start moved by +128 tokens at the same length (−128 for
+  a window that would run past the end; for a trajectory that fits in one
+  window, the first 128 tokens are dropped). ≈3.7% content change.
+- **Statistics, per critic.** Spearman r between original and `P_fmt`
+  scores over all windows (`r_fmt`); same for `P_shift` (`r_shift`);
+  `r_adj` between adjacent windows (25% overlap); `r_far` between first and
+  last window of the same trajectory. The same four for per-window panel u
+  (rank norms fit on train rows' original window scores).
+- **Reading, fixed now.** `r_fmt ≥ 0.8` and `r_shift ≥ 0.7` → critics are
+  stable to surface form; the low cross-window correlation reflects
+  content, and the draft's mechanism sentence is **withdrawn** and replaced
+  with "critic scores respond to window content; the panel's aggregation is
+  what fails." `r_fmt < 0.5` → the instability claim stands. Between →
+  reported as inconclusive. Conclusions are per critic where classes differ.
+- **Compute.** ≤4B critics locally (MPS); 8B and AceCodeRM-7B on the L4
+  (stage 5). Same script, same perturbations.
+
+## A4-c  LLM-as-judge classes
+
+- **Judges.** `gpt-5`, `gpt-5-mini`, `gpt-5-nano` (OpenAI API). One
+  vendor: this is labelled a **single-family LLM judge panel**, never a
+  "frontier panel". `gpt-5-mini` is also the agent model — a
+  self-evaluation confound, flagged; `gpt-5` and `gpt-5-nano` are not the
+  agent. Cross-family judges are a stated extension, not run here.
+- **Conditions.** `J1` (patch-in-view): problem statement + final diff.
+  `J2` (execution-aware): J1 + the pruned last ≈6,000 tokens (24,000
+  characters) of the trajectory, which contain the agent's own test runs
+  when it ran any. No judge sees gold tests or the reference patch.
+- **Call.** One per (judge, condition, trajectory); default reasoning
+  effort; no sampling parameters. Output JSON
+  `{"p_resolved": 0–100, "reason": ≤40 words}`. Detection score =
+  `100 − p_resolved`. Responses cached; a parse failure is retried once,
+  then recorded as missing (never imputed as a score).
+- **Metrics.** Per judge AUROC; panel `u_LLM` = std of rank-normalized
+  (train-fit) scores across the three judges; AUROC(`u_LLM`). Paired vs
+  primary −c by repo-clustered bootstrap. Bars: 0.665 for every quantity.
+- **Predictions.** A4c-P1: best single judge in J1 > 0.665. A4c-P2:
+  `u_LLM` (J1) > 0.665. A4c-P3: J2 − J1 gain > 0.10 for the best judge.
+- **Readings.** P1 or P2 pass → the paper's claim narrows to *reward-model*
+  critics. P3 passes while P1 fails → the useful safeguard is the agent's
+  own execution feedback, not a critic panel. All fail → "AI-critic
+  disagreement, within the classes tested".
+- **Cost cap.** $10 of the OpenAI credits (~204 calls).
+
+## A4-d  Length ladder third point (L4 stage 5)
+
+An 8k point is added for all seven critics (same code, `--max-tokens 8000`)
+so the ladder is 4k / 8k / 16k; per-critic paired differences with the
+clustered bootstrap. The 16k run remains the Amendment 2 result. No
+prediction beyond monotonicity reporting. `AceCodeRM-32B`: did not load on
+24 GB (OOM twice); reported as not run.
+
+## A4-e  Replication on a wide repository pool — designed, not run
+
+The binding constraint on Verified is 12 repositories (django 46%), which
+caps effective n regardless of instance count (paired u-vs-ruler Δ=0.10 has
+power ≈0.3 at any n). Design: SWE-smith (or SWE-rebench) instances sampled
+one per repository across ≥40 repositories, same agent, scaffold, k=4,
+critic, panel, gold-by-execution. Stopping rule: stop when the repo-
+clustered 95% CI on AUROC(u) has half-width ≤ 0.08, or when 40 repositories
+have each contributed ≥ 3 usable trajectories, whichever first; never on a
+favourable point estimate. Same bars. Estimated cost ≈ $5 generation +
+container gold. Requires Docker again on this machine. Runs only on
+explicit decision.
