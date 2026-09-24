@@ -18,7 +18,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 SWEBENCH_PY = ROOT / ".venv-swebench" / "bin" / "python"
-DATASET = "princeton-nlp/SWE-bench_Verified"
+DATASET = "SWE-bench/SWE-bench_Verified"   # the 5.x harness needs the new-org dataset: the princeton-nlp mirror lacks the image field
 
 
 def available() -> bool:
