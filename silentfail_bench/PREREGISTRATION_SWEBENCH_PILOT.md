@@ -166,3 +166,51 @@ gold and is the first thing reported; (ii) **re-selection** by a new critic
 commits some different candidates, whose patches must be graded by the
 harness before M1–M3 for that set can be computed. `needs_gold.jsonl` lists
 them; nothing about those rows is looked at before the harness has run.
+
+---
+
+# Amendment 3 — 2026-09-24, before any windowed score exists
+
+**Motivation.** Amendments 1–2 scored a prefix, a tail, and a head+tail. All
+null. One structural objection remains: no critic ever saw the *middle* of
+a trajectory, where an agent drifts into a silent failure. Two changes give
+the panel a genuinely different chance without exceeding a 16 GB GPU.
+
+**Population, positives, gold, metrics: unchanged.** Audit-only on the
+primary committed set (n=34, 12 positives). No re-selection in this
+amendment.
+
+**Preprocessing (structural pruning, deterministic).** Tool outputs longer
+than 24 lines are collapsed to their first 8 + last 8 lines with an
+`[... N lines omitted ...]` marker. Diffs are never pruned. Applied
+identically to every row before windowing.
+
+**Windowing.** Each pruned trajectory is cut into overlapping windows of
+≈3,500 tokens with 25% overlap, each prefixed by the problem statement
+(≤800 tokens). The final window always ends at the trajectory's end
+(patch included). At most 8 windows per trajectory; if more are needed,
+8 are chosen evenly spaced including first and last. Window count is
+recorded per row.
+
+**Scores.** Every critic scores every window. Per critic and trajectory:
+`mean`, `max`, `last`. Panel `u` is computed *per window* (std of
+rank-normalized scores across the m=4 panel, rank norms fit on train rows'
+window scores), then aggregated: **`u_max`** (primary), `u_mean`, `u_last`.
+
+**Predictions.**
+- **A3-P1 (the bar):** `AUROC(u_max) > 0.665` — the panel must beat the
+  best structural covariate (patch added lines). Anything less is not a
+  detector worth a confirmatory run.
+- **A3-P2:** `AUROC(u_max) − 0.508 > 0.10` (gain over the prefix panel).
+- **A3-P3:** the named critic's `mean`-window score beats its
+  patch-in-view score (0.534) by > 0.10 — i.e. seeing the middle helps a
+  single critic at all.
+
+**What would count against the pivot.** All three fail → the panel design is
+closed across prefix, tail, head+tail and multi-window inputs; the negative
+result paper is the paper, with this as its strongest section.
+
+**Reporting.** `u_max` is the maximum of noisy statistics and is biased
+upward under the null; the repo-clustered bootstrap over instances handles
+the paired comparison, but point estimates are reported with that caveat.
+Declared with zero windowed scores computed.
