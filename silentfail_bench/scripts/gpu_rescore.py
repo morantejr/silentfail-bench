@@ -29,6 +29,7 @@ CRITICS = [  # order: cheap standard heads first, then the two Amendment-2 criti
     ("Skywork/Skywork-Reward-V2-Llama-3.1-8B",      "seqcls"),   # the proposal's named critic
     ("TIGER-Lab/AceCodeRM-7B",                      "acecode"),  # code-trained, custom head
 ]
+CRITICS_32B = [("TIGER-Lab/AceCodeRM-32B", "acecode4bit")]        # --include-32b: 4-bit on a 24 GB card
 
 
 def slug(repo: str) -> str:
@@ -57,7 +58,12 @@ def load(repo: str, kind: str, load_8bit: bool):
     # sdpa = PyTorch memory-efficient attention: O(L) memory instead of the O(L^2)
     # map eager attention materializes (16k tokens -> 8-32 GiB per model on a T4).
     kw = dict(trust_remote_code=True, device_map="auto", attn_implementation="sdpa")
-    if load_8bit:
+    if kind == "acecode4bit":
+        from transformers import BitsAndBytesConfig
+        kw["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16, bnb_4bit_quant_type="nf4")
+        kw["device_map"] = {"": 0}
+        kind = "acecode"
+    elif load_8bit:
         from transformers import BitsAndBytesConfig
         kw["quantization_config"] = BitsAndBytesConfig(load_in_8bit=True)
     else:
@@ -111,20 +117,24 @@ def main() -> None:
     ap.add_argument("--load-8bit", action="store_true", help="single 16 GB GPU (Colab T4)")
     ap.add_argument("--limit", type=int, default=None, help="smoke test on the first N candidates")
     ap.add_argument("--only", nargs="*", default=None, help="subset of critic repos")
+    ap.add_argument("--include-32b", action="store_true", help="also score AceCodeRM-32B in 4-bit (24 GB GPU)")
     a = ap.parse_args()
     a.out.mkdir(parents=True, exist_ok=True)
     cands = [json.loads(l) for l in a.bundle.read_text().splitlines() if l.strip()]
     if a.limit: cands = cands[: a.limit]
     print(f"[bundle] {len(cands)} candidates | GPUs: {torch.cuda.device_count()} | 8bit={a.load_8bit}", flush=True)
 
-    for repo, kind in CRITICS:
+    for repo, kind in CRITICS + (CRITICS_32B if a.include_32b else []):
         if a.only and repo not in a.only: continue
+        if kind == "acecode4bit": kind_load = "acecode4bit"
+        kind_load = kind
         dest = a.out / f"scores_gpu_{slug(repo)}.json"
         if dest.exists():
             print(f"[skip] {repo}: {dest.name} exists", flush=True); continue
         t0 = time.time()
         try:
-            tok, model = load(repo, kind, a.load_8bit)
+            tok, model = load(repo, kind_load, a.load_8bit)
+            if kind == "acecode4bit": kind = "acecode"
         except Exception as e:
             print(f"[FAIL load] {repo}: {type(e).__name__}: {str(e)[:200]}", flush=True); continue
         dev = next(model.parameters()).device

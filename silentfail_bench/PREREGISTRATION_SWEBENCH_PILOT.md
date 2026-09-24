@@ -214,3 +214,11 @@ result paper is the paper, with this as its strongest section.
 upward under the null; the repo-clustered bootstrap over instances handles
 the paired comparison, but point estimates are reported with that caveat.
 Declared with zero windowed scores computed.
+
+**Amendment 2/3 addendum — L4 access (2026-09-24, before any L4 score).**
+A 24 GB GPU makes the *originally declared* Amendment-2 input (16k tokens)
+runnable. The Kaggle result at the 4k fallback stands as that instrument's
+result and is not overwritten; the 16k run is reported beside it and is the
+one carried forward. `TIGER-Lab/AceCodeRM-32B` (4-bit) is added to A2-P1 as
+the stronger code-trained critic, with the same prediction. Amendment 3 runs
+unchanged. Bars unchanged: 0.665.
