@@ -997,3 +997,30 @@ scope, all fixes applied). `paper/main_short.pdf` is the submission cut: 6
 body pages of the 7 AAAI allows, plus references, keeping the ladder table,
 the control and replication figures, the endpoint table and the instrument
 record.
+
+# 23. Final pre-share items (2026-09-25)
+
+**A2-P3 is now reported, as undecidable.** The prediction asked whether the
+code-trained critic's prefix and full-length scores correlate above 0.5.
+`AceCodeRM-7B` fell back to a 4k window on **31 of 34 committed rows** even on
+a 24 GB GPU, so its apparent r = 0.997 is a score correlated with itself, not
+a prefix-vs-full contrast; the 32B sibling ran only at 8k/16k and has no
+prefix pass. The paper now states this as attempted and undecidable and gives
+the selector's own contrast instead (r = 0.35 prefix vs true 16k; r = 0.18
+prefix vs patch-in-view). *If the mentor wants A2-P3 decided, scoring
+AceCodeRM-7B at a true 16k on a Modal A100 costs about $2 and 20 minutes. Not
+run without a decision.*
+
+**The short version no longer says "every prediction failed."** It now scopes
+that to predictions about disagreement and names the registered predictions
+that passed.
+
+**Both PDFs are tracked and in HEAD** (`paper/main.pdf`, `paper/main_short.pdf`).
+
+**Data handling is documented in the README.** The 39 MB rescoring bundle is
+tracked deliberately — it is the input every critic scored, and no result can
+be re-derived without it. Raw trajectories are untracked; the test-fixture RSA
+key and webhook secret found in one of them are redacted in place and were
+verified never to have reached a tracked file or any commit
+(`git log --all -S` returns zero). Anyone copying the folder rather than
+cloning gets the trajectories; anyone cloning does not.

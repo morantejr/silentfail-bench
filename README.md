@@ -78,3 +78,17 @@ The free-compute pilot (Ollama, ~22 GB, $0) is documented in
 - Rank-normalizations are fit on **train groups only**.
 - If the known-correct reference solution does not pass the gold harness, that
   instance is excluded as an invalid oracle rather than counted as a failure.
+
+
+## Large artifacts and data handling
+
+- `silentfail_bench/data/replication_multilingual/rescoring_bundle.jsonl` (39 MB) is tracked
+  deliberately: it is the input every critic scored, and without it no result in the paper can
+  be re-derived. It is kept by an explicit `.gitignore` exception.
+- `silentfail_bench/data/**/traj/` (raw agent trajectories) is **not** tracked. It contains
+  machine-local absolute paths, and one trajectory captured a test-fixture RSA private key and
+  webhook secret that the agent read from the upstream Docusaurus repository. Both were
+  redacted in place; neither ever reached a tracked file or any commit (verified with
+  `git log --all -S`). If you copy this folder rather than cloning it, that directory travels
+  with it.
+- Top-level LaTeX build artifacts (`*.aux`, `*.log`, `*.out`) are ignored but present on disk.
