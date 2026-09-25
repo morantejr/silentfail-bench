@@ -225,3 +225,21 @@ was checkpointed with full text and could be inspected after the fact.
 
 Fix: `scripts/reselect_from_candidates.py` re-runs selection over the
 existing pool with a true RM. Pre-registration Amendment 1 records the swap.
+
+## Replication infrastructure (2026-09-25): swe-rex Modal image layer stalled generation
+**Symptom.** Amendment 4e generation on Modal produced 28 trajectories, then
+nothing for an hour with every worker in "Starting modal sandbox".
+**Cause.** swe-rex's Modal deployment builds a per-instance image layer
+(`apt-get update && apt-get install pipx`) on top of every SWE-bench image
+before it can start. On the Multilingual images (Ubuntu 22.04, no Python)
+that layer takes 10+ minutes each; 114 of them through Modal's limited
+build concurrency is effectively a stall. Verified: Modal's `add_python`
+layer on the same image builds in 5 s; the apt layer had not finished
+`apt-get update` after 5 minutes.
+**Fix.** `swerex/deployment/modal.py` patched in the venv (copy kept at
+`modal/swerex_modal_patched.py.txt`): registry images get
+`add_python="3.11"`, no apt layer; `swe-rex` is pip-installed into that
+python at sandbox start (~10 s). Sandboxes then start in 6–90 s.
+**Also.** Killing the orchestrator does not stop its Modal sandboxes; they
+run to `runtime_timeout` and hold concurrency. Stop the `swe-rex` app
+explicitly (`modal app stop <id> -y`) before restarting.
