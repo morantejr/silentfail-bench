@@ -213,4 +213,23 @@ decides between "null survives" and "narrower positive".
 
 ---
 
-## Next entry (pending): Amendment 4e readout (R-P1..R-P3)
+## Replication · Amendment 4e on SWE-bench Multilingual — 2026-09-25
+
+**Done.** 456 trajectories, 114 instances, 41 repositories, nine languages;
+agent sandboxes and official gold on Modal (3 oracle pairs passed); seven
+critics at 4k, 16k and windowed; the pre-registered R-P1..R-P3 readout.
+Draft v0.3 (`paper/main.pdf`, 12 pages, 8 figures).
+
+**Learned.** 45.5% silent failures on 77 usable rows (35 positives, 37
+repos). Panel `u` 0.565 [0.43, 0.71] vs the critic's 0.560 — **the null
+replicates** (R-P1). `u_max` 0.541 [0.40, 0.68], within-repo p 0.53 — **the
+windowed positive does not** (R-P2). The lines-added ruler fell to 0.508:
+a Verified regularity, not a law. Every reward model 0.36–0.58.
+
+**Changed.** End state fixed: **null survives**. The pivot is closed; the
+paper is the negative result, now on 53 repositories and 47 positives
+combined. Remaining work is writing: citations, mentor read, AAAI cut.
+
+---
+
+## Next entry (pending): LLM judges on the replication rows; mentor read of v0.3

@@ -124,4 +124,29 @@ for j, (key, lab, col) in enumerate((("r_fmt", "same window, reformatted", BLUE)
 ax.axhline(0, color="k", lw=0.6); ax.set_xticks(x); ax.set_xticklabels(labels, fontsize=7, rotation=20, ha="right"); ax.set_ylabel("Spearman r between scores"); ax.set_ylim(-0.5, 1.05)
 ax.legend(fontsize=6.5, frameon=False, ncol=2, loc="lower left"); ax.set_title("the same critic re-scored: stable to form, responsive to content", fontsize=9)
 fig.tight_layout(); fig.savefig(OUT / "fig_stability.pdf"); plt.close(fig)
+
+# ---------- Fig 8: replication on 41 repositories (Amendment 4e) ----------
+RP = Path("silentfail_bench/data/replication_multilingual")
+rr = json.loads((RP / "prereg_readout_replication.json").read_text()); rw = json.loads((RP / "readout_windows_secondary.json").read_text())
+ver = {"panel $u$ (prefix 4k)": (0.508, (0.373, 0.643)), "panel $u_{\\max}$ (windows)": (0.686, (0.657, 0.731)), "lines added (ruler)": (0.665, None),
+       "best single RM, 16k": (0.712, None), "best LLM judge, patch in view": (0.752, None)}
+ml = {"panel $u$ (prefix 4k)": (rr["primary_prefix_u"]["M1_AUROC_u"], tuple(rr["primary_prefix_u"]["CI95_repo_clustered"])),
+      "panel $u_{\\max}$ (windows)": (rr["windowed_u_max"]["AUROC"], tuple(rr["windowed_u_max"]["CI95_repo_clustered"])),
+      "lines added (ruler)": (rr["ruler_lines_added"]["AUROC"], tuple(rr["ruler_lines_added"]["CI95_repo_clustered"])),
+      "best single RM, 16k": (max(rr["single_critics_full16k"].values()), None)}
+jr = RP / "prereg_readout_replication_judges.json"
+if jr.exists():
+    jd = json.loads(jr.read_text()); ml["best LLM judge, patch in view"] = (jd["conditions"]["J1"]["best_single"]["AUROC"], None)
+labels = list(ver); yy = np.arange(len(labels))[::-1]
+fig, ax = plt.subplots(figsize=(6.4, 3.0))
+for yi, lab in zip(yy, labels):
+    v, vci = ver[lab]; ax.plot([v], [yi + 0.16], "o", color=GRAY, ms=6)
+    if lab in ml:
+        m, mci = ml[lab]; ax.plot([m], [yi - 0.16], "o", color=BLUE, ms=6)
+        if mci: ax.plot(list(mci), [yi - 0.16] * 2, color=BLUE, lw=1.2)
+ax.axvline(0.5, color="k", lw=0.8, ls=":"); ax.axvline(0.665, color=GOLD, lw=1.2, ls="--")
+ax.set_yticks(yy); ax.set_yticklabels(labels, fontsize=8); ax.set_xlim(0.3, 0.85); ax.set_xlabel("AUROC for silent failure")
+ax.plot([], [], "o", color=GRAY, label="SWE-bench Verified: 12 repos, 12 positives"); ax.plot([], [], "o", color=BLUE, label=f"SWE-bench Multilingual: {rr['n_repos']} repos, {rr['silent_failures']} positives (95% CI)")
+ax.legend(fontsize=7.5, frameon=False, loc="lower right"); ax.set_title("the same instrument on three times the repositories", fontsize=9)
+fig.tight_layout(); fig.savefig(OUT / "fig_replication.pdf"); plt.close(fig)
 print("figures:", sorted(p.name for p in OUT.glob("*.pdf")))

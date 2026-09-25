@@ -748,3 +748,39 @@ trajectories (Amendment 4e design; ~$5 + Docker).
 - **Amendment 4e (revised, pre-registered before generation):** SWE-bench
   Multilingual, 41 repos, 114 instances × 4 candidates, agent sandboxes and
   gold on Modal. Generation running.
+
+# 16. Amendment 4e — replication on 41 repositories: the null survives (2026-09-25)
+
+Pre-registered before generation (revised to SWE-bench Multilingual because
+SWE-smith is not gradable by the official harness). Same agent, critic,
+panel, pruning, windows; agent sandboxes and gold on Modal; three
+reference/empty oracle pairs passed before any model patch was graded.
+
+| | Verified | Multilingual |
+|---|---|---|
+| instances / repos / candidates | 41 / 9 / 164 | 114 / 41 / 456 |
+| population / silent failures | 34 / 12 (35%) | **77 / 35 (45.5%)**, 37 repos |
+| panel `u` (prefix 4k) | 0.508 | 0.565 [0.43, 0.71] |
+| critic's own score | 0.621 | 0.560 |
+| `u_max` (windows) | 0.686, jackknife 0.66–0.73 | **0.541 [0.40, 0.68]**, jackknife 0.53–0.56, within-repo p 0.53 |
+| lines-added ruler | 0.665 | **0.508 [0.35, 0.65]** |
+| best single RM at 16k | 0.712 (1B) | 0.577; the 1B is 0.485 |
+| named 8B critic | 0.534 / 0.591 | 0.52 |
+| code-trained 7B | 0.405 | 0.356 |
+
+**R-P1 passed** (null replicates). **R-P2 failed** (`u_max` at chance).
+**R-P3 vacuous** (the ruler itself fell to chance).
+
+Reading: the Verified `u_max` result was a twelve-positive fluctuation; so
+was the ruler; so was the 1B's 0.712. With 35 positives the intervals are
+half as wide and sit on 0.5. End state: **null survives**, now on 53
+repositories combined. The pivot is closed; the paper is the negative
+result. Draft v0.3.
+
+Declared deviations: $18.30 generation vs the $15 cap (rate limit killed 138
+partial trajectories; stopping at 420/456 would have biased the sample);
+26% empty patches; 7 `gold_error`. LLM judges on the 77 rows: running
+(≈$4), reported when in.
+
+Infrastructure record: `DEFECTS.md` (swe-rex apt layer; orphaned sandboxes;
+batch runner's preds.json skip; OpenAI 500 RPM / 500k TPM).
