@@ -1,0 +1,54 @@
+{
+ "analysis": "Amendment 4f (pre-registered): unselected-candidate control, paired by instance",
+ "verified": {
+  "n_paired": 31,
+  "failure_rate_random": 0.323,
+  "failure_rate_committed": 0.29,
+  "paired_diff_committed_minus_random": -0.032,
+  "CI95": [
+   -0.214,
+   0.0
+  ],
+  "AUROC_negc_random": 0.81,
+  "AUROC_negc_random_CI": [
+   0.741,
+   1.0
+  ],
+  "AUROC_negc_committed_same_rows": 0.611,
+  "AUROC_u_random": 0.367,
+  "AUROC_u_random_CI": [
+   0.059,
+   0.684
+  ],
+  "AUROC_u_committed_same_rows_same_panel": 0.293,
+  "random_arm_gold_errors": 3,
+  "F_P1_selection_concentrates_failure": false,
+  "F_P2_selector_sees_more_on_random": true,
+  "note": "c from the primary run's candidate scores (prefix 4k); u from the 16k L4 panel on both arms, as declared"
+ },
+ "multilingual": {
+  "n_paired": 71,
+  "failure_rate_random": 0.465,
+  "failure_rate_committed": 0.423,
+  "paired_diff_committed_minus_random": -0.042,
+  "CI95": [
+   -0.114,
+   0.027
+  ],
+  "AUROC_negc_random": 0.427,
+  "AUROC_negc_random_CI": [
+   0.297,
+   0.56
+  ],
+  "AUROC_negc_committed_same_rows": 0.514,
+  "AUROC_u_random": 0.51,
+  "AUROC_u_random_CI": [
+   0.395,
+   0.638
+  ],
+  "AUROC_u_committed_same_rows_same_panel": 0.533,
+  "random_arm_gold_errors": 9,
+  "F_P1_selection_concentrates_failure": false,
+  "F_P2_selector_sees_more_on_random": false
+ }
+}

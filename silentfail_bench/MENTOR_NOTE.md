@@ -785,3 +785,40 @@ partial trajectories; stopping at 420/456 would have biased the sample);
 
 Infrastructure record: `DEFECTS.md` (swe-rex apt layer; orphaned sandboxes;
 batch runner's preds.json skip; OpenAI 500 RPM / 500k TPM).
+
+# 17. Tier 1 after the skeptical review — draft v0.4 (2026-09-25)
+
+Review at `REVIEW_skeptical_2026-09-25.md`. Verdict: idea not novel
+(predicted by the correlated-judge literature), measurement is; workshop/
+TMLR now, main track only with a selector axis. Tier 1 done:
+
+- Retitled and rescoped: *Auditing the Winner: Critic Disagreement Does Not
+  Recover Silent Failures in Selected SWE-Agent Trajectories.* Contributions
+  restated as protocol + replicated null with upper bound + diagnostics.
+- Related work written; 64 verified citations (`paper/refs.bib`); two
+  OpenReview ids from the reviewer's list could not be resolved and are not
+  cited.
+- **Amendment 4f, unselected-candidate control** (pre-registered, $8):
+
+| | Verified (31 paired) | Multilingual (71 paired) |
+|---|---|---|
+| failure rate, committed vs random | 29% vs 32%, diff −3 [−21, 0] | 42% vs 47%, diff −4 [−11, +3] |
+| selector's own score: random arm / committed arm | **0.81 [0.74, 1.00] / 0.61** | 0.43 / 0.51 |
+| panel u: random arm / committed arm | 0.37 / 0.29 (16k panel) | 0.51 / 0.53 |
+
+  **F-P1 fails on both**: with a 4B chat RM selecting, best-of-4 did not
+  concentrate failure. The proposal's "selection enriches the committed set
+  for critic mistakes" is not demonstrated for this selector; the paper now
+  claims a failure rate, not concentration. **F-P2 passes on Verified**:
+  the selector separates failures among candidates it did not pick (0.81)
+  far better than among the ones it committed (0.61) — the selection-
+  conditional gap, measured. On Multilingual the critic has no signal in
+  either arm. Disagreement is at chance off-selection too.
+
+Reading for the mentor: the control both weakens one claim (concentration)
+and strengthens the paper's protocol claim (evaluate on the selected
+population; the number changes by 0.2 when you do). It also sharpens the
+reviewer's main objection — the selector is weak — into a measured fact:
+this selector barely selects. The Tier-2 selector axis (SWE-RM / frontier
+judge on the same candidate pools, ~$150, two weeks) is the natural next
+study; it is the mentor's call.

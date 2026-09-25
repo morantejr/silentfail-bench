@@ -233,4 +233,29 @@ combined. Remaining work is writing: citations, mentor read, AAAI cut.
 
 ---
 
-## Next entry (pending): mentor read of v0.3; citations; AAAI cut
+## Review and Tier 1 · draft v0.4 — 2026-09-25
+
+**Done.** Skeptical-reviewer assessment with 63 verified references
+(`silentfail_bench/REVIEW_skeptical_2026-09-25.md`). Tier 1 of its
+recommendations: retitle and rescope; related work with 64 citations;
+trained-auditor paragraph; limitations from the review; and the
+pre-registered **unselected-candidate control** (Amendment 4f), graded on
+Modal for both benchmarks.
+
+**Learned.** With a 4B chat reward model selecting, the committed candidate
+fails no more often than one passed over (−3 / −4 points; CIs include 0):
+**best-of-4 did not concentrate failure.** On Verified the selector's own
+score ranks failures at 0.81 among unselected candidates but 0.61 among
+committed ones — selection consumed the critic's signal, the
+selection-conditional gap measured directly. On Multilingual the critic has
+no signal in either arm. Disagreement is at chance off-selection as well.
+
+**Changed.** The paper claims a silent-failure *rate*, not *concentration*;
+its protocol claim (evaluate auditors on the selected population) is now
+backed by a measured 0.2 gap; the reviewer's "weak selector" objection is
+now a stated fact. End state unchanged: null survives. Next decision is the
+mentor's: submit (workshop / TMLR) or run the selector axis (Tier 2).
+
+---
+
+## Next entry (pending): mentor decision — submit v0.4 or Tier 2 selector axis

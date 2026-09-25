@@ -12,14 +12,16 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: complete through the 41-repository replication (2026-09-25); draft v0.3.**
+> **Status: draft v0.4 after skeptical review and the unselected-candidate control (2026-09-25).**
 > SWE-bench Verified pilot (41 instances, 12 positives) plus a pre-registered
 > replication on SWE-bench Multilingual (114 instances, 41 repos, 35 positives),
 > seven reward-model critics at 4k/8k/16k and windowed, three LLM judges,
 > test–retest, official executed gold throughout. **H1 not supported and the
 > null replicates:** panel disagreement 0.565 [0.43, 0.71] vs the critic's own
 > 0.560; the Verified windowed positive (0.686) fell to 0.541 [0.40, 0.68];
-> the lines-added baseline fell to 0.508. Paper:
+> the lines-added baseline fell to 0.508; best-of-4 by a 4B reward model did
+> not concentrate failure (control), but selection removed the selector's own
+> signal (0.81 → 0.61 on Verified). Paper:
 > [`paper/main.pdf`](paper/main.pdf). See [`UPDATES.md`](UPDATES.md).
 
 ## Layout
