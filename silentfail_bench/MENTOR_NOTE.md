@@ -888,3 +888,18 @@ rather than left to §4.4. The paper no longer implies nothing ever crossed a
 bar; one thing did, on twelve positives, and it did not replicate.
 
 Amendment 5 (selector axis) remains declared and not run, by decision.
+
+**§19 addendum (2026-09-25).** A further read caught an overclaim of mine in
+§4.6: I wrote that +0.12 was the loosest bound "across all four estimators
+and both benchmarks". It is not. It is the loosest *pooled* bound among the
+three estimators that use every row; on Verified alone the fixed-weight
+interval reaches +0.25. Corrected in body, limitations and contributions.
+
+The same read asked for an interval on the within-fold estimator, which it
+did not have. Computing it showed that estimator is the weakest of the four:
+a held-out repository is usually all-pass or all-fail, so no AUROC is
+defined and the fold is dropped — **3 of 9 folds on Verified (22/34 rows),
+15 of 46 pooled (53/111 rows)** — and its pooled interval is [−0.31, +0.28],
+[−1.00, +0.40] on Verified. It is now reported with its coverage and
+explicitly not leaned on; the abstract enumerates only the three
+full-coverage estimators. Version label bumped to v0.6 (it had said v0.5).

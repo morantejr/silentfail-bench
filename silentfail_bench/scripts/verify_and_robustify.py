@@ -94,3 +94,34 @@ popV = [r for r in V if not r["excluded"] and r["visible_pass"]]; popM = [r for 
 rep = {"leak_verification": [verify(V, "verified"), verify(M, "multilingual")],
        "endpoint_robustness": [endpoint(popV, "verified"), endpoint(popM, "multilingual"), endpoint(popV + popM, "pooled")]}
 (ROOT / "data/verify_and_robustify.json").write_text(json.dumps(rep, indent=1)); print(json.dumps(rep, indent=1))
+
+# ---------- addendum (review request): interval and fold count for the within-fold estimator ----------
+def fold_avg_with_ci(pop, label, n_boot=2000, seed=13):
+    y = np.array([1 if r["g"] == 0 else 0 for r in pop]); grp = np.array([r["_grp"] for r in pop])
+    c = np.array([r["c"] for r in pop], float); u = np.array([r["u"] for r in pop], float)
+    Xc, Xcu = c[:, None], np.column_stack([c, u])
+    def stat(idx):
+        yy, gg, xc, xcu = y[idx], grp[idx], Xc[idx], Xcu[idx]
+        num = den = 0.0; used = 0
+        for g in np.unique(gg):
+            te = gg == g; tr = ~te
+            if yy[tr].sum() < 2 or (1 - yy[tr]).sum() < 2 or not (0 < yy[te].sum() < te.sum()): continue
+            pc, pcu = oof(xc, yy, gg, [te]), oof(xcu, yy, gg, [te])
+            if np.isnan(pc[te]).any() or np.isnan(pcu[te]).any(): continue
+            w = te.sum(); num += w * (auroc_fast(yy[te], pcu[te]) - auroc_fast(yy[te], pc[te])); den += w; used += 1
+        return (num / den if den else np.nan), used, den
+    point, used, covered = stat(np.arange(len(y)))
+    uniq = np.unique(grp); idx_by = {g: np.flatnonzero(grp == g) for g in uniq}; rng = np.random.default_rng(seed); vals = []
+    for _ in range(n_boot):
+        drawn = rng.choice(uniq, size=len(uniq), replace=True)
+        idx = np.concatenate([idx_by[g] for g in drawn])
+        v, _, _ = stat(idx)
+        if v == v: vals.append(v)
+    return {"label": label, "delta": round(float(point), 3), "CI95": [round(float(np.percentile(vals, 2.5)), 3), round(float(np.percentile(vals, 97.5)), 3)] if vals else None,
+            "folds_contributing": used, "n_repos_total": int(len(uniq)), "rows_covered": int(covered), "rows_total": len(y)}
+
+if __name__ == "__main__":
+    add = [fold_avg_with_ci(popV, "verified"), fold_avg_with_ci(popM, "multilingual"), fold_avg_with_ci(popV + popM, "pooled")]
+    rep["fold_averaged_with_ci"] = add
+    (ROOT / "data/verify_and_robustify.json").write_text(json.dumps(rep, indent=1))
+    print(json.dumps(add, indent=1))

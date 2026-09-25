@@ -127,5 +127,43 @@
    },
    "fold_averaged_delta_LORO": -0.119
   }
+ ],
+ "fold_averaged_with_ci": [
+  {
+   "label": "verified",
+   "delta": -0.152,
+   "CI95": [
+    -1.0,
+    0.4
+   ],
+   "folds_contributing": 3,
+   "n_repos_total": 9,
+   "rows_covered": 22,
+   "rows_total": 34
+  },
+  {
+   "label": "multilingual",
+   "delta": -0.145,
+   "CI95": [
+    -0.375,
+    0.421
+   ],
+   "folds_contributing": 12,
+   "n_repos_total": 37,
+   "rows_covered": 31,
+   "rows_total": 77
+  },
+  {
+   "label": "pooled",
+   "delta": -0.119,
+   "CI95": [
+    -0.308,
+    0.275
+   ],
+   "folds_contributing": 15,
+   "n_repos_total": 46,
+   "rows_covered": 53,
+   "rows_total": 111
+  }
  ]
 }
