@@ -18,3 +18,4 @@ data/*/*
 !data/*/gold_errors.json
 !data/*.json
 !data/*/rescoring_bundle.jsonl
+silentfail_l4_package*
