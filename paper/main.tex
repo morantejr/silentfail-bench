@@ -3,6 +3,7 @@
 \usepackage[margin=0.9in]{geometry}
 \usepackage{amsmath,amssymb,booktabs,enumitem,tabularx,array,graphicx,xcolor}
 \usepackage[numbers,sort&compress]{natbib}
+\usepackage{placeins}
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,allcolors=teal!50!black}
 \setlength{\parskip}{0.35em}\setlength{\parindent}{0pt}
@@ -188,6 +189,7 @@ The failure is therefore in the statistic, not the critics. A panel's disagreeme
 
 This explains the earlier false positive too. On HumanEval+ with an LLM-as-judge critic, we briefly observed $u=0.69$ and a ``Goodhart signature'' of the critic below chance. Both were artifacts of a critic with three output values on three positives; with a real reward model selecting, both vanished. We withdrew the claim in the record before running the SWE-bench pilot, as we withdraw the instability claim here.
 
+\FloatBarrier
 \section{Limitations and declared deviations}\label{sec:limits}
 \begin{itemize}[leftmargin=1.2em,itemsep=1pt]
 \item \textbf{One agent, one selector family.} gpt-5-mini at 40 steps; a 4B chat reward model selects, so the selected population is that of a weak selector. Failure structure may differ for stronger agents or deployed-grade verifiers.
@@ -202,6 +204,7 @@ This explains the earlier false positive too. On HumanEval+ with an LLM-as-judge
 \item \textbf{Declared deviations.} 41 instances, not 50 (generation stalled on host disk; the missing nine were set by list order). Amendment 4a's registered difficulty control was a near-oracle (0.95) and was replaced by a labelled structure-only base. The replication's \$15 generation cap was exceeded (\$18.30; the account's rate limit killed 138 partial trajectories) because stopping at 420/456 would have dropped the harder instances first. 26\% of replication candidates submitted no patch; 7 committed patches were ungradable and excluded.
 \end{itemize}
 
+\FloatBarrier
 \section{Related work}
 \paragraph{Best-of-$n$, Goodhart and the winner's curse.} Selecting the argmax of a learned proxy over-optimizes it~\citep{gao2023scaling,beirami2024theoretical}; at inference time the effect appears as reward hacking that grows with $n$~\citep{khalaf2025inference,stroebl2024inference,brown2024monkeys} and can be mitigated by pessimism~\citep{yu2026caution}. The statistical form is the optimizer's curse~\citep{smith2006optimizer}; selecting on a noisy score and then studying the selected set is selection bias in the structural sense~\citep{hernan2004structural}. Two recent notes make the evaluation consequence explicit: success counted before an answer is chosen is not deployed success~\citep{emadi2026scaling}, and best-of-$n$ degrades calibration even under a perfect ranker~\citep{trilemma2026}. Our estimand is this consequence for auditors.
 
