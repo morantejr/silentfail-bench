@@ -410,3 +410,45 @@ that figure. Stopping at 420 would drop the harder, longer instances first
 and bias the failure rate, so the remaining 36 were generated (≈$1.30) and
 the cap is recorded as ≈$18. Instances that still lack a candidate after
 that pass are excluded before any scoring, by name, in the readout.
+
+---
+
+# Amendment 4f — unselected-candidate control — 2026-09-25, before any random candidate is graded
+
+**Motivation.** The paper reports the silent-failure rate among *committed*
+trajectories but has no unselected comparison, so it cannot say whether
+selection concentrated failure or merely occurred. This control grades one
+candidate per instance that the selector did **not** commit.
+
+**Design.** For every instance in both benchmarks (41 Verified, 114
+Multilingual), draw one non-committed candidate with a non-empty patch,
+uniformly, seed 20260925. Grade it with the same harness path as the
+committed one (Modal runner; oracle pairs already passed on both datasets).
+Instances with no eligible candidate are reported as such, not replaced.
+
+**Quantities, both arms paired by instance.**
+- Failure rate among random-arm rows vs committed-arm rows (paired
+  difference, repo-clustered bootstrap CI).
+- `AUROC(-c)` and `AUROC(u)` on the random arm, computed with the same
+  critic scores used for the committed arm: Multilingual — prefix-4k scores
+  (all 456 candidates were scored); Verified — the selector's own
+  candidate scores for `c` (all 164 were scored in the primary run) and the
+  16k L4 panel for `u` (the only panel run that scored every candidate);
+  the Verified committed-arm comparison therefore uses the 16k panel value
+  (0.439), and this is declared.
+
+**Predictions (bars fixed now).**
+- **F-P1 (selection concentrates failure):** committed-arm failure rate
+  exceeds the random-arm rate; CI on the paired difference excludes zero.
+- **F-P2 (selection changes what the critic can see):** `AUROC(-c)` on the
+  random arm exceeds `AUROC(-c)` on the committed arm by > 0.10 — the
+  selector separates failures better among candidates it did not pick.
+- **F-P3:** `AUROC(u)` on the random arm is reported; no prediction. If it
+  exceeds 0.665 while the committed arm does not, that is the range-
+  restriction reading of the null and is stated as such.
+
+**Readings.** F-P1 passes → "selection concentrates silent failures" may be
+claimed. Fails → the paper says "a third to a half of committed trajectories
+are silent failures" and nothing about concentration. F-P2 passes →
+selection-conditional evaluation is shown to matter, which is the paper's
+protocol claim, measured. Cost ≈ $10 Modal.
