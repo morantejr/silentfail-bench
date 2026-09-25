@@ -1,0 +1,66 @@
+{
+ "analysis": "Amendment 4e replication readout (pre-registered)",
+ "n_rows": 114,
+ "population_n": 77,
+ "silent_failures": 35,
+ "silent_failure_rate": 0.455,
+ "n_repos": 37,
+ "inference_floor_met": true,
+ "primary_prefix_u": {
+  "M1_AUROC_u": 0.565,
+  "CI95_repo_clustered": [
+   0.429,
+   0.71
+  ],
+  "M2_AUROC_negc": 0.56,
+  "M3_delta": 0.005,
+  "M3_CI95": [
+   -0.188,
+   0.217
+  ],
+  "p_perm_within_repo": 0.8508
+ },
+ "R_P1_null_replicates": true,
+ "ruler_lines_added": {
+  "AUROC": 0.508,
+  "CI95_repo_clustered": [
+   0.352,
+   0.647
+  ]
+ },
+ "windowed_u_max": {
+  "AUROC": 0.541,
+  "CI95_repo_clustered": [
+   0.397,
+   0.68
+  ],
+  "p_perm_within_repo": 0.5336,
+  "p_perm_free": 0.2712,
+  "rows_scored": 77,
+  "vs_lines_added_delta": 0.033,
+  "vs_lines_added_CI95": [
+   -0.154,
+   0.225
+  ]
+ },
+ "R_P2_u_max_confirmed": false,
+ "R_P3_u_max_beats_ruler": true,
+ "single_critics_prefix4k": {
+  "ray2333_grm_gemma2_2b_rewardmodel_ft": 0.576,
+  "ray2333_grm_llama3_2_3b_rewardmodel_ft": 0.547,
+  "skywork_skywork_reward_v2_llama_3_1_8b": 0.503,
+  "skywork_skywork_reward_v2_llama_3_2_1b": 0.557,
+  "skywork_skywork_reward_v2_qwen3_1_7b": 0.531,
+  "skywork_skywork_reward_v2_qwen3_4b": 0.56,
+  "tiger_lab_acecoderm_7b": 0.465
+ },
+ "single_critics_full16k": {
+  "ray2333_grm_gemma2_2b_rewardmodel_ft": 0.493,
+  "ray2333_grm_llama3_2_3b_rewardmodel_ft": 0.513,
+  "skywork_skywork_reward_v2_llama_3_1_8b": 0.52,
+  "skywork_skywork_reward_v2_llama_3_2_1b": 0.485,
+  "skywork_skywork_reward_v2_qwen3_1_7b": 0.577,
+  "skywork_skywork_reward_v2_qwen3_4b": 0.555,
+  "tiger_lab_acecoderm_7b": 0.356
+ }
+}
