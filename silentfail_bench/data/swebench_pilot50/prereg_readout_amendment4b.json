@@ -1,0 +1,98 @@
+{
+ "analysis": "Amendment 4b (pre-registered): Spearman r under content-preserving perturbations",
+ "critics": {
+  "ray2333_grm_gemma2_2b_rewardmodel_ft": {
+   "n_windows": 73,
+   "r_fmt": 0.983,
+   "r_shift": 0.921,
+   "r_adj": 0.516,
+   "n_adj_pairs": 39,
+   "r_far": 0.311,
+   "n_far_pairs": 28,
+   "device": "cuda",
+   "reading": "stable to surface form -> low cross-window r reflects content"
+  },
+  "ray2333_grm_llama3_2_3b_rewardmodel_ft": {
+   "n_windows": 65,
+   "r_fmt": 0.984,
+   "r_shift": 0.913,
+   "r_adj": 0.517,
+   "n_adj_pairs": 31,
+   "r_far": 0.254,
+   "n_far_pairs": 24,
+   "device": "cuda",
+   "reading": "stable to surface form -> low cross-window r reflects content"
+  },
+  "skywork_skywork_reward_v2_llama_3_1_8b": {
+   "n_windows": 65,
+   "r_fmt": 0.988,
+   "r_shift": 0.864,
+   "r_adj": 0.289,
+   "n_adj_pairs": 31,
+   "r_far": 0.21,
+   "n_far_pairs": 24,
+   "device": "cuda",
+   "reading": "stable to surface form -> low cross-window r reflects content"
+  },
+  "skywork_skywork_reward_v2_llama_3_2_1b": {
+   "n_windows": 65,
+   "r_fmt": 0.988,
+   "r_shift": 0.939,
+   "r_adj": 0.562,
+   "n_adj_pairs": 31,
+   "r_far": 0.376,
+   "n_far_pairs": 24,
+   "device": "cuda",
+   "reading": "stable to surface form -> low cross-window r reflects content"
+  },
+  "skywork_skywork_reward_v2_qwen3_1_7b": {
+   "n_windows": 68,
+   "r_fmt": 0.992,
+   "r_shift": 0.912,
+   "r_adj": 0.206,
+   "n_adj_pairs": 34,
+   "r_far": 0.296,
+   "n_far_pairs": 27,
+   "device": "cuda",
+   "reading": "stable to surface form -> low cross-window r reflects content"
+  },
+  "skywork_skywork_reward_v2_qwen3_4b": {
+   "n_windows": 68,
+   "r_fmt": 0.989,
+   "r_shift": 0.931,
+   "r_adj": 0.443,
+   "n_adj_pairs": 34,
+   "r_far": 0.473,
+   "n_far_pairs": 27,
+   "device": "cuda",
+   "reading": "stable to surface form -> low cross-window r reflects content"
+  },
+  "tiger_lab_acecoderm_7b": {
+   "n_windows": 68,
+   "r_fmt": 0.992,
+   "r_shift": 0.953,
+   "r_adj": 0.196,
+   "n_adj_pairs": 34,
+   "r_far": -0.393,
+   "n_far_pairs": 27,
+   "device": "cuda",
+   "reading": "stable to surface form -> low cross-window r reflects content"
+  }
+ },
+ "panel_u": {
+  "n_windows": 65,
+  "r_fmt": 0.912,
+  "r_shift": 0.733,
+  "r_adj": 0.424,
+  "n_adj_pairs": 31,
+  "r_far": 0.43,
+  "n_far_pairs": 24,
+  "members": [
+   "ray2333_grm_gemma2_2b_rewardmodel_ft",
+   "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+   "skywork_skywork_reward_v2_llama_3_2_1b",
+   "skywork_skywork_reward_v2_qwen3_1_7b"
+  ],
+  "reading": "stable to surface form -> low cross-window r reflects content"
+ }
+}

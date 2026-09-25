@@ -1,0 +1,96 @@
+{
+ "analysis": "Amendment 4d partial: 4k (Kaggle) vs 16k (L4) per critic, paired, repo-clustered; 8k pending L4 stage 5",
+ "critics": {
+  "ray2333_grm_gemma2_2b_rewardmodel_ft": {
+   "AUROC_4k": 0.473,
+   "AUROC_16k": 0.441,
+   "delta_16k_minus_4k": -0.032,
+   "CI95": [
+    -0.244,
+    0.246
+   ],
+   "p_perm_16k_vs_chance": 0.7221,
+   "corr_c4k_c16k_pearson": 0.517,
+   "rows_at_16k": 34,
+   "rows_at_4k_fallback": 0
+  },
+  "ray2333_grm_llama3_2_3b_rewardmodel_ft": {
+   "AUROC_4k": 0.451,
+   "AUROC_16k": 0.489,
+   "delta_16k_minus_4k": 0.038,
+   "CI95": [
+    -0.1,
+    0.226
+   ],
+   "p_perm_16k_vs_chance": 0.5584,
+   "corr_c4k_c16k_pearson": 0.295,
+   "rows_at_16k": 34,
+   "rows_at_4k_fallback": 0
+  },
+  "skywork_skywork_reward_v2_llama_3_1_8b": {
+   "AUROC_4k": 0.534,
+   "AUROC_16k": 0.591,
+   "delta_16k_minus_4k": 0.057,
+   "CI95": [
+    -0.078,
+    0.235
+   ],
+   "p_perm_16k_vs_chance": 0.2029,
+   "corr_c4k_c16k_pearson": 0.567,
+   "rows_at_16k": 34,
+   "rows_at_4k_fallback": 0
+  },
+  "skywork_skywork_reward_v2_llama_3_2_1b": {
+   "AUROC_4k": 0.636,
+   "AUROC_16k": 0.712,
+   "delta_16k_minus_4k": 0.076,
+   "CI95": [
+    -0.063,
+    0.192
+   ],
+   "p_perm_16k_vs_chance": 0.02,
+   "corr_c4k_c16k_pearson": 0.419,
+   "rows_at_16k": 34,
+   "rows_at_4k_fallback": 0
+  },
+  "skywork_skywork_reward_v2_qwen3_1_7b": {
+   "AUROC_4k": 0.473,
+   "AUROC_16k": 0.572,
+   "delta_16k_minus_4k": 0.098,
+   "CI95": [
+    0.0,
+    0.375
+   ],
+   "p_perm_16k_vs_chance": 0.2594,
+   "corr_c4k_c16k_pearson": 0.733,
+   "rows_at_16k": 34,
+   "rows_at_4k_fallback": 0
+  },
+  "skywork_skywork_reward_v2_qwen3_4b": {
+   "AUROC_4k": 0.468,
+   "AUROC_16k": 0.587,
+   "delta_16k_minus_4k": 0.119,
+   "CI95": [
+    0.0,
+    0.321
+   ],
+   "p_perm_16k_vs_chance": 0.2212,
+   "corr_c4k_c16k_pearson": 0.714,
+   "rows_at_16k": 34,
+   "rows_at_4k_fallback": 0
+  },
+  "tiger_lab_acecoderm_7b": {
+   "AUROC_4k": 0.405,
+   "AUROC_16k": 0.428,
+   "delta_16k_minus_4k": 0.023,
+   "CI95": [
+    0.0,
+    0.048
+   ],
+   "p_perm_16k_vs_chance": 0.7636,
+   "corr_c4k_c16k_pearson": 0.997,
+   "rows_at_16k": 3,
+   "rows_at_4k_fallback": 31
+  }
+ }
+}

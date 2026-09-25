@@ -8,7 +8,8 @@ The API key is read from mini-swe-agent's global .env in-process and never print
 """
 from __future__ import annotations
 
-import argparse, json, os, re, sys, time
+import argparse, json, os, re, sys, threading, time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
@@ -64,32 +65,34 @@ def run(a) -> None:
     if a.limit: committed = committed[: a.limit]
     a.cache.parent.mkdir(parents=True, exist_ok=True)
     done = {(d["judge"], d["cond"], d["instance_id"]) for d in map(json.loads, a.cache.read_text().splitlines())} if a.cache.exists() else set()
-    spent = 0.0
-    for cond in ("J1", "J2"):
-        for judge in JUDGES:
-            for c in committed:
-                key = (judge, cond, c["instance_id"])
-                if key in done: continue
-                if spent > COST_CAP: sys.exit(f"cost cap ${COST_CAP} reached (est ${spent:.2f})")
-                msgs = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt(c, cond)}]
-                rec = {"judge": judge, "cond": cond, "instance_id": c["instance_id"], "candidate": c["candidate"]}
-                for attempt in range(3):
-                    try:
-                        kw = dict(model=judge, messages=msgs)
-                        if attempt == 0: kw["response_format"] = {"type": "json_object"}
-                        r = client.chat.completions.create(**kw)
-                        txt = r.choices[0].message.content or ""
-                        p, reason = parse(txt)
-                        u = r.usage; cost = (u.prompt_tokens * PRICE[judge][0] + u.completion_tokens * PRICE[judge][1]) / 1e6
-                        spent += cost
-                        rec.update({"p_resolved": p, "reason": reason, "prompt_tokens": u.prompt_tokens, "completion_tokens": u.completion_tokens,
-                                    "model_returned": r.model, "est_cost_usd": round(cost, 5), "attempt": attempt})
-                        if p is not None or attempt == 2: break
-                    except Exception as e:
-                        rec.update({"p_resolved": None, "error": f"{type(e).__name__}: {str(e)[:200]}"}); time.sleep(3 * (attempt + 1))
-                with a.cache.open("a") as f: f.write(json.dumps(rec) + "\n")
-                done.add(key)
-                print(f"  {cond} {judge:11s} {c['instance_id']:40s} p={rec.get('p_resolved')} (${spent:.2f} so far)", flush=True)
+    spent = 0.0; lock = threading.Lock()
+    jobs = [(cond, judge, c) for cond in ("J1", "J2") for judge in JUDGES for c in committed if (judge, cond, c["instance_id"]) not in done]
+    print(f"[run] {len(jobs)} calls to make ({len(done)} cached), workers={a.workers}", flush=True)
+    def one(job):
+        nonlocal spent
+        cond, judge, c = job
+        with lock:
+            if spent > COST_CAP: return
+        msgs = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt(c, cond)}]
+        rec = {"judge": judge, "cond": cond, "instance_id": c["instance_id"], "candidate": c["candidate"]}
+        for attempt in range(3):
+            try:
+                kw = dict(model=judge, messages=msgs)
+                if attempt == 0: kw["response_format"] = {"type": "json_object"}
+                r = client.chat.completions.create(**kw)
+                txt = r.choices[0].message.content or ""
+                p, reason = parse(txt)
+                u = r.usage; cost = (u.prompt_tokens * PRICE[judge][0] + u.completion_tokens * PRICE[judge][1]) / 1e6
+                rec.update({"p_resolved": p, "reason": reason, "prompt_tokens": u.prompt_tokens, "completion_tokens": u.completion_tokens,
+                            "model_returned": r.model, "est_cost_usd": round(cost, 5), "attempt": attempt})
+                with lock: spent += cost
+                if p is not None or attempt == 2: break
+            except Exception as e:
+                rec.update({"p_resolved": None, "error": f"{type(e).__name__}: {str(e)[:200]}"}); time.sleep(3 * (attempt + 1))
+        with lock:
+            with a.cache.open("a") as f: f.write(json.dumps(rec) + "\n")
+            print(f"  {cond} {judge:11s} {c['instance_id']:40s} p={rec.get('p_resolved')} (${spent:.2f} so far)", flush=True)
+    with ThreadPoolExecutor(max_workers=a.workers) as ex: list(ex.map(one, jobs))
     print(f"[done] est spend ${spent:.2f}", flush=True)
 
 
@@ -139,7 +142,7 @@ def main() -> None:
     ap.add_argument("--rows", type=Path, default=ROOT / "data/swebench_pilot50/pilot_free_scored.jsonl")
     ap.add_argument("--cache", type=Path, default=ROOT / "data/swebench_pilot50/llm_judges/judgments.jsonl")
     ap.add_argument("--out", type=Path, default=ROOT / "data/swebench_pilot50/prereg_readout_amendment4c.json")
-    ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--limit", type=int, default=None); ap.add_argument("--workers", type=int, default=8)
     a = ap.parse_args(); (run if a.cmd == "run" else readout)(a)
 
 

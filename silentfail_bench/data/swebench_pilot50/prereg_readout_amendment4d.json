@@ -1,0 +1,138 @@
+{
+ "analysis": "Amendment 4d: length ladder 4k (Kaggle T4 fallback) / 8k (L4) / 16k (L4), same 34 rows, paired to 4k, repo-clustered",
+ "critics": {
+  "ray2333_grm_gemma2_2b_rewardmodel_ft": {
+   "AUROC_4k": 0.473,
+   "rows_at_declared_4k": null,
+   "AUROC_8k": 0.561,
+   "rows_at_declared_8k": 34,
+   "delta_8k_minus_4k": [
+    0.087,
+    -0.038,
+    0.148
+   ],
+   "AUROC_16k": 0.441,
+   "rows_at_declared_16k": 34,
+   "delta_16k_minus_4k": [
+    -0.032,
+    -0.244,
+    0.246
+   ],
+   "corr_c8k_c16k": 0.387
+  },
+  "ray2333_grm_llama3_2_3b_rewardmodel_ft": {
+   "AUROC_4k": 0.451,
+   "rows_at_declared_4k": null,
+   "AUROC_8k": 0.527,
+   "rows_at_declared_8k": 34,
+   "delta_8k_minus_4k": [
+    0.076,
+    -0.107,
+    0.193
+   ],
+   "AUROC_16k": 0.489,
+   "rows_at_declared_16k": 34,
+   "delta_16k_minus_4k": [
+    0.038,
+    -0.1,
+    0.226
+   ],
+   "corr_c8k_c16k": 0.139
+  },
+  "skywork_skywork_reward_v2_llama_3_1_8b": {
+   "AUROC_4k": 0.534,
+   "rows_at_declared_4k": null,
+   "AUROC_8k": 0.561,
+   "rows_at_declared_8k": 34,
+   "delta_8k_minus_4k": [
+    0.027,
+    -0.052,
+    0.125
+   ],
+   "AUROC_16k": 0.591,
+   "rows_at_declared_16k": 34,
+   "delta_16k_minus_4k": [
+    0.057,
+    -0.078,
+    0.235
+   ],
+   "corr_c8k_c16k": 0.704
+  },
+  "skywork_skywork_reward_v2_llama_3_2_1b": {
+   "AUROC_4k": 0.636,
+   "rows_at_declared_4k": null,
+   "AUROC_8k": 0.648,
+   "rows_at_declared_8k": 34,
+   "delta_8k_minus_4k": [
+    0.011,
+    -0.143,
+    0.143
+   ],
+   "AUROC_16k": 0.712,
+   "rows_at_declared_16k": 34,
+   "delta_16k_minus_4k": [
+    0.076,
+    -0.063,
+    0.192
+   ],
+   "corr_c8k_c16k": 0.344
+  },
+  "skywork_skywork_reward_v2_qwen3_1_7b": {
+   "AUROC_4k": 0.473,
+   "rows_at_declared_4k": null,
+   "AUROC_8k": 0.451,
+   "rows_at_declared_8k": 34,
+   "delta_8k_minus_4k": [
+    -0.023,
+    -0.15,
+    0.0
+   ],
+   "AUROC_16k": 0.572,
+   "rows_at_declared_16k": 34,
+   "delta_16k_minus_4k": [
+    0.098,
+    0.0,
+    0.375
+   ],
+   "corr_c8k_c16k": 0.688
+  },
+  "skywork_skywork_reward_v2_qwen3_4b": {
+   "AUROC_4k": 0.468,
+   "rows_at_declared_4k": null,
+   "AUROC_8k": 0.466,
+   "rows_at_declared_8k": 34,
+   "delta_8k_minus_4k": [
+    -0.002,
+    -0.052,
+    0.044
+   ],
+   "AUROC_16k": 0.587,
+   "rows_at_declared_16k": 34,
+   "delta_16k_minus_4k": [
+    0.119,
+    0.0,
+    0.321
+   ],
+   "corr_c8k_c16k": 0.736
+  },
+  "tiger_lab_acecoderm_7b": {
+   "AUROC_4k": 0.405,
+   "rows_at_declared_4k": null,
+   "AUROC_8k": 0.428,
+   "rows_at_declared_8k": 3,
+   "delta_8k_minus_4k": [
+    0.023,
+    0.0,
+    0.048
+   ],
+   "AUROC_16k": 0.428,
+   "rows_at_declared_16k": 3,
+   "delta_16k_minus_4k": [
+    0.023,
+    0.0,
+    0.048
+   ],
+   "corr_c8k_c16k": 1.0
+  }
+ }
+}

@@ -1,0 +1,995 @@
+{
+ "critic": "Skywork/Skywork-Reward-V2-Llama-3.1-8B",
+ "kind": "seqcls",
+ "max_tokens": 8000,
+ "head": 4000,
+ "tail": 12000,
+ "load_8bit": false,
+ "elapsed_s": 509,
+ "scores": {
+  "astropy__astropy-14539#0": {
+   "score": 13.5390625,
+   "truncated": true,
+   "n_tokens": 8456,
+   "max_tokens_used": 8000
+  },
+  "astropy__astropy-14539#1": {
+   "score": 11.1953125,
+   "truncated": true,
+   "n_tokens": 8455,
+   "max_tokens_used": 8000
+  },
+  "astropy__astropy-14539#2": {
+   "score": 15.2265625,
+   "truncated": true,
+   "n_tokens": 8455,
+   "max_tokens_used": 8000
+  },
+  "astropy__astropy-14539#3": {
+   "score": 11.0390625,
+   "truncated": true,
+   "n_tokens": 8455,
+   "max_tokens_used": 8000
+  },
+  "astropy__astropy-14598#0": {
+   "score": -0.11065673828125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "astropy__astropy-14598#1": {
+   "score": 3.0078125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "astropy__astropy-14598#2": {
+   "score": 1.7314453125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "astropy__astropy-14598#3": {
+   "score": -0.225341796875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-10914#0": {
+   "score": 5.43359375,
+   "truncated": true,
+   "n_tokens": 8229,
+   "max_tokens_used": 8000
+  },
+  "django__django-10914#1": {
+   "score": 8.2734375,
+   "truncated": true,
+   "n_tokens": 8229,
+   "max_tokens_used": 8000
+  },
+  "django__django-10914#2": {
+   "score": 13.4375,
+   "truncated": true,
+   "n_tokens": 8229,
+   "max_tokens_used": 8000
+  },
+  "django__django-10914#3": {
+   "score": 10.171875,
+   "truncated": true,
+   "n_tokens": 8230,
+   "max_tokens_used": 8000
+  },
+  "django__django-11206#0": {
+   "score": 13.609375,
+   "truncated": false,
+   "n_tokens": 4281,
+   "max_tokens_used": 8000
+  },
+  "django__django-11206#1": {
+   "score": 11.53125,
+   "truncated": false,
+   "n_tokens": 4206,
+   "max_tokens_used": 8000
+  },
+  "django__django-11206#2": {
+   "score": 11.2265625,
+   "truncated": false,
+   "n_tokens": 6758,
+   "max_tokens_used": 8000
+  },
+  "django__django-11206#3": {
+   "score": 10.2890625,
+   "truncated": false,
+   "n_tokens": 5311,
+   "max_tokens_used": 8000
+  },
+  "django__django-11265#0": {
+   "score": 3.1875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-11265#1": {
+   "score": -0.5673828125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-11265#2": {
+   "score": -1.931640625,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-11265#3": {
+   "score": 2.076171875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-12406#0": {
+   "score": 4.83203125,
+   "truncated": true,
+   "n_tokens": 8285,
+   "max_tokens_used": 8000
+  },
+  "django__django-12406#1": {
+   "score": 8.9296875,
+   "truncated": true,
+   "n_tokens": 8284,
+   "max_tokens_used": 8000
+  },
+  "django__django-12406#2": {
+   "score": -4.9765625,
+   "truncated": true,
+   "n_tokens": 8284,
+   "max_tokens_used": 8000
+  },
+  "django__django-12406#3": {
+   "score": 9.28125,
+   "truncated": true,
+   "n_tokens": 8283,
+   "max_tokens_used": 8000
+  },
+  "django__django-12754#0": {
+   "score": 16.1875,
+   "truncated": true,
+   "n_tokens": 8204,
+   "max_tokens_used": 8000
+  },
+  "django__django-12754#1": {
+   "score": 10.390625,
+   "truncated": true,
+   "n_tokens": 8204,
+   "max_tokens_used": 8000
+  },
+  "django__django-12754#2": {
+   "score": 8.9609375,
+   "truncated": true,
+   "n_tokens": 8204,
+   "max_tokens_used": 8000
+  },
+  "django__django-12754#3": {
+   "score": 4.40234375,
+   "truncated": true,
+   "n_tokens": 8204,
+   "max_tokens_used": 8000
+  },
+  "django__django-13028#0": {
+   "score": 10.28125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-13028#1": {
+   "score": 4.57421875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-13028#2": {
+   "score": 4.9609375,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-13028#3": {
+   "score": -4.15625,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-13417#0": {
+   "score": 3.828125,
+   "truncated": true,
+   "n_tokens": 8270,
+   "max_tokens_used": 8000
+  },
+  "django__django-13417#1": {
+   "score": -2.33203125,
+   "truncated": true,
+   "n_tokens": 8270,
+   "max_tokens_used": 8000
+  },
+  "django__django-13417#2": {
+   "score": 0.8212890625,
+   "truncated": true,
+   "n_tokens": 8270,
+   "max_tokens_used": 8000
+  },
+  "django__django-13417#3": {
+   "score": 11.484375,
+   "truncated": true,
+   "n_tokens": 8270,
+   "max_tokens_used": 8000
+  },
+  "django__django-13513#0": {
+   "score": 8.6015625,
+   "truncated": true,
+   "n_tokens": 8308,
+   "max_tokens_used": 8000
+  },
+  "django__django-13513#1": {
+   "score": 0.341552734375,
+   "truncated": true,
+   "n_tokens": 8309,
+   "max_tokens_used": 8000
+  },
+  "django__django-13513#2": {
+   "score": 6.33984375,
+   "truncated": true,
+   "n_tokens": 8308,
+   "max_tokens_used": 8000
+  },
+  "django__django-13513#3": {
+   "score": 10.046875,
+   "truncated": true,
+   "n_tokens": 8308,
+   "max_tokens_used": 8000
+  },
+  "django__django-13590#0": {
+   "score": 10.96875,
+   "truncated": true,
+   "n_tokens": 8213,
+   "max_tokens_used": 8000
+  },
+  "django__django-13590#1": {
+   "score": 12.1953125,
+   "truncated": true,
+   "n_tokens": 8213,
+   "max_tokens_used": 8000
+  },
+  "django__django-13590#2": {
+   "score": 10.0078125,
+   "truncated": true,
+   "n_tokens": 8213,
+   "max_tokens_used": 8000
+  },
+  "django__django-13590#3": {
+   "score": 9.5859375,
+   "truncated": true,
+   "n_tokens": 8213,
+   "max_tokens_used": 8000
+  },
+  "django__django-14017#0": {
+   "score": 6.671875,
+   "truncated": true,
+   "n_tokens": 8374,
+   "max_tokens_used": 8000
+  },
+  "django__django-14017#1": {
+   "score": 8.1953125,
+   "truncated": true,
+   "n_tokens": 8377,
+   "max_tokens_used": 8000
+  },
+  "django__django-14017#2": {
+   "score": 9.9296875,
+   "truncated": true,
+   "n_tokens": 8377,
+   "max_tokens_used": 8000
+  },
+  "django__django-14017#3": {
+   "score": 5.38671875,
+   "truncated": true,
+   "n_tokens": 8377,
+   "max_tokens_used": 8000
+  },
+  "django__django-14034#0": {
+   "score": 14.3125,
+   "truncated": true,
+   "n_tokens": 8330,
+   "max_tokens_used": 8000
+  },
+  "django__django-14034#1": {
+   "score": 10.859375,
+   "truncated": true,
+   "n_tokens": 8330,
+   "max_tokens_used": 8000
+  },
+  "django__django-14034#2": {
+   "score": 11.984375,
+   "truncated": true,
+   "n_tokens": 8330,
+   "max_tokens_used": 8000
+  },
+  "django__django-14034#3": {
+   "score": 7.84765625,
+   "truncated": true,
+   "n_tokens": 8330,
+   "max_tokens_used": 8000
+  },
+  "django__django-14155#0": {
+   "score": 12.703125,
+   "truncated": false,
+   "n_tokens": 6652,
+   "max_tokens_used": 8000
+  },
+  "django__django-14155#1": {
+   "score": 8.109375,
+   "truncated": false,
+   "n_tokens": 5882,
+   "max_tokens_used": 8000
+  },
+  "django__django-14155#2": {
+   "score": 9.6875,
+   "truncated": false,
+   "n_tokens": 7990,
+   "max_tokens_used": 8000
+  },
+  "django__django-14155#3": {
+   "score": 11.3125,
+   "truncated": false,
+   "n_tokens": 6471,
+   "max_tokens_used": 8000
+  },
+  "django__django-15037#0": {
+   "score": 6.75390625,
+   "truncated": true,
+   "n_tokens": 8140,
+   "max_tokens_used": 8000
+  },
+  "django__django-15037#1": {
+   "score": 10.1640625,
+   "truncated": true,
+   "n_tokens": 8141,
+   "max_tokens_used": 8000
+  },
+  "django__django-15037#2": {
+   "score": 7.11328125,
+   "truncated": true,
+   "n_tokens": 8141,
+   "max_tokens_used": 8000
+  },
+  "django__django-15037#3": {
+   "score": 7.64453125,
+   "truncated": true,
+   "n_tokens": 8141,
+   "max_tokens_used": 8000
+  },
+  "django__django-15128#0": {
+   "score": -1.3857421875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-15128#1": {
+   "score": 5.51953125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-15128#2": {
+   "score": 3.208984375,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-15128#3": {
+   "score": -0.0831298828125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "django__django-15278#0": {
+   "score": 5.62890625,
+   "truncated": true,
+   "n_tokens": 8312,
+   "max_tokens_used": 8000
+  },
+  "django__django-15278#1": {
+   "score": 8.40625,
+   "truncated": true,
+   "n_tokens": 8312,
+   "max_tokens_used": 8000
+  },
+  "django__django-15278#2": {
+   "score": 6.4765625,
+   "truncated": true,
+   "n_tokens": 8313,
+   "max_tokens_used": 8000
+  },
+  "django__django-15278#3": {
+   "score": 7.58203125,
+   "truncated": true,
+   "n_tokens": 8313,
+   "max_tokens_used": 8000
+  },
+  "django__django-15569#0": {
+   "score": 10.0703125,
+   "truncated": false,
+   "n_tokens": 6851,
+   "max_tokens_used": 8000
+  },
+  "django__django-15569#1": {
+   "score": 13.78125,
+   "truncated": false,
+   "n_tokens": 7469,
+   "max_tokens_used": 8000
+  },
+  "django__django-15569#2": {
+   "score": 9.5703125,
+   "truncated": false,
+   "n_tokens": 6408,
+   "max_tokens_used": 8000
+  },
+  "django__django-15569#3": {
+   "score": 6.453125,
+   "truncated": true,
+   "n_tokens": 8174,
+   "max_tokens_used": 8000
+  },
+  "django__django-15863#0": {
+   "score": 11.65625,
+   "truncated": true,
+   "n_tokens": 8209,
+   "max_tokens_used": 8000
+  },
+  "django__django-15863#1": {
+   "score": 8.9921875,
+   "truncated": true,
+   "n_tokens": 8209,
+   "max_tokens_used": 8000
+  },
+  "django__django-15863#2": {
+   "score": 10.9765625,
+   "truncated": true,
+   "n_tokens": 8209,
+   "max_tokens_used": 8000
+  },
+  "django__django-15863#3": {
+   "score": 8.8046875,
+   "truncated": true,
+   "n_tokens": 8209,
+   "max_tokens_used": 8000
+  },
+  "django__django-16899#0": {
+   "score": 5.65234375,
+   "truncated": true,
+   "n_tokens": 8190,
+   "max_tokens_used": 8000
+  },
+  "django__django-16899#1": {
+   "score": 8.828125,
+   "truncated": true,
+   "n_tokens": 8190,
+   "max_tokens_used": 8000
+  },
+  "django__django-16899#2": {
+   "score": 4.6640625,
+   "truncated": true,
+   "n_tokens": 8190,
+   "max_tokens_used": 8000
+  },
+  "django__django-16899#3": {
+   "score": 8.328125,
+   "truncated": true,
+   "n_tokens": 8190,
+   "max_tokens_used": 8000
+  },
+  "django__django-16901#0": {
+   "score": -4.58203125,
+   "truncated": true,
+   "n_tokens": 8313,
+   "max_tokens_used": 8000
+  },
+  "django__django-16901#1": {
+   "score": 15.578125,
+   "truncated": true,
+   "n_tokens": 8313,
+   "max_tokens_used": 8000
+  },
+  "django__django-16901#2": {
+   "score": 8.015625,
+   "truncated": true,
+   "n_tokens": 8313,
+   "max_tokens_used": 8000
+  },
+  "django__django-16901#3": {
+   "score": 8.46875,
+   "truncated": true,
+   "n_tokens": 8313,
+   "max_tokens_used": 8000
+  },
+  "django__django-9296#0": {
+   "score": 8.5859375,
+   "truncated": true,
+   "n_tokens": 8112,
+   "max_tokens_used": 8000
+  },
+  "django__django-9296#1": {
+   "score": 12.375,
+   "truncated": true,
+   "n_tokens": 8111,
+   "max_tokens_used": 8000
+  },
+  "django__django-9296#2": {
+   "score": 8.8828125,
+   "truncated": false,
+   "n_tokens": 6399,
+   "max_tokens_used": 8000
+  },
+  "django__django-9296#3": {
+   "score": 11.21875,
+   "truncated": false,
+   "n_tokens": 7459,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-20488#0": {
+   "score": -5.140625,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-20488#1": {
+   "score": -6.8203125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-20488#2": {
+   "score": 3.615234375,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-20488#3": {
+   "score": 2.37109375,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-25960#0": {
+   "score": 1.5732421875,
+   "truncated": true,
+   "n_tokens": 8240,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-25960#1": {
+   "score": 3.77734375,
+   "truncated": true,
+   "n_tokens": 8240,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-25960#2": {
+   "score": 8.4765625,
+   "truncated": true,
+   "n_tokens": 8239,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-25960#3": {
+   "score": 9.625,
+   "truncated": true,
+   "n_tokens": 8239,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-26208#0": {
+   "score": 0.95654296875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-26208#1": {
+   "score": -0.69677734375,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-26208#2": {
+   "score": 0.79296875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "matplotlib__matplotlib-26208#3": {
+   "score": 0.112060546875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "pydata__xarray-6744#0": {
+   "score": 4.1875,
+   "truncated": true,
+   "n_tokens": 8460,
+   "max_tokens_used": 8000
+  },
+  "pydata__xarray-6744#1": {
+   "score": 11.671875,
+   "truncated": true,
+   "n_tokens": 8461,
+   "max_tokens_used": 8000
+  },
+  "pydata__xarray-6744#2": {
+   "score": 11.390625,
+   "truncated": true,
+   "n_tokens": 8461,
+   "max_tokens_used": 8000
+  },
+  "pydata__xarray-6744#3": {
+   "score": 13.515625,
+   "truncated": true,
+   "n_tokens": 8460,
+   "max_tokens_used": 8000
+  },
+  "pylint-dev__pylint-4661#0": {
+   "score": 16.0625,
+   "truncated": true,
+   "n_tokens": 8241,
+   "max_tokens_used": 8000
+  },
+  "pylint-dev__pylint-4661#1": {
+   "score": 17.703125,
+   "truncated": false,
+   "n_tokens": 7504,
+   "max_tokens_used": 8000
+  },
+  "pylint-dev__pylint-4661#2": {
+   "score": 14.828125,
+   "truncated": true,
+   "n_tokens": 8238,
+   "max_tokens_used": 8000
+  },
+  "pylint-dev__pylint-4661#3": {
+   "score": 13.640625,
+   "truncated": true,
+   "n_tokens": 8240,
+   "max_tokens_used": 8000
+  },
+  "pylint-dev__pylint-8898#0": {
+   "score": 1.2900390625,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "pylint-dev__pylint-8898#1": {
+   "score": 1.603515625,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "pylint-dev__pylint-8898#2": {
+   "score": 1.07421875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "pylint-dev__pylint-8898#3": {
+   "score": 0.2880859375,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "pytest-dev__pytest-5840#0": {
+   "score": 7.4140625,
+   "truncated": true,
+   "n_tokens": 8194,
+   "max_tokens_used": 8000
+  },
+  "pytest-dev__pytest-5840#1": {
+   "score": 2.666015625,
+   "truncated": true,
+   "n_tokens": 8195,
+   "max_tokens_used": 8000
+  },
+  "pytest-dev__pytest-5840#2": {
+   "score": 8.9453125,
+   "truncated": true,
+   "n_tokens": 8195,
+   "max_tokens_used": 8000
+  },
+  "pytest-dev__pytest-5840#3": {
+   "score": 8.765625,
+   "truncated": true,
+   "n_tokens": 8195,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-10844#0": {
+   "score": 4.60546875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-10844#1": {
+   "score": 1.6689453125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-10844#2": {
+   "score": 5.28125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-10844#3": {
+   "score": 9.71875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-13328#0": {
+   "score": -1.583984375,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-13328#1": {
+   "score": 1.2529296875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-13328#2": {
+   "score": 7.63671875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-13328#3": {
+   "score": -3.685546875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-26323#0": {
+   "score": 1.646484375,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-26323#1": {
+   "score": 1.298828125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-26323#2": {
+   "score": 3.0546875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "scikit-learn__scikit-learn-26323#3": {
+   "score": 1.0595703125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-10449#0": {
+   "score": 8.046875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-10449#1": {
+   "score": 6.2421875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-10449#2": {
+   "score": 3.228515625,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-10449#3": {
+   "score": -0.484130859375,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-10673#0": {
+   "score": 11.5859375,
+   "truncated": true,
+   "n_tokens": 8360,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-10673#1": {
+   "score": 12.859375,
+   "truncated": true,
+   "n_tokens": 8361,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-10673#2": {
+   "score": -2.158203125,
+   "truncated": true,
+   "n_tokens": 8361,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-10673#3": {
+   "score": 7.015625,
+   "truncated": true,
+   "n_tokens": 8361,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-11445#0": {
+   "score": 13.1484375,
+   "truncated": false,
+   "n_tokens": 6204,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-11445#1": {
+   "score": 2.6328125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-11445#2": {
+   "score": 11.8984375,
+   "truncated": false,
+   "n_tokens": 8318,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-11445#3": {
+   "score": 3.83203125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-8269#0": {
+   "score": 9.203125,
+   "truncated": true,
+   "n_tokens": 8335,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-8269#1": {
+   "score": 10.328125,
+   "truncated": true,
+   "n_tokens": 8336,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-8269#2": {
+   "score": 11.7265625,
+   "truncated": true,
+   "n_tokens": 8336,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-8269#3": {
+   "score": 8.7421875,
+   "truncated": true,
+   "n_tokens": 8335,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-9591#0": {
+   "score": -2.130859375,
+   "truncated": true,
+   "n_tokens": 8489,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-9591#1": {
+   "score": -3.318359375,
+   "truncated": true,
+   "n_tokens": 8487,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-9591#2": {
+   "score": 10.03125,
+   "truncated": true,
+   "n_tokens": 8487,
+   "max_tokens_used": 8000
+  },
+  "sphinx-doc__sphinx-9591#3": {
+   "score": 0.615234375,
+   "truncated": true,
+   "n_tokens": 8489,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-13091#0": {
+   "score": 7.09375,
+   "truncated": true,
+   "n_tokens": 8450,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-13091#1": {
+   "score": 2.109375,
+   "truncated": true,
+   "n_tokens": 8450,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-13091#2": {
+   "score": -3.501953125,
+   "truncated": true,
+   "n_tokens": 8450,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-13091#3": {
+   "score": 10.2578125,
+   "truncated": true,
+   "n_tokens": 8451,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-16886#0": {
+   "score": 8.28125,
+   "truncated": false,
+   "n_tokens": 3899,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-16886#1": {
+   "score": 3.208984375,
+   "truncated": false,
+   "n_tokens": 5911,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-16886#2": {
+   "score": 4.03125,
+   "truncated": true,
+   "n_tokens": 8068,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-16886#3": {
+   "score": 8.515625,
+   "truncated": false,
+   "n_tokens": 5364,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-17318#0": {
+   "score": -0.380126953125,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-17318#1": {
+   "score": -2.904296875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-17318#2": {
+   "score": 2.216796875,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-17318#3": {
+   "score": 0.174072265625,
+   "truncated": true,
+   "n_tokens": 8512,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-24539#0": {
+   "score": 8.8125,
+   "truncated": true,
+   "n_tokens": 8243,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-24539#1": {
+   "score": 12.40625,
+   "truncated": true,
+   "n_tokens": 8244,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-24539#2": {
+   "score": 8.0078125,
+   "truncated": true,
+   "n_tokens": 8244,
+   "max_tokens_used": 8000
+  },
+  "sympy__sympy-24539#3": {
+   "score": 9.5390625,
+   "truncated": true,
+   "n_tokens": 8244,
+   "max_tokens_used": 8000
+  }
+ }
+}
