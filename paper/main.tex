@@ -80,21 +80,21 @@ Fifty instances were sampled with a fixed seed; generation completed for 41 (the
 
 \begin{table}[t]\centering\footnotesize
 \begin{tabular}{lcccc}\toprule
-Configuration & M1 $\mathrm{AUROC}(u)$ & M2 $\mathrm{AUROC}(-c)$ & M3 & 95\% CI \\\midrule
-Primary: prefix (4k tok), 4 chat RMs & 0.508 & 0.621 & $-0.114$ & $[-0.37, +0.22]$ \\
-\quad robustness, $m{=}3$ (family-disjoint) & 0.545 & 0.621 & $-0.076$ & $[-0.39, +0.23]$ \\
+Configuration & $\mathrm{AUROC}(u)$ & $\mathrm{AUROC}(-c)$ & M3 & 95\% CI \\\midrule
+Primary: 4k prefix, 4 chat RMs & 0.508 & 0.621 & $-0.114$ & $[-0.37, +0.22]$ \\
+\quad robustness, $m{=}3$ family-disjoint & 0.545 & 0.621 & $-0.076$ & $[-0.39, +0.23]$ \\
 Submission window: diff + last 3k tok & 0.458 & 0.530 & $-0.072$ & $[-0.35, +0.13]$ \\
 Patch in view (4k), 4 chat RMs & 0.494 & 0.621 & $-0.127$ & $[-0.28, +0.11]$ \\
 \quad + AceCodeRM-7B as 5th auditor & 0.473 & 0.621 & $-0.148$ & $[-0.30, +0.10]$ \\
 8B named critic selecting; disjoint panel & 0.445 & 0.602 & $-0.157$ & $[-0.56, +0.14]$ \\
-\quad the same at a true 16k (33 rows; one patch ungradable) & 0.483 & 0.736 & $-0.252$ & $[-0.47, +0.28]$ \\
+\quad the same at a true 16k (33 rows) & 0.483 & 0.736 & $-0.252$ & $[-0.47, +0.28]$ \\
 Code-trained critic selecting; 5-RM panel & 0.542 & 0.472 & $+0.069$ & $[-0.21, +0.45]$ \\
-Full trajectory, true 16k tok (L4), 4 chat RMs & 0.439 & 0.587 & $-0.182$ & $[-0.38, +0.17]$ \\
-LLM judges (gpt-5 family), patch in view, $u_{\mathrm{LLM}}$ & 0.528 & 0.621 & $-0.093$ & $[-0.30, +0.10]$ \\
-\quad execution-aware (+ last 6k tok of transcript) & 0.640 & 0.621 & $+0.019$ & $[-0.28, +0.16]$ \\\midrule
-Pruned overlapping windows, $u_{\max}$ (L4) & \textbf{0.686} & 0.621 & $+0.064$ & $[-0.11, +0.33]$ \\\bottomrule
+Full trajectory, true 16k, 4 chat RMs & 0.439 & 0.587 & $-0.182$ & $[-0.38, +0.17]$ \\
+LLM judges (gpt-5 family), patch in view & 0.528 & 0.621 & $-0.093$ & $[-0.30, +0.10]$ \\
+\quad execution-aware (+ last 6k tok) & 0.640 & 0.621 & $+0.019$ & $[-0.28, +0.16]$ \\\midrule
+Pruned overlapping windows, $u_{\max}$ & \textbf{0.686} & 0.621 & $+0.064$ & $[-0.11, +0.33]$ \\\bottomrule
 \end{tabular}
-\caption{The pre-registered primary and all amendments. Same 34 trajectories; 12 positives in every row except the two re-selections (12 and 11). M2 is the selecting critic's own score at the row's input where it was re-scored, otherwise the primary $c$. CIs are repository-clustered bootstraps on the paired difference. Only the last row clears the structural bar of 0.665 (\S\ref{sec:windows}).}\label{tab:ladder}\end{table}
+\caption{The pre-registered primary and all amendments. Columns are M1, M2 and M3 $=$ M1 $-$ M2 (\S2). Same 34 trajectories; 12 positives in every row except the two re-selections (12 and 11; the 16k re-selection excludes one ungradable patch). M2 is the selecting critic's own score at the row's input where it was re-scored, otherwise the primary $c$. CIs are repository-clustered bootstraps on the paired difference. Only the last row clears the structural bar of 0.665 (\S\ref{sec:windows}).}\label{tab:ladder}\end{table}
 
 Table~\ref{tab:ladder} and Fig.~\ref{fig:ladder} are the core of the paper. The primary analysis --- four chat-preference reward models auditing a 4{,}096-token prefix --- gave $\mathrm{AUROC}(u)=0.508$. Every subsequent amendment was declared before its data existed and asked whether some specific limitation of that primary was hiding the signal:
 
@@ -127,19 +127,21 @@ The three registered predictions resolved as follows. \textbf{R-P1} (the null re
 
 Table~\ref{tab:multilingual} and Fig.~\ref{fig:replication} carry the point.
 \begin{table}[t]\centering\footnotesize
-\begin{tabular}{lcc}\toprule
-Quantity on SWE-bench Multilingual (77 rows, 35 positives, 37 repos) & AUROC & 95\% CI / $p$ \\\midrule
-panel $u$, 4k prefix (primary) & 0.565 & $[0.43, 0.71]$; vs $c$: $+0.005$ $[-0.19, +0.22]$ \\
+\begin{tabularx}{\linewidth}{@{}Xcl@{}}\toprule
+Quantity on SWE-bench Multilingual & AUROC & 95\% CI / $p$ \\
+\multicolumn{3}{@{}l}{\footnotesize 77 rows, 35 positives, 37 repositories} \\\midrule
+panel $u$, 4k prefix (primary) & 0.565 & $[0.43, 0.71]$ \\
+\quad paired vs the selecting critic & $+0.005$ & $[-0.19, +0.22]$ \\
 selecting critic $-c$ & 0.560 & --- \\
-$u_{\max}$ over pruned windows & 0.541 & $[0.40, 0.68]$; within-repo perm.\ $p=0.53$ \\
+$u_{\max}$ over pruned windows & 0.541 & $[0.40, 0.68]$, $p_{\mathrm{repo}}=0.53$ \\
 $u_{\mathrm{mean}}$ / $u_{\mathrm{last}}$ & 0.541 / 0.552 & --- \\
 lines added (ruler) & 0.508 & $[0.35, 0.65]$ \\
 best single RM at 16k (Skywork-1.7B) & 0.577 & seven RMs: 0.36--0.58 \\
 named 8B critic, mean window & 0.465 & --- \\
-LLM judges, patch in view: gpt-5 / mini / nano & 0.662 / 0.604 / 0.576 & each within its CI of $c$ \\
+LLM judges: gpt-5 / mini / nano & 0.662 / 0.604 / 0.576 & each within its CI of $c$ \\
 LLM-judge disagreement $u_{\mathrm{LLM}}$ & 0.514 & $[-0.30, +0.10]$ vs $c$ \\
 registered endpoint, $M_{c+u}-M_c$ (LORO) & $-0.022$ & $[-0.13, +0.08]$ \\\bottomrule
-\end{tabular}
+\end{tabularx}
 \caption{Every pre-registered and secondary quantity on the replication.}\label{tab:multilingual}\end{table} Nothing that rose above the ruler on Verified rose above chance on Multilingual: the best reward model at 16k is 0.577 (the 1B model that scored 0.712 is at 0.485); the named 8B critic 0.52; the code-trained model 0.356; every windowed single-critic aggregate 0.45--0.64. With 35 positives the intervals are half the width they were, and they now exclude the effects the pilot's point estimates suggested.
 
 \subsection{What the critics do and do not carry}\label{sec:carry}

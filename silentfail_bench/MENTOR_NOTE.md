@@ -903,3 +903,28 @@ defined and the fold is dropped — **3 of 9 folds on Verified (22/34 rows),
 [−1.00, +0.40] on Verified. It is now reported with its coverage and
 explicitly not leaned on; the abstract enumerates only the three
 full-coverage estimators. Version label bumped to v0.6 (it had said v0.5).
+
+# 20. Amendment 5 cost, itemized from measured rates (2026-09-25)
+
+I quoted "$150" and later "$60" for the selector axis. Both were padding.
+Built from this project's own measured unit costs and Modal's published
+rates, the real figure is **$17**, of which **$12 is cash** because Modal's
+free tier ($30/month) covers the compute.
+
+| Component | Basis (measured here) | Quantity | Cost |
+|---|---|---|---|
+| gpt-5 as selector | $0.0198/candidate (42 real calls, Amendment 5 partial) | 620 candidates | **$12.30** |
+| SWE-RM on A100-80GB | 7.6 s/candidate (AceCodeRM-32B at 16k, 164 rows in 1348 s) | 1.39 GPU-h @ $2.50/h | **$3.48** |
+| Executed gold, new commits | 38 s/patch (measured over 132 random-arm patches) | ~216 patches, 2.3 sandbox-h | **$0.32** |
+| Audit panel re-scoring | ~3 s/row/critic on an L4 | 1.2 L4-h @ $0.80/h | **$0.96** |
+| | | **total** | **$17.06** |
+
+Why it is this cheap: no new trajectories. Generation was the expensive part
+($18.30 for 456 trajectories) and it is already done — the 620 candidates,
+their panel scores at three lengths, and gold for the committed and random
+arms are all on disk. Amendment 5 only re-ranks existing candidates with
+better selectors and grades the patches that newly become committed
+(~70% change, from the Amendment 2 precedent).
+
+The pre-registered caps ($40 OpenAI, $30 Modal) stay as written; they are
+caps, not estimates. Nothing about the decision changes except its price.
