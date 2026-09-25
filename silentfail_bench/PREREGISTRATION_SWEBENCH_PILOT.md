@@ -518,3 +518,10 @@ these pools and says so.
 committed set → descriptive only for that selector.
 
 **Cost cap.** $40 OpenAI, $30 Modal. Declared before any call.
+
+**Amendment 5 — NOT RUN (2026-09-25).** Declared as above, then stopped by
+author decision before any analysis. 42 of 620 candidate scores from
+`S_judge` were written (`data/selector_axis/`, $0.83) and **were not read,
+analysed, or used in any reported quantity**; `S_swerm` was never launched.
+The amendment stands as a pre-registered design for a future study. No
+result in this paper depends on it, and v0.5's conclusions are unchanged.
