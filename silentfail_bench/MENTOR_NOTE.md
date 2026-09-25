@@ -928,3 +928,30 @@ better selectors and grades the patches that newly become committed
 
 The pre-registered caps ($40 OpenAI, $30 Modal) stay as written; they are
 caps, not estimates. Nothing about the decision changes except its price.
+
+# 21. A design catch in Amendment 5, found before running it (2026-09-25)
+
+A good selector destroys the thing we measure. Planning simulation (not a
+result): draw four candidates at the observed per-candidate failure rate,
+let a selector with a given candidate-pool AUROC take the argmax, count the
+failures left in the committed set.
+
+| selector pool AUROC | Verified: committed rate → positives | Multilingual: rate → positives |
+|---|---|---|
+| 0.50 (no signal) | 31% → 10.5 | 46% → 35 |
+| 0.61 | 24% → 8.2 | 38% → 29 |
+| **0.72 (gpt-5's observed level)** | **19% → 6.5** | **32% → 24** |
+| 0.81 | 17% → 5.6 | 28% → 22 |
+
+**Consequence.** At gpt-5's demonstrated detection level, Verified falls to
+roughly 6–7 positives — below the pre-registered inference floor of 10 — so
+Amendment 5 would be **a Multilingual experiment with Verified reported
+descriptively**. Multilingual holds ~24 positives, enough to clear the floor
+but with single-AUROC intervals near ±0.17.
+
+This is not a reason to skip the experiment; it is a reason to state in
+advance that the Verified arm is expected to be uninformative, and to size
+any conclusion on the ~24 Multilingual positives. If the mentor wants both
+arms powered, the fix is more instances (Verified is 500 and we used 41), not
+a different selector — roughly 60 more Verified instances at k=4 would
+restore ~10 positives under a strong selector, at about $6 of generation.
