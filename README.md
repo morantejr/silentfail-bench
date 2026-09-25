@@ -33,7 +33,9 @@ about are exactly where its blind spots collect. **A null result is publishable*
 | [`silentfail_bench/DEFECTS.md`](silentfail_bench/DEFECTS.md) | Defects found before the first real run, and the verified sandbox posture |
 | [`silentfail_bench/MENTOR_NOTE.md`](silentfail_bench/MENTOR_NOTE.md) | Current open decisions |
 | [`UPDATES.md`](UPDATES.md) | **Research log — one entry per stage: done / learned / changed** |
-| `SilentFail_AAAI_Proposal.pdf` / `.tex` | The current proposal (the only PDF in the repo) |
+| `SilentFail_AAAI_Proposal.pdf` / `.tex` | The original proposal |
+| `paper/main.pdf` | The paper (full version) |
+| `paper/main_short.pdf` | The paper cut to 7 pages + references for a main-track submission |
 | [`archive/drafts/`](archive/drafts/) | Earlier drafts and write-ups, kept for the record |
 
 ## Two things a reader should know up front

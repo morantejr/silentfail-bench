@@ -29,7 +29,7 @@ rows = [  # (label, u, negc, [ci_lo, ci_hi] of u - (-c) if known)
  ("Submission window (diff + 3k tail)", 0.458, 0.530, (-0.35, 0.133)),
  ("Patch in view (4k), 4 chat RMs [Kaggle]", 0.494, 0.621, (-0.276, 0.111)),
  ("+ AceCodeRM as 5th auditor", 0.473, 0.621, (-0.296, 0.104)),
- ("Proposal's 8B critic selecting, disjoint panel", 0.445, 0.602, (-0.564, 0.143)),
+ ("Proposal's 8B critic selecting, disjoint panel", 0.455, 0.602, (-0.486, 0.26)),
  ("  ... the same at a true 16k", 0.483, 0.736, (-0.468, 0.283)),
  ("Code-trained critic selecting, 5-RM panel", 0.542, 0.472, (-0.208, 0.452)),
  ("Full trajectory, true 16k (L4), 4 chat RMs", 0.439, 0.587, (-0.384, 0.171)),
@@ -182,7 +182,7 @@ chance(ax); ax.axvline(0.665, color=GOLD, lw=1.2, ls="--")
 ax.annotate("pilot's structural baseline", xy=(0.665, -0.95), xytext=(0.672, -0.95), color=GOLD, fontsize=6.5, va="center")
 ax.set_yticks(yy); ax.set_yticklabels(labels, fontsize=8); ax.set_xlim(0.3, 0.85); ax.set_ylim(-1.7, len(labels) - 0.4)
 ax.set_xlabel("AUROC for silent failure")
-legend_key(ax, [("o", GRAY, "pilot: Verified, 12 repos, 12 failures"), ("o", BLUE, f"replication: Multilingual, {rr['n_repos']} repos, {rr['silent_failures']} failures (bars = 95% CI)")],
+legend_key(ax, [("o", GRAY, "pilot: Verified, 9 repos, 12 failures"), ("o", BLUE, f"replication: Multilingual, {rr['n_repos']} repos, {rr['silent_failures']} failures (bars = 95% CI)")],
     loc="lower center", bbox_to_anchor=(0.5, -0.34), ncol=1)
 ax.set_title("the same measurements on three times the repositories", fontsize=9, loc="left", pad=12)
 fig.tight_layout(); fig.savefig(OUT / "fig_replication.pdf", bbox_inches="tight"); plt.close(fig)

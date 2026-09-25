@@ -955,3 +955,45 @@ any conclusion on the ~24 Multilingual positives. If the mentor wants both
 arms powered, the fix is more instances (Verified is 500 and we used 41), not
 a different selector — roughly 60 more Verified instances at k=4 would
 restore ~10 positives under a strong selector, at about $6 of generation.
+
+# 22. File-level audit: eleven data errors found and fixed (2026-09-25)
+
+An audit with repository access (not just the PDF) found real errors, not
+style. Every one was verified against the source JSON before changing the
+paper. All are now fixed in `paper/main.tex` and in `paper/make_figures.py`.
+
+| Where | Was | Now (source) |
+|---|---|---|
+| Table 1, 8B re-selection | u 0.445, M3 −0.157, CI [−0.56,+0.14] | **0.455, −0.148, [−0.49,+0.26]** (`prereg_readout_amendment2.json`) |
+| Table 1, full 16k row | M2 0.587, so M3 ≠ M1−M2 | M2 **0.621** (the prefix c that M3 is computed against); 0.587 moved to prose |
+| Table 2, judge disagreement CI | [−0.30,+0.10] (the *Verified* interval) | **[−0.22,+0.13]** |
+| §4.3 chat RMs | "five of six at or below chance" | **four of six** |
+| §4.3 16k gains | "+0.06 to +0.12" | **+0.04 to +0.12**, sixth −0.03 |
+| §4.1 exit statuses | "17.7% hit the step limit or submitted nothing" | **15.9%** hit the limit; 17.7% is the empty-patch rate |
+| Appendix alt-u | "none is above 0.60" | **highest is 0.601** |
+| Contributions | "no single-protocol comparison exceeds +0.22" | primary protocol's own upper is +0.22; sweep reaches **+0.45** |
+| Fig. replication caption | "12 repositories" / "41" | **9 / 37** (analysed sets) |
+| Subtitle | "50 repositories" | **46 analysed** |
+| §4.4 | "the only pre-registered prediction that came true" | false — the premise check, the judge bar and R-P1 also passed; reworded |
+
+Also: the four-estimator endpoint rows are now labelled (one pre-registered,
+three post-hoc robustness); the review-budget table is marked exploratory;
+Amendment 5 is named in the paper as declared and deliberately unrun; and
+Table 1's caption states the correct positives per re-selection row (12, 11, 11).
+
+**Security.** No API keys in the tree or in git history. One RSA private key
+and a webhook secret — a test fixture the agent read from the upstream
+Docusaurus repository — were found in a gitignored trajectory file on disk.
+Verified absent from every tracked file and from all git history; redacted in
+place so a folder copy is safe.
+
+**Not fixed, recorded as known:** `rescoring_bundle.jsonl` (39 MB) is tracked
+by a `.gitignore` exception and is in history; `data/**/traj` holds ~55k
+absolute paths but is untracked; top-level LaTeX build logs are ignored but
+present in the folder. A cleanup commit was proposed and not run.
+
+**Two PDFs now.** `paper/main.pdf` is the full draft (23 pp, unchanged in
+scope, all fixes applied). `paper/main_short.pdf` is the submission cut: 6
+body pages of the 7 AAAI allows, plus references, keeping the ladder table,
+the control and replication figures, the endpoint table and the instrument
+record.

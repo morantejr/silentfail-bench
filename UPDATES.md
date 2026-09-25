@@ -295,4 +295,25 @@ estimator-independent.
 
 ---
 
-## Next entry (pending): mentor decision — submit v0.6 or run Amendment 5 (selector axis, declared, not run)
+## File-level audit and the submission cut — 2026-09-25
+
+**Done.** An audit with repository access found **eleven numerical errors**
+in the paper; every one was verified against its source JSON and fixed
+(`MENTOR_NOTE.md` §22). Largest: the 8B re-selection row disagreed with its
+readout (0.445 vs 0.455), a table cell broke M3 = M1 − M2, and a multilingual
+confidence interval was the Verified one. Pre-registration integrity items
+fixed too: the post-hoc endpoint estimators are now labelled, the
+review-budget table is marked exploratory, Amendment 5 is named as declared
+and unrun, and the claim that u_max was "the only prediction that came true"
+is withdrawn.
+
+**Security.** No keys in the tree or history. A test-fixture RSA key inside
+one gitignored trajectory was redacted on disk.
+
+**Changed.** No result moved; the corrections are all within rounding of the
+conclusions, but the paper now matches its own data. Two PDFs: the full draft
+(23 pp) and a 7-page submission cut.
+
+---
+
+## Next entry (pending): mentor decision — submit or run Amendment 5 (declared, not run)

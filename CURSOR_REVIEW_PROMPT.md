@@ -1,4 +1,4 @@
-Read the repository at `/Users/jmorante/Downloads/xtail_spec` in full. It is a
+Read the repository at the repository root (this folder) in full. It is a
 complete, finished empirical ML study with its paper, data, code and
 pre-registration trail. You have reviewed the PDF three times (v0.4, v0.5,
 v0.6) and every wording/statistics item you raised has been applied. This
