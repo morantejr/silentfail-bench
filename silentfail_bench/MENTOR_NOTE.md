@@ -1024,3 +1024,15 @@ key and webhook secret found in one of them are redacted in place and were
 verified never to have reached a tracked file or any commit
 (`git log --all -S` returns zero). Anyone copying the folder rather than
 cloning gets the trajectories; anyone cloning does not.
+
+**§23 addendum.** Two further corrections. (1) The short version's conclusion
+said disagreement adds at most +0.12 AUROC "over doing nothing"; the bound is
+over **the selector's own score**, which is the comparison that matters since
+that score is already in hand. Corrected, and the sentence now says why.
+(2) Repository counts are now used consistently: **9** and **37** are the
+analysed sets, **46** is the pooled total, and **41** and **12** appear only
+where they describe the benchmark sampled from, each with an explicit
+qualifier. The conclusion's "fifty" and "forty-one" are gone, and the full
+paper's abstract now matches the short one at 37. `check_consistency.py`
+enforces this: an unqualified benchmark-total count fails the check, verified
+by removing the qualifier from each file in turn and confirming exit 1.

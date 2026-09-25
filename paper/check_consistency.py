@@ -52,6 +52,18 @@ check("endpoint fixed-weight pooled", pooled["fixed_unit_weights_no_fitting"]["d
 check("endpoint LORO pooled", pooled["logistic_LORO"]["delta"], -0.030 if "-0.030" in tex or "$-0.030$" in tex else None)
 
 # --- analysed repository counts ---
+print("\nrepository counts as written in the prose (analysed sets):")
+import itertools
+for f in ("paper/main.tex", "paper/main_short.tex"):
+    src = Path(f).read_text()
+    bad = []
+    # 41 and 12 are benchmark totals and are only allowed next to an explicit qualifier
+    for m in re.finditer(r"(.{70})(41|12) repositor(.{0,90})", src, re.S):
+        ctx = m.group(1) + " " + m.group(3)
+        if not re.search(r"sampl|drawn|Verified is|analys|survive", ctx): bad.append(ctx[-55:].strip())
+    print(f"  {'ok  ' if not bad else 'FAIL'}  {f}: unqualified benchmark-total counts: {bad or 'none'}")
+    if bad: fail.append(f"{f} repo count")
+
 print("\nanalysed repository counts:")
 for f, tag, want in ((D / "swebench_pilot50/pilot_free_scored.jsonl", "pilot", 9),
                      (D / "replication_multilingual/replication_scored.jsonl", "replication", 37)):
