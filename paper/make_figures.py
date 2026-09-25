@@ -32,7 +32,7 @@ rows = [  # (label, u, negc, [ci_lo, ci_hi] of u - (-c) if known)
  ("Proposal's 8B critic selecting, disjoint panel", 0.455, 0.602, (-0.486, 0.26)),
  ("  ... the same at a true 16k", 0.483, 0.736, (-0.468, 0.283)),
  ("Code-trained critic selecting, 5-RM panel", 0.542, 0.472, (-0.208, 0.452)),
- ("Full trajectory, true 16k (L4), 4 chat RMs", 0.439, 0.587, (-0.384, 0.171)),
+ ("Full trajectory, true 16k (L4), 4 chat RMs", 0.439, 0.621, (-0.384, 0.171)),
  ("Pruned overlapping windows, $u_{\\max}$ (L4)", 0.686, 0.621, (-0.11, 0.333)),
 ]
 fig, ax = plt.subplots(figsize=(6.6, 3.5))
