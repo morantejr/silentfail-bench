@@ -22,6 +22,10 @@
 When an agent commits the best of $n$ attempts under a critic, the committed trajectory is where the critic's confidence and its errors coincide. A common proposal is to audit it with a disjoint panel of critics and escalate on disagreement. We pre-registered and ran this test with executed gold on SWE-bench Verified (41 instances, 9 repositories) and SWE-bench Multilingual (114 instances, 41 repositories): best-of-4 selection by a reward model, a checkpoint-disjoint panel, and the official test harness. Silent failures --- committed, agent-declared-complete trajectories that fail hidden tests --- were 35\% and 45\% of the population. On the registered endpoint --- the out-of-fold gain in AUROC from adding panel disagreement to the selector's own score --- disagreement adds nothing detectable: pooled over 47 failures and 46 repositories, the three estimators that use every row give $-0.03$, $-0.01$ and $+0.01$, every interval includes zero, and the loosest pooled upper bound is $+0.12$. Disagreement alone ranks failures at AUROC 0.51 and 0.57, indistinguishable from the selecting critic's own score, and this held across 4k--16k contexts, pruned overlapping windows, seven reward models from 1B to 32B including code-trained ones, two re-selection regimes, and a single-family panel of LLM judges. Point estimates that cleared a structural baseline on Verified (windowed disagreement 0.69; patch size 0.67; one 1B critic 0.71) all fell to chance on 41 repositories: no configuration produced a replicable signal. An unselected-candidate control shows that with this selector the committed candidate fails no more often than one passed over, while the selector's own score ranks failures at 0.81 among unselected candidates and 0.61 among committed ones on Verified --- the selection-conditional gap measured directly. Test--retest shows the critics are stable ($r\geq0.98$) and content-driven: the failure is in what disagreement measures. We argue that audit signals must be evaluated on the population the selector commits, against the selector's own score, with executed gold; we report an upper bound on the residual value of disagreement; and we document the instrument failures that would otherwise have produced a positive result.
 \end{abstract}
 
+\begin{center}\fbox{\begin{minipage}{0.95\linewidth}\small
+\textbf{In plain terms.} A coding agent tries a task several times and a scoring model picks its best attempt. We checked those picks against the project's real test suite. A third to a half of them were broken --- the agent said it was finished, the scorer agreed, and the tests failed. The idea we tested was a safety net: ask several other scoring models to grade the same attempt, and treat \emph{their disagreement} as a warning that something is wrong. It does not work. Disagreement flags broken work no better than a coin flip, and adds nothing to what the original scorer already told you. The scoring models themselves are not the problem --- they are consistent, and the best of them spots roughly two-thirds of the failures on its own. The problem is that measuring how much they \emph{differ} throws that information away. We also show why this is easy to get wrong: several promising-looking results in our own pilot disappeared when we re-ran everything on three times as many code repositories, and six bugs in our own measuring equipment would each have produced a convincing but false finding.
+\end{minipage}}\end{center}
+
 \section{Introduction}
 Best-of-$n$ selection under a learned critic is now a default in agent scaffolds: generate several trajectories, score each with a reward model, commit the argmax. Three claims about this are easy to conflate, and this paper keeps them apart. The \emph{theory} is that argmax selection on a noisy score induces the optimizer's curse~\citep{smith2006optimizer}: among candidates, the top-scored one is disproportionately the one whose flaws the critic cannot see, so the score carries less information about the committed candidate than about the pool. What we \emph{observe} is one instance of that theory measured directly: on SWE-bench Verified the selecting critic ranks failures at 0.81 among the candidates it passed over and at 0.61 among the ones it committed, on the same instances. What we do \emph{not} show is that selection raised the failure rate of the committed candidate --- with the selector we used, it did not (\S\ref{sec:control}). A committed trajectory that fails its task while carrying a high score is a \emph{silent failure}; they are a third to a half of what this agent committed, whether or not selection put them there.
 
@@ -37,7 +41,7 @@ Throughout, ``critic'' means an off-the-shelf reward model or LLM judge used wit
 
 \section{Setup and estimand}
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_design.pdf}
-\caption{The design. $c$ is the selecting critic's scalar score of a whole trajectory; best-of-$n$ commits the argmax. A disjoint panel of $m$ reward models produces $u$, the sample standard deviation of their rank-normalized scores (rank norms fit on training repositories only). Gold $g$ is the official SWE-bench harness verdict on the committed patch.}\label{fig:design}\end{figure}
+\caption{\textbf{How the experiment works.} An agent writes several candidate fixes; a scoring model picks one; a separate panel grades the pick; the project's real tests decide whether it was right. $c$ is the selecting critic's scalar score of a whole trajectory; best-of-$n$ commits the argmax. A disjoint panel of $m$ reward models produces $u$, the sample standard deviation of their rank-normalized scores (rank norms fit on training repositories only). Gold $g$ is the official SWE-bench harness verdict on the committed patch.}\label{fig:design}\end{figure}
 
 \paragraph{Unit and gold.} The unit is one committed trajectory $\tau$. Gold $g(\tau)\in\{0,1\}$ is trajectory-level task success under the official \texttt{swebench} 5.x harness; failed tests do not imply every step was wrong, and we make no step-level claims. Positive class throughout is failure ($\gzero$).
 
@@ -66,17 +70,17 @@ The rule we adopted: a rate of exactly 0\% or 100\%, or a statistic that cannot 
 \section{Results}
 \subsection{Silent failures are common among committed trajectories}\label{sec:control}
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_pilot.pdf}
-\caption{The pilot. Top left: best-of-4 with a true reward-model critic genuinely selected (chosen index spread across all four slots; an earlier LLM-judge critic had collapsed to index 0). Top right: from 164 candidates to 12 silent failures. Bottom left: per-repository failure rates, 9 repositories, ICC 0.18. Bottom right: effective sample size on SWE-bench Verified as a function of repository ICC; the public estimate from six leaderboard submissions is 0.033--0.053.}\label{fig:pilot}\end{figure}
+\caption{\textbf{Where the sample goes, and why it is small.} Top left: best-of-4 with a true reward-model critic genuinely selected (chosen index spread across all four slots; an earlier LLM-judge critic had collapsed to index 0). Top right: from 164 candidates to 12 silent failures. Bottom left: per-repository failure rates, 9 repositories, ICC 0.18. Bottom right: effective sample size on SWE-bench Verified as a function of repository ICC; the public estimate from six leaderboard submissions is 0.033--0.053.}\label{fig:pilot}\end{figure}
 
 Fifty instances were sampled with a fixed seed; generation completed for 41 (the deviation is explained in \S\ref{sec:limits}). Of 164 candidates, 138 submitted a patch (17.7\% hit the 40-step limit or submitted nothing). Selection by \texttt{Skywork-Reward-V2-Qwen3-4B} committed 34 usable trajectories; the harness resolved 22 and failed 12, with zero errors.
 
 \textbf{35.3\% [21.5, 52.1] of committed, agent-declared-complete trajectories were silent failures} on Verified, and 45.5\% on Multilingual (\S\ref{sec:replication}). On HumanEval+ the same pipeline yielded 8\% at any selection pressure; SWE-bench supplies the phenomenon in quantity. Selection was real (Fig.~\ref{fig:pilot}, top left), and $\mathrm{corr}(c,u)=0.11$, so $u$ was near-orthogonal to $c$ --- the precondition the design wants. Whether selection \emph{concentrated} failure --- whether the committed candidate fails more often than one the critic did not pick --- is a separate question that a committed-only sample cannot answer; Amendment 4f, pre-registered before grading, answers it: one unselected candidate per instance was graded on both benchmarks (31 and 71 paired rows). \textbf{The committed candidate failed no more often than one the critic passed over}: $-3$ points on Verified [$-21$, $0$] and $-4$ on Multilingual [$-11$, $+3$]. With this selector, best-of-4 did not concentrate failure, and we claim a failure \emph{rate}, not concentration. The control also measures the selection-conditional gap directly. On Verified the selector's own score ranks failures among the candidates it did \emph{not} pick at 0.81 [0.74, 1.00], but among the ones it committed at 0.61 on the same instances: selection consumed the critic's own signal, which is the premise of the design. On Multilingual the critic has no signal in either arm (0.43 unselected, 0.51 committed), so there was nothing for selection to remove. Panel disagreement on the unselected arm is 0.37 and 0.51 --- no better off-selection than on (Fig.~\ref{fig:control}).
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_control.pdf}
-\caption{Amendment 4f. One candidate the critic passed over, graded per instance, paired with the one it committed. Left: selection did not raise the failure rate. Right: on Verified, selection removed the selector's own signal (0.81 $\to$ 0.61); on Multilingual the selector had none to remove.}\label{fig:control}\end{figure}
+\caption{\textbf{Picking did not make things worse --- but it did use up the picker's own judgment.} One candidate the critic passed over, graded per instance, paired with the one it committed. Left: the committed candidate fails about as often as one passed over. Right: on Verified the selector tells failures from successes among candidates it rejected (0.81) far better than among those it chose (0.61); on Multilingual it could do neither.}\label{fig:control}\end{figure}
 
 \subsection{The safeguard does not: the ladder of nulls}
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_ladder.pdf}
-\caption{Every pre-registered configuration on the same 34 trajectories and 12 positives. Circles: panel disagreement $u$. Squares: the selecting critic's own score. Nothing crosses the ruler.}\label{fig:ladder}\end{figure}
+\caption{\textbf{Every way we tried to make disagreement work, on the pilot.} Each row is one configuration; 0.5 is a coin flip. Circles: panel disagreement $u$. Squares: the selecting critic's own score. The gold line is the simplest baseline we could find --- counting the lines added to the patch. Nothing crosses it here, and the one configuration that later did (Fig.~\ref{fig:windows}) failed to replicate (Fig.~\ref{fig:replication}).}\label{fig:ladder}\end{figure}
 
 \begin{table}[t]\centering\footnotesize
 \begin{tabular}{lcccc}\toprule
@@ -111,7 +115,7 @@ Every single-window prediction failed. The intervals on M3 are wide --- twelve p
 
 \subsection{Windowed auditing: the one row that clears the bar}\label{sec:windows}
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_windows.pdf}
-\caption{Amendment 3. Left: panel disagreement aggregated over pruned, overlapping windows; whisker on $u_{\max}$ is the leave-one-instance-out range. Right: each critic's own score aggregated over its windows (exploratory; no prediction was registered for these).}\label{fig:windows}\end{figure}
+\caption{\textbf{Letting the panel read the whole trajectory in overlapping chunks.} Left: panel disagreement aggregated over pruned, overlapping windows; whisker on $u_{\max}$ is the leave-one-instance-out range. Right: each critic's own score aggregated over its windows (exploratory; no prediction was registered for these).}\label{fig:windows}\end{figure}
 
 Amendment 3, pre-registered before any windowed score existed, made one structural change: collapse tool outputs longer than 24 lines to their first and last 8, then score overlapping 3{,}500-token windows (25\% overlap, problem statement prefixed, final window anchored at the patch) and take the panel's maximum disagreement. All three registered predictions passed: $\mathrm{AUROC}(u_{\max})=0.686$ against a bar of 0.665; a gain of $+0.18$ over the prefix panel against a bar of $+0.10$; and the named 8B critic's mean-window score, 0.652, against 0.634.
 
@@ -119,7 +123,7 @@ We report this as the study's strongest positive signal and immediately bound it
 
 \subsection{Replication on 41 repositories: the null survives, the exceptions do not}\label{sec:replication}
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_replication.pdf}
-\caption{Amendment 4e. Every quantity that looked like a signal on Verified, re-measured on SWE-bench Multilingual with the same agent, critic, panel, pruning, windows and executed gold. Intervals are repository-clustered bootstraps.}\label{fig:replication}\end{figure}
+\caption{\textbf{Everything promising on the small benchmark vanished on the big one.} Grey: the pilot's 12 repositories. Blue: 41 repositories. Every quantity that looked like a signal on Verified, re-measured on SWE-bench Multilingual with the same agent, critic, panel, pruning, windows and executed gold. Intervals are repository-clustered bootstraps.}\label{fig:replication}\end{figure}
 
 The binding limitation of everything above is twelve repositories. Amendment 4e, pre-registered before any trajectory existed, re-ran the instrument on SWE-bench Multilingual: 41 repositories in nine languages, up to three instances each (114), $k{=}4$ (456 trajectories), the same selection critic and panel, agent sandboxes and gold on Modal (three reference-patch / empty-patch oracle pairs passed before any model patch was graded). Of 114 committed trajectories, 77 formed the population (30 empty patches, 7 ungradable); \textbf{35 were silent failures (45.5\%)} across 37 repositories --- three times the positives of the pilot, with an inference floor of 20 pre-registered.
 
@@ -175,15 +179,15 @@ Fixed unit weights, no fitting & Verified & 0.614 & 0.583 & $-0.030$ & $[-0.17, 
 
 \subsection{A ruler beats the critics --- on one benchmark}
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_ruler.pdf}
-\caption{Same 34 trajectories, same 12 positives. Gold bars need no model. Exploratory (declared as such): the covariates were registered as controls, not baselines.}\label{fig:ruler}\end{figure}
+\caption{\textbf{On the pilot, two integers beat every model we ran.} Same 34 trajectories, same 12 positives. Gold bars need no model at all. Exploratory (declared as such): the covariates were registered as controls, not baselines.}\label{fig:ruler}\end{figure}
 
 Two integers, read off the diff and the transcript with no model at all, rank silent failures better than every reward model at 4k and every disagreement statistic at any length (Fig.~\ref{fig:ruler}): lines added in the patch, 0.665; agent step count, 0.657. Bigger patches and longer trajectories fail more. The paired gap over the primary $u$ is $+0.16$ [$-0.11$, $+0.36$], exploratory, on twelve positives. Individual critics do cross this bar once they see the solution at length (\S\ref{sec:windows}); the panel's disagreement never does on a single window, and adds nothing to the ruler out of fold. We propose lines-added as the baseline any audit statistic must clear before it is worth a confirmatory run --- and note that on SWE-bench Verified, beating it by 0.10 in a paired test has power of about 0.3 at any $n$, because twelve repositories cap the effective sample (\S\ref{sec:limits}).
 
 \section{Mechanism: stable critics, uninformative disagreement}
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_instability.pdf}
-\caption{The primary selecting critic's score on the trajectory prefix (x) against its score on two other windows of the same trajectory (y). Same model, same trajectory, nearly unrelated numbers --- because the windows contain different things (see Fig.~\ref{fig:stability}).}\label{fig:instab}\end{figure}
+\caption{\textbf{The same critic, the same trajectory, two different excerpts --- and almost unrelated scores.} The primary selecting critic's score on the trajectory prefix (x) against its score on two other windows of the same trajectory (y) --- because the windows contain different things (see Fig.~\ref{fig:stability}).}\label{fig:instab}\end{figure}
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_stability.pdf}
-\caption{Amendment 4b, test--retest. Each critic re-scored every Amendment-3 window after a content-preserving reformatting (headers re-cased, pruning marker reworded, one neutral line prepended) and after a 128-token shift. Spearman $r$ over 65--73 windows. The same critic on the same content is essentially deterministic; on adjacent or distant windows it is not.}\label{fig:stability}\end{figure}
+\caption{\textbf{The critics are not noisy: they react to content.} Re-ask the same critic the same question and it answers the same way; change which part of the trajectory it reads and it does not. Each critic re-scored every Amendment-3 window after a content-preserving reformatting (headers re-cased, pruning marker reworded, one neutral line prepended) and after a 128-token shift. Spearman $r$ over 65--73 windows. The same critic on the same content is essentially deterministic; on adjacent or distant windows it is not.}\label{fig:stability}\end{figure}
 
 Draft v0.1 of this paper read Fig.~\ref{fig:instab} --- the same reward model scoring the prefix and the patch of one trajectory with correlation 0.03--0.18 --- as evidence that these critics ``do not hold a judgment'' of code correctness. That reading could not distinguish critic noise from windows that legitimately contain different information, and we pre-registered a test to separate them (Amendment 4b, with the reading fixed in advance). The result withdraws the claim. Re-scoring the identical window after a reformatting that changes no information, every critic reproduces its ranking at $r=0.98$--$0.99$; after a 128-token shift, at $0.86$--$0.95$; the per-window panel $u$ itself at $0.91$ and $0.73$. Adjacent windows with 25\% overlap correlate at $0.20$--$0.56$, first against last at $-0.39$ to $0.47$. These critics are stable instruments responding to what is in front of them. The prefix score is a judgment of the problem; the patch score is a judgment of the patch; they differ because the inputs do.
 
@@ -248,6 +252,35 @@ Modal (A100-80GB; CPU sandboxes) & AceCodeRM-32B $\times$ 164 + windows; officia
 Amendment 4f control (Modal) & official gold for 144 unselected candidates, both benchmarks & $\approx$\$8 \\
 Amendment 4e replication (OpenAI + Modal) & 456 trajectories, 114 instances, 41 repos; 7 critics at 4k/16k/windows; gold with 3 oracle pairs & \$18.30 + $\approx$\$8 \\\bottomrule
 \end{tabularx}
+
+\section{Glossary and the shape of the study}
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}lX@{}}\toprule
+Term & Meaning in this paper \\\midrule
+\emph{trajectory} & one complete attempt by the agent at one task: everything it read, ran and wrote, ending in a patch \\
+\emph{critic} (reward model, judge) & a model that reads a trajectory and returns a number meaning ``how good is this''. Off-the-shelf; not trained by us \\
+\emph{best-of-$n$ selection} & generate $n$ attempts, score each with one critic, keep the highest. Here $n=4$ \\
+\emph{committed} / \emph{silent failure} & the attempt the critic kept; a silent failure is one the agent declared finished, the critic ranked best, and the hidden tests reject \\
+$c$ & the selecting critic's score of the committed trajectory \\
+$u$ (disagreement) & how much the audit panel disagrees about the committed trajectory: the spread of members' scores after each is put on a common scale \\
+\emph{gold} & the verdict of the project's own test suite, run in a container. Not a model's opinion \\
+AUROC & the chance a randomly chosen failure is ranked above a randomly chosen success. $0.5$ is a coin flip, $1.0$ is perfect \\
+\emph{pre-registration} & writing down the analysis and its pass/fail thresholds, dated, before the data exists \\\bottomrule
+\end{tabularx}
+
+\bigskip
+\begin{tabularx}{\linewidth}{@{}lXX@{}}\toprule
+Stage & What we expected & What happened \\\midrule
+Proposal & disagreement would flag failures the selector missed & --- \\
+Pilot (Verified) & --- & 35\% silent failures; disagreement at chance; patch size beat every critic \\
+Amendments 1--2 & a longer look, or a better critic, would help & neither did, across 4k--16k and eight critics \\
+Amendment 3 & reading the trajectory in windows would help & the only configuration that ever crossed the bar, on 12 failures \\
+Amendments 4a--4d & structure and stability diagnostics & no critic adds value beyond patch size; critics are stable, so the earlier ``instability'' explanation was wrong and was withdrawn \\
+Amendment 4e & replicate on 41 repositories & every promising Verified number fell to chance, including the windows and patch size \\
+Amendment 4f & selection concentrates failures & it does not; but it does consume the selector's own signal \\
+Registered endpoint & --- & disagreement adds nothing to the selector: pooled bound $+0.12$ AUROC \\\bottomrule
+\end{tabularx}
+\normalsize
 
 \section{Operating points and alternative disagreement statistics}
 \footnotesize
