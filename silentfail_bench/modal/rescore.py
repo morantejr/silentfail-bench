@@ -9,7 +9,11 @@ Outputs land in Volume silentfail-out under /<run>/<out>/.
 """
 from __future__ import annotations
 
+import os
+
 import modal
+
+BUNDLE = os.environ.get("SF_BUNDLE", "")   # local bundle path, shipped inside the image (volume uploads of 40 MB hung)
 
 app = modal.App("silentfail-rescore")
 hf_cache = modal.Volume.from_name("silentfail-hf-cache", create_if_missing=True)
@@ -21,10 +25,11 @@ image = (
     .pip_install("https://github.com/TIGER-AI-Lab/AceCoder/archive/refs/heads/main.zip")
     .add_local_dir("scripts", remote_path="/root/scripts")
 )
+if BUNDLE: image = image.add_local_file(BUNDLE, remote_path="/root/bundle.jsonl")
 
 
 @app.function(image=image, gpu="L4", timeout=6 * 3600, volumes={"/hf": hf_cache, "/out": out_vol, "/bundles": bundles})
-def run(run_name: str, out: str, max_tokens: int, mode: str, windows: bool, only: list[str] | None, limit: int) -> dict:
+def score(run_name: str, out: str, max_tokens: int, mode: str, windows: bool, only: list[str] | None, limit: int) -> dict:
     import importlib.util, os, subprocess, sys, time
     os.environ.update(HF_HOME="/hf", HF_HUB_CACHE="/hf/hub")
     spec = importlib.util.find_spec("acecoder")
@@ -33,7 +38,7 @@ def run(run_name: str, out: str, max_tokens: int, mode: str, windows: bool, only
         open(f, "w").write(s.replace("index=(attention_mask.sum(dim=-1, keepdim=True) - 1)", "index=(attention_mask.sum(dim=-1, keepdim=True) - 1).to(value.device)"))
     print(subprocess.run(["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"], capture_output=True, text=True).stdout.strip(), flush=True)
     sys.path.insert(0, "/root/scripts")
-    bundle = f"/bundles/{run_name}/rescoring_bundle.jsonl"; dest = f"/out/{run_name}/{out}"; t0 = time.time()
+    bundle = "/root/bundle.jsonl" if os.path.exists("/root/bundle.jsonl") else f"/bundles/{run_name}/rescoring_bundle.jsonl"; dest = f"/out/{run_name}/{out}"; t0 = time.time()
     extra = (["--only", *only] if only else []) + (["--limit", str(limit)] if limit else [])
     if windows:
         import gpu_rescore_windows as gw
@@ -49,4 +54,4 @@ def run(run_name: str, out: str, max_tokens: int, mode: str, windows: bool, only
 
 @app.local_entrypoint()
 def main(run: str, out: str, max_tokens: int = 16000, mode: str = "headtail", windows: bool = False, only: str = "", limit: int = 0):
-    print(run.remote(run_name=run, out=out, max_tokens=max_tokens, mode=mode, windows=windows, only=only.split() or None, limit=limit))
+    print(score.remote(run_name=run, out=out, max_tokens=max_tokens, mode=mode, windows=windows, only=only.split() or None, limit=limit))

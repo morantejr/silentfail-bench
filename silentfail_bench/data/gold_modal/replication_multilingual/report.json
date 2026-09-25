@@ -1,0 +1,935 @@
+{
+ "run_id": "replication_multilingual",
+ "dataset": "swe-bench/SWE-Bench_Multilingual",
+ "total": 84,
+ "resolved_ids": [
+  "apache__druid-14092",
+  "apache__druid-16875",
+  "apache__lucene-12196",
+  "apache__lucene-12212",
+  "apache__lucene-13494",
+  "astral-sh__ruff-15443",
+  "astral-sh__ruff-15626",
+  "axios__axios-4731",
+  "fastlane__fastlane-20958",
+  "fluent__fluentd-3616",
+  "fmtlib__fmt-2317",
+  "fmtlib__fmt-3729",
+  "gohugoio__hugo-12343",
+  "gohugoio__hugo-12579",
+  "google__gson-1014",
+  "google__gson-2024",
+  "hashicorp__terraform-35611",
+  "immutable-js__immutable-js-2006",
+  "jordansissel__fpm-1850",
+  "laravel__framework-46234",
+  "laravel__framework-51890",
+  "laravel__framework-52451",
+  "micropython__micropython-10095",
+  "micropython__micropython-15898",
+  "mrdoob__three.js-26589",
+  "mrdoob__three.js-27395",
+  "nlohmann__json-4237",
+  "nushell__nushell-13246",
+  "nushell__nushell-13605",
+  "nushell__nushell-13831",
+  "php-cs-fixer__php-cs-fixer-8064",
+  "phpoffice__phpspreadsheet-3463",
+  "phpoffice__phpspreadsheet-3903",
+  "redis__redis-10068",
+  "redis__redis-12272",
+  "rubocop__rubocop-13375",
+  "tokio-rs__tokio-6752",
+  "tokio-rs__tokio-7139",
+  "uutils__coreutils-6731",
+  "vuejs__core-11589",
+  "vuejs__core-11870",
+  "vuejs__core-11915"
+ ],
+ "unresolved_ids": [
+  "astral-sh__ruff-15356",
+  "axios__axios-6539",
+  "babel__babel-15649",
+  "burntsushi__ripgrep-2209",
+  "burntsushi__ripgrep-2576",
+  "caddyserver__caddy-6051",
+  "facebook__docusaurus-9183",
+  "faker-ruby__faker-2705",
+  "faker-ruby__faker-2970",
+  "fastlane__fastlane-19304",
+  "fastlane__fastlane-20642",
+  "fluent__fluentd-4030",
+  "gin-gonic__gin-1805",
+  "gin-gonic__gin-3741",
+  "gin-gonic__gin-3820",
+  "google__gson-2479",
+  "hashicorp__terraform-34814",
+  "hashicorp__terraform-34900",
+  "jekyll__jekyll-8047",
+  "jekyll__jekyll-8761",
+  "jekyll__jekyll-9141",
+  "jordansissel__fpm-1829",
+  "jqlang__jq-2728",
+  "php-cs-fixer__php-cs-fixer-7663",
+  "phpoffice__phpspreadsheet-4214",
+  "preactjs__preact-3345",
+  "preactjs__preact-3739",
+  "projectlombok__lombok-3326",
+  "prometheus__prometheus-10633",
+  "redis__redis-11734",
+  "rubocop__rubocop-13579",
+  "rubocop__rubocop-13627",
+  "tokio-rs__axum-2096",
+  "uutils__coreutils-6575",
+  "valkey-io__valkey-1499"
+ ],
+ "error_ids": [
+  "gohugoio__hugo-12204",
+  "javaparser__javaparser-4538",
+  "preactjs__preact-2757",
+  "sharkdp__bat-2835",
+  "tokio-rs__axum-691",
+  "tokio-rs__axum-734",
+  "tokio-rs__tokio-6724"
+ ],
+ "oracle": [
+  {
+   "instance_id": "apache__druid-14092",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 111,
+   "f2p": "1/1",
+   "p2p": "1/1"
+  },
+  {
+   "instance_id": "apache__druid-14092",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 73,
+   "f2p": "0/1",
+   "p2p": "0/1"
+  },
+  {
+   "instance_id": "apache__druid-16875",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 97,
+   "f2p": "1/1",
+   "p2p": "2/2"
+  },
+  {
+   "instance_id": "apache__druid-16875",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 67,
+   "f2p": "0/1",
+   "p2p": "0/2"
+  },
+  {
+   "instance_id": "apache__lucene-12196",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 122,
+   "f2p": "1/1",
+   "p2p": "11/11"
+  },
+  {
+   "instance_id": "apache__lucene-12196",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 139,
+   "f2p": "0/1",
+   "p2p": "11/11"
+  }
+ ],
+ "details": [
+  {
+   "instance_id": "apache__druid-14092",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 111,
+   "f2p": "1/1",
+   "p2p": "1/1"
+  },
+  {
+   "instance_id": "apache__druid-14092",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 73,
+   "f2p": "0/1",
+   "p2p": "0/1"
+  },
+  {
+   "instance_id": "apache__druid-14092",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 82,
+   "f2p": "1/1",
+   "p2p": "1/1"
+  },
+  {
+   "instance_id": "apache__druid-16875",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 97,
+   "f2p": "1/1",
+   "p2p": "2/2"
+  },
+  {
+   "instance_id": "apache__druid-16875",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 67,
+   "f2p": "0/1",
+   "p2p": "0/2"
+  },
+  {
+   "instance_id": "apache__druid-16875",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 97,
+   "f2p": "1/1",
+   "p2p": "2/2"
+  },
+  {
+   "instance_id": "apache__lucene-12196",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 122,
+   "f2p": "1/1",
+   "p2p": "11/11"
+  },
+  {
+   "instance_id": "apache__lucene-12196",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 139,
+   "f2p": "0/1",
+   "p2p": "11/11"
+  },
+  {
+   "instance_id": "apache__lucene-12196",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 132,
+   "f2p": "1/1",
+   "p2p": "11/11"
+  },
+  {
+   "instance_id": "apache__lucene-13494",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 152,
+   "f2p": "1/1",
+   "p2p": "8/8"
+  },
+  {
+   "instance_id": "apache__lucene-12212",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 135,
+   "f2p": "1/1",
+   "p2p": "10/10"
+  },
+  {
+   "instance_id": "astral-sh__ruff-15626",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 148,
+   "f2p": "2/2",
+   "p2p": "34/34"
+  },
+  {
+   "instance_id": "astral-sh__ruff-15356",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 162,
+   "f2p": "0/1",
+   "p2p": "133/133"
+  },
+  {
+   "instance_id": "astral-sh__ruff-15443",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 110,
+   "f2p": "1/1",
+   "p2p": "58/58"
+  },
+  {
+   "instance_id": "axios__axios-6539",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 45,
+   "f2p": "0/1",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "axios__axios-4731",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 37,
+   "f2p": "1/1",
+   "p2p": "1/1"
+  },
+  {
+   "instance_id": "babel__babel-15649",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 128,
+   "f2p": "0/1",
+   "p2p": "105/105"
+  },
+  {
+   "instance_id": "burntsushi__ripgrep-2576",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 34,
+   "f2p": "0/1",
+   "p2p": "84/85"
+  },
+  {
+   "instance_id": "burntsushi__ripgrep-2209",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 39,
+   "f2p": "0/1",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "caddyserver__caddy-6051",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 27,
+   "f2p": "0/1",
+   "p2p": "19/19"
+  },
+  {
+   "instance_id": "facebook__docusaurus-9183",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 74,
+   "f2p": "0/1",
+   "p2p": "35/35"
+  },
+  {
+   "instance_id": "faker-ruby__faker-2970",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 30,
+   "f2p": "1/1",
+   "p2p": "7/8"
+  },
+  {
+   "instance_id": "faker-ruby__faker-2705",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 74,
+   "f2p": "1/1",
+   "p2p": "10/15"
+  },
+  {
+   "instance_id": "fastlane__fastlane-20642",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 33,
+   "f2p": "0/1",
+   "p2p": "12/12"
+  },
+  {
+   "instance_id": "fastlane__fastlane-19304",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 41,
+   "f2p": "1/1",
+   "p2p": "0/10"
+  },
+  {
+   "instance_id": "fastlane__fastlane-20958",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 43,
+   "f2p": "1/1",
+   "p2p": "12/12"
+  },
+  {
+   "instance_id": "fluent__fluentd-3616",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 32,
+   "f2p": "1/1",
+   "p2p": "2/2"
+  },
+  {
+   "instance_id": "fluent__fluentd-4030",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 27,
+   "f2p": "0/1",
+   "p2p": "4/4"
+  },
+  {
+   "instance_id": "fmtlib__fmt-2317",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 53,
+   "f2p": "1/1",
+   "p2p": "103/103"
+  },
+  {
+   "instance_id": "fmtlib__fmt-3729",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 23,
+   "f2p": "1/1",
+   "p2p": "12/12"
+  },
+  {
+   "instance_id": "gin-gonic__gin-3820",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 31,
+   "f2p": "0/1",
+   "p2p": "16/16"
+  },
+  {
+   "instance_id": "gin-gonic__gin-3741",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 24,
+   "f2p": "0/1",
+   "p2p": "1/1"
+  },
+  {
+   "instance_id": "gin-gonic__gin-1805",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 24,
+   "f2p": "0/1",
+   "p2p": "13/13"
+  },
+  {
+   "instance_id": "gohugoio__hugo-12343",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 44,
+   "f2p": "1/1",
+   "p2p": "23/23"
+  },
+  {
+   "instance_id": "gohugoio__hugo-12579",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 37,
+   "f2p": "1/1",
+   "p2p": "23/23"
+  },
+  {
+   "instance_id": "gohugoio__hugo-12204",
+   "model_name_or_path": "silentfail_replication",
+   "error": "patch apply failed"
+  },
+  {
+   "instance_id": "google__gson-2024",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 37,
+   "f2p": "3/3",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "google__gson-1014",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 31,
+   "f2p": "2/2",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "google__gson-2479",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 41,
+   "f2p": "0/2",
+   "p2p": "0/1"
+  },
+  {
+   "instance_id": "hashicorp__terraform-34814",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 37,
+   "f2p": "0/1",
+   "p2p": "16/16"
+  },
+  {
+   "instance_id": "hashicorp__terraform-34900",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 52,
+   "f2p": "0/2",
+   "p2p": "15/15"
+  },
+  {
+   "instance_id": "hashicorp__terraform-35611",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 54,
+   "f2p": "1/1",
+   "p2p": "20/20"
+  },
+  {
+   "instance_id": "immutable-js__immutable-js-2006",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 58,
+   "f2p": "1/1",
+   "p2p": "22/22"
+  },
+  {
+   "instance_id": "javaparser__javaparser-4538",
+   "model_name_or_path": "silentfail_replication",
+   "error": "patch apply failed"
+  },
+  {
+   "instance_id": "jekyll__jekyll-9141",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 37,
+   "f2p": "0/1",
+   "p2p": "4/4"
+  },
+  {
+   "instance_id": "jekyll__jekyll-8761",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 27,
+   "f2p": "0/1",
+   "p2p": "1/1"
+  },
+  {
+   "instance_id": "jekyll__jekyll-8047",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 28,
+   "f2p": "0/1",
+   "p2p": "10/11"
+  },
+  {
+   "instance_id": "jordansissel__fpm-1850",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 25,
+   "f2p": "1/1",
+   "p2p": "2/2"
+  },
+  {
+   "instance_id": "jordansissel__fpm-1829",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 29,
+   "f2p": "1/6",
+   "p2p": "41/41"
+  },
+  {
+   "instance_id": "jqlang__jq-2728",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 91,
+   "f2p": "0/1",
+   "p2p": "28/28"
+  },
+  {
+   "instance_id": "laravel__framework-51890",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 24,
+   "f2p": "1/1",
+   "p2p": "8/8"
+  },
+  {
+   "instance_id": "laravel__framework-46234",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 28,
+   "f2p": "1/1",
+   "p2p": "44/44"
+  },
+  {
+   "instance_id": "laravel__framework-52451",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 25,
+   "f2p": "1/1",
+   "p2p": "18/18"
+  },
+  {
+   "instance_id": "micropython__micropython-10095",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 41,
+   "f2p": "1/1",
+   "p2p": "22/22"
+  },
+  {
+   "instance_id": "micropython__micropython-15898",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 34,
+   "f2p": "1/1",
+   "p2p": "13/13"
+  },
+  {
+   "instance_id": "mrdoob__three.js-26589",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 166,
+   "f2p": "3/3",
+   "p2p": "13/13"
+  },
+  {
+   "instance_id": "mrdoob__three.js-27395",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 54,
+   "f2p": "1/1",
+   "p2p": "18/18"
+  },
+  {
+   "instance_id": "nlohmann__json-4237",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 33,
+   "f2p": "1/1",
+   "p2p": "21/21"
+  },
+  {
+   "instance_id": "nushell__nushell-13246",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 153,
+   "f2p": "1/1",
+   "p2p": "14/14"
+  },
+  {
+   "instance_id": "nushell__nushell-13605",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 251,
+   "f2p": "1/1",
+   "p2p": "50/50"
+  },
+  {
+   "instance_id": "nushell__nushell-13831",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 218,
+   "f2p": "1/1",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "php-cs-fixer__php-cs-fixer-7663",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 24,
+   "f2p": "5/8",
+   "p2p": "68/68"
+  },
+  {
+   "instance_id": "php-cs-fixer__php-cs-fixer-8064",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 22,
+   "f2p": "1/1",
+   "p2p": "17/17"
+  },
+  {
+   "instance_id": "phpoffice__phpspreadsheet-4214",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 24,
+   "f2p": "2/2",
+   "p2p": "38/40"
+  },
+  {
+   "instance_id": "phpoffice__phpspreadsheet-3903",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 22,
+   "f2p": "1/1",
+   "p2p": "10/10"
+  },
+  {
+   "instance_id": "phpoffice__phpspreadsheet-3463",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 21,
+   "f2p": "1/1",
+   "p2p": "12/12"
+  },
+  {
+   "instance_id": "preactjs__preact-3739",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 45,
+   "f2p": "0/1",
+   "p2p": "12/12"
+  },
+  {
+   "instance_id": "preactjs__preact-2757",
+   "model_name_or_path": "silentfail_replication",
+   "error": "KeyError: 'tests_status'"
+  },
+  {
+   "instance_id": "preactjs__preact-3345",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 60,
+   "f2p": "0/1",
+   "p2p": "16/16"
+  },
+  {
+   "instance_id": "projectlombok__lombok-3326",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 56,
+   "f2p": "1/1",
+   "p2p": "3/4"
+  },
+  {
+   "instance_id": "prometheus__prometheus-10633",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 27,
+   "f2p": "0/1",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "redis__redis-12272",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 99,
+   "f2p": "2/2",
+   "p2p": "10/10"
+  },
+  {
+   "instance_id": "redis__redis-10068",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 90,
+   "f2p": "1/1",
+   "p2p": "7/7"
+  },
+  {
+   "instance_id": "redis__redis-11734",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 136,
+   "f2p": "0/2",
+   "p2p": "47/47"
+  },
+  {
+   "instance_id": "rubocop__rubocop-13579",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 28,
+   "f2p": "2/4",
+   "p2p": "15/15"
+  },
+  {
+   "instance_id": "rubocop__rubocop-13375",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 35,
+   "f2p": "1/1",
+   "p2p": "100/100"
+  },
+  {
+   "instance_id": "rubocop__rubocop-13627",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 27,
+   "f2p": "1/4",
+   "p2p": "21/24"
+  },
+  {
+   "instance_id": "sharkdp__bat-2835",
+   "model_name_or_path": "silentfail_replication",
+   "error": "KeyError: 'tests_status'"
+  },
+  {
+   "instance_id": "tokio-rs__axum-2096",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 50,
+   "f2p": "0/4",
+   "p2p": "16/17"
+  },
+  {
+   "instance_id": "tokio-rs__axum-734",
+   "model_name_or_path": "silentfail_replication",
+   "error": "KeyError: 'tests_status'"
+  },
+  {
+   "instance_id": "tokio-rs__axum-691",
+   "model_name_or_path": "silentfail_replication",
+   "error": "KeyError: 'tests_status'"
+  },
+  {
+   "instance_id": "tokio-rs__tokio-7139",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 40,
+   "f2p": "1/1",
+   "p2p": "16/16"
+  },
+  {
+   "instance_id": "tokio-rs__tokio-6724",
+   "model_name_or_path": "silentfail_replication",
+   "error": "KeyError: 'tests_status'"
+  },
+  {
+   "instance_id": "tokio-rs__tokio-6752",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 34,
+   "f2p": "1/1",
+   "p2p": "32/32"
+  },
+  {
+   "instance_id": "uutils__coreutils-6575",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 76,
+   "f2p": "0/1",
+   "p2p": "12/64"
+  },
+  {
+   "instance_id": "uutils__coreutils-6731",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 70,
+   "f2p": "1/1",
+   "p2p": "9/9"
+  },
+  {
+   "instance_id": "valkey-io__valkey-1499",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 139,
+   "f2p": "0/1",
+   "p2p": "46/46"
+  },
+  {
+   "instance_id": "vuejs__core-11870",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 53,
+   "f2p": "1/1",
+   "p2p": "7/7"
+  },
+  {
+   "instance_id": "vuejs__core-11915",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 50,
+   "f2p": "2/2",
+   "p2p": "43/43"
+  },
+  {
+   "instance_id": "vuejs__core-11589",
+   "model_name_or_path": "silentfail_replication",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 49,
+   "f2p": "1/1",
+   "p2p": "78/78"
+  }
+ ]
+}

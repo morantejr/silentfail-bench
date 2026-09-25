@@ -46,7 +46,7 @@ def perm_p(y, s, grp, within, n=4000, seed=3):
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--rows", type=Path, required=True); ap.add_argument("--windows", type=Path, default=None); ap.add_argument("--full16k", type=Path, default=None)
+    ap.add_argument("--rows", type=Path, required=True); ap.add_argument("--windows", type=Path, default=None); ap.add_argument("--full16k", type=Path, default=None); ap.add_argument("--prefix4k", type=Path, default=None)
     ap.add_argument("--out", type=Path, default=None); a = ap.parse_args()
     rows = [json.loads(l) for l in a.rows.read_text().splitlines() if l.strip()]
     pop = [r for r in rows if not r["excluded"] and r["visible_pass"]]
@@ -83,7 +83,7 @@ def main() -> None:
                                         "vs_lines_added_delta": round(tr.delta, 3), "vs_lines_added_CI95": [round(tr.ci_lo, 3), round(tr.ci_hi, 3)]}
                 rep["R_P2_u_max_confirmed"] = bool(a_um > 0.60 and ci_um[0] > 0.50 and pw < 0.05)
                 rep["R_P3_u_max_beats_ruler"] = bool(a_um > rep["ruler_lines_added"]["AUROC"])
-    for label, d in (("single_critics_prefix4k", None), ("single_critics_full16k", a.full16k)):
+    for label, d in (("single_critics_prefix4k", a.prefix4k), ("single_critics_full16k", a.full16k)):
         if d is None or not d.exists(): continue
         out = {}
         for f in sorted(d.glob("scores_gpu_*.json")):
