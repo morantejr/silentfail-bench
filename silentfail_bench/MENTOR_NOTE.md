@@ -822,3 +822,33 @@ reviewer's main objection — the selector is weak — into a measured fact:
 this selector barely selects. The Tier-2 selector axis (SWE-RM / frontier
 judge on the same candidate pools, ~$150, two weeks) is the natural next
 study; it is the mentor's call.
+
+# 18. Tier 1.5 after two more external reads — draft v0.5 (2026-09-25)
+
+Both reads (ChatGPT, Cursor) agree with the skeptical review: honest arc,
+workshop-strong, main-track only with a selector that has signal. Their
+concrete asks, all done at $0 from existing scores:
+
+- **The proposal's confirmatory endpoint, finally computed.** LORO in place
+  of the 70/30 split (declared substitution): ΔAUROC(M_{c+u} − M_c) =
+  −0.076 (Verified), −0.022 (Multilingual), **−0.030 [−0.10, +0.04] pooled**
+  over 47 positives / 46 repos. Adding disagreement to the selector's score
+  lowers out-of-fold AUROC. This is now the paper's tightest statement.
+- Simultaneous bound stated: +0.04 (endpoint), +0.22 (single protocols),
+  +0.45 (widest interval in the sweep).
+- Review-budget operating points at 5/10/20% for u, −c, ruler, gpt-5
+  judge; alternative u statistics (range, MAD, entropy, mean/min rank) —
+  all ≤ 0.60. Appendix tables.
+- Multilingual results table; control figure (Fig. 9); six instrument
+  failures enumerated.
+- Intro rewritten to keep theory / observed (0.81→0.61) / not-shown
+  (concentration) apart in every sentence.
+- Limitations: "the selection-conditional regime is observed on one
+  benchmark" — Cursor's objection, stated as a limitation and as the
+  missing experiment.
+- Title changed to a failure-to-reject form: *Critic Disagreement Adds No
+  Detectable Failure Signal Beyond the Selector on SWE-Agent Trajectories.*
+  Author's call.
+
+Decision unchanged: submit v0.5 to a workshop/TMLR, or run the selector
+axis (Tier 2, ~$150) for a main-track attempt.

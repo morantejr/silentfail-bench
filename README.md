@@ -12,7 +12,7 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: draft v0.4 after skeptical review and the unselected-candidate control (2026-09-25).**
+> **Status: draft v0.5 (2026-09-25) — registered endpoint computed: disagreement adds −0.03 [−0.10, +0.04] AUROC over the selector, pooled over 47 positives.**
 > SWE-bench Verified pilot (41 instances, 12 positives) plus a pre-registered
 > replication on SWE-bench Multilingual (114 instances, 41 repos, 35 positives),
 > seven reward-model critics at 4k/8k/16k and windowed, three LLM judges,

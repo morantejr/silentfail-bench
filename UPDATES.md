@@ -258,4 +258,22 @@ mentor's: submit (workshop / TMLR) or run the selector axis (Tier 2).
 
 ---
 
-## Next entry (pending): mentor decision — submit v0.4 or Tier 2 selector axis
+## Tier 1.5 · draft v0.5 — 2026-09-25
+
+**Done.** The proposal's registered confirmatory endpoint computed by
+leave-one-repository-out on 47 pooled positives; operating points at review
+budgets; alternative disagreement statistics; Multilingual table; control
+figure; six instrument failures enumerated; intro discipline; title in
+failure-to-reject form.
+
+**Learned.** ΔAUROC(M_{c+u} − M_c) = **−0.03 [−0.10, +0.04]** pooled: adding
+disagreement to the selector's score lowers out-of-fold AUROC. No
+alternative u statistic exceeds 0.60. At a 20% review budget u catches 25%
+/ 23% of failures; the selector's own score 33% / 29%.
+
+**Changed.** The upper bound on disagreement's residual value is +0.04 on
+the registered endpoint (was +0.22, per-protocol). Nothing else.
+
+---
+
+## Next entry (pending): mentor decision — submit v0.5 or Tier 2 selector axis

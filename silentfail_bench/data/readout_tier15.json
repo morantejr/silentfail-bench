@@ -1,0 +1,240 @@
+{
+ "A_confirmatory_endpoint_LORO": [
+  {
+   "label": "verified",
+   "n": 34,
+   "positives": 12,
+   "AUROC_Mc_oof": 0.527,
+   "AUROC_Mcu_oof": 0.451,
+   "delta_AUROC_oof": -0.076,
+   "CI95_repo_clustered": [
+    -0.157,
+    0.077
+   ]
+  },
+  {
+   "label": "multilingual",
+   "n": 77,
+   "positives": 35,
+   "AUROC_Mc_oof": 0.459,
+   "AUROC_Mcu_oof": 0.436,
+   "delta_AUROC_oof": -0.022,
+   "CI95_repo_clustered": [
+    -0.132,
+    0.079
+   ]
+  },
+  {
+   "label": "pooled",
+   "n": 111,
+   "positives": 47,
+   "AUROC_Mc_oof": 0.484,
+   "AUROC_Mcu_oof": 0.454,
+   "delta_AUROC_oof": -0.03,
+   "CI95_repo_clustered": [
+    -0.1,
+    0.042
+   ]
+  }
+ ],
+ "B_operating_points": {
+  "verified": {
+   "u": {
+    "5%": {
+     "flagged": 2,
+     "failures_caught": 1,
+     "recall": 0.083,
+     "precision": 0.5
+    },
+    "10%": {
+     "flagged": 3,
+     "failures_caught": 1,
+     "recall": 0.083,
+     "precision": 0.333
+    },
+    "20%": {
+     "flagged": 7,
+     "failures_caught": 3,
+     "recall": 0.25,
+     "precision": 0.429
+    }
+   },
+   "-c": {
+    "5%": {
+     "flagged": 2,
+     "failures_caught": 2,
+     "recall": 0.167,
+     "precision": 1.0
+    },
+    "10%": {
+     "flagged": 3,
+     "failures_caught": 2,
+     "recall": 0.167,
+     "precision": 0.667
+    },
+    "20%": {
+     "flagged": 7,
+     "failures_caught": 4,
+     "recall": 0.333,
+     "precision": 0.571
+    }
+   },
+   "lines_added": {
+    "5%": {
+     "flagged": 2,
+     "failures_caught": 1,
+     "recall": 0.083,
+     "precision": 0.5
+    },
+    "10%": {
+     "flagged": 3,
+     "failures_caught": 2,
+     "recall": 0.167,
+     "precision": 0.667
+    },
+    "20%": {
+     "flagged": 7,
+     "failures_caught": 5,
+     "recall": 0.417,
+     "precision": 0.714
+    }
+   },
+   "best_judge_J1": {
+    "5%": {
+     "flagged": 2,
+     "failures_caught": 1,
+     "recall": 0.083,
+     "precision": 0.5
+    },
+    "10%": {
+     "flagged": 3,
+     "failures_caught": 2,
+     "recall": 0.167,
+     "precision": 0.667
+    },
+    "20%": {
+     "flagged": 7,
+     "failures_caught": 4,
+     "recall": 0.333,
+     "precision": 0.571
+    }
+   },
+   "_prevalence": 0.353,
+   "_n": 34
+  },
+  "multilingual": {
+   "u": {
+    "5%": {
+     "flagged": 4,
+     "failures_caught": 2,
+     "recall": 0.057,
+     "precision": 0.5
+    },
+    "10%": {
+     "flagged": 8,
+     "failures_caught": 2,
+     "recall": 0.057,
+     "precision": 0.25
+    },
+    "20%": {
+     "flagged": 15,
+     "failures_caught": 8,
+     "recall": 0.229,
+     "precision": 0.533
+    }
+   },
+   "-c": {
+    "5%": {
+     "flagged": 4,
+     "failures_caught": 4,
+     "recall": 0.114,
+     "precision": 1.0
+    },
+    "10%": {
+     "flagged": 8,
+     "failures_caught": 6,
+     "recall": 0.171,
+     "precision": 0.75
+    },
+    "20%": {
+     "flagged": 15,
+     "failures_caught": 10,
+     "recall": 0.286,
+     "precision": 0.667
+    }
+   },
+   "lines_added": {
+    "5%": {
+     "flagged": 4,
+     "failures_caught": 1,
+     "recall": 0.029,
+     "precision": 0.25
+    },
+    "10%": {
+     "flagged": 8,
+     "failures_caught": 3,
+     "recall": 0.086,
+     "precision": 0.375
+    },
+    "20%": {
+     "flagged": 15,
+     "failures_caught": 6,
+     "recall": 0.171,
+     "precision": 0.4
+    }
+   },
+   "best_judge_J1": {
+    "5%": {
+     "flagged": 4,
+     "failures_caught": 3,
+     "recall": 0.086,
+     "precision": 0.75
+    },
+    "10%": {
+     "flagged": 8,
+     "failures_caught": 5,
+     "recall": 0.143,
+     "precision": 0.625
+    },
+    "20%": {
+     "flagged": 15,
+     "failures_caught": 8,
+     "recall": 0.229,
+     "precision": 0.533
+    }
+   },
+   "_prevalence": 0.455,
+   "_n": 77
+  }
+ },
+ "C_alternative_u_statistics": {
+  "verified": {
+   "std_registered": 0.508,
+   "range": 0.559,
+   "mad": 0.481,
+   "entropy_of_normalized": 0.5,
+   "mean_rank_norm": 0.466,
+   "min_rank_norm": 0.483
+  },
+  "multilingual": {
+   "std_registered": 0.565,
+   "range": 0.587,
+   "mad": 0.552,
+   "entropy_of_normalized": 0.393,
+   "mean_rank_norm": 0.601,
+   "min_rank_norm": 0.581
+  }
+ },
+ "D_simultaneous_bound": {
+  "primary_protocol_M3_upper": {
+   "verified": 0.219,
+   "multilingual": 0.217
+  },
+  "widest_upper_in_sweep": {
+   "row": "code-trained critic selecting; 5-RM panel (Verified)",
+   "upper": 0.452
+  },
+  "note": "the +0.22 bound is per-protocol; the widest interval in the Table 1 sweep reaches +0.45"
+ },
+ "note": "A is the proposal's confirmatory endpoint computed with leave-one-repository-out in place of the 70/30 split that never reached 10 test positives; declared post-hoc substitution of the CV scheme, same estimand."
+}

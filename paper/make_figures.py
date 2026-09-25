@@ -147,6 +147,22 @@ for yi, lab in zip(yy, labels):
 ax.axvline(0.5, color="k", lw=0.8, ls=":"); ax.axvline(0.665, color=GOLD, lw=1.2, ls="--")
 ax.set_yticks(yy); ax.set_yticklabels(labels, fontsize=8); ax.set_xlim(0.3, 0.85); ax.set_xlabel("AUROC for silent failure")
 ax.plot([], [], "o", color=GRAY, label="SWE-bench Verified: 12 repos, 12 positives"); ax.plot([], [], "o", color=BLUE, label=f"SWE-bench Multilingual: {rr['n_repos']} repos, {rr['silent_failures']} positives (95% CI)")
-ax.legend(fontsize=7.5, frameon=False, loc="lower right"); ax.set_title("the same instrument on three times the repositories", fontsize=9)
+ax.legend(fontsize=7.5, frameon=False, loc="upper right", bbox_to_anchor=(1.0, 1.02)); ax.set_title("the same instrument on three times the repositories", fontsize=9, loc="left")
 fig.tight_layout(); fig.savefig(OUT / "fig_replication.pdf"); plt.close(fig)
+
+# ---------- Fig 9: the unselected-candidate control (Amendment 4f) ----------
+c4f = json.loads((Path("silentfail_bench/data/random_arm/prereg_readout_amendment4f.json")).read_text())
+fig, axs = plt.subplots(1, 2, figsize=(6.4, 2.6))
+for ax, key, title in ((axs[0], "failure_rate", "silent-failure rate"), (axs[1], "AUROC_negc", "selector's own score, AUROC for failure")):
+    x = np.arange(2); w = 0.34
+    rnd = [c4f[b][f"{key}_random"] for b in ("verified", "multilingual")]
+    com = [c4f[b][f"{key}_committed"] if key == "failure_rate" else c4f[b]["AUROC_negc_committed_same_rows"] for b in ("verified", "multilingual")]
+    ax.bar(x - w/2, rnd, w, color=GRAY, label="candidate the critic passed over"); ax.bar(x + w/2, com, w, color=BLUE, label="candidate the critic committed")
+    for i in range(2):
+        ax.text(x[i] - w/2, rnd[i] + 0.01, f"{rnd[i]:.2f}", ha="center", fontsize=7); ax.text(x[i] + w/2, com[i] + 0.01, f"{com[i]:.2f}", ha="center", fontsize=7)
+    ax.set_xticks(x); ax.set_xticklabels([f"Verified\n(n={c4f['verified']['n_paired']} paired)", f"Multilingual\n(n={c4f['multilingual']['n_paired']} paired)"], fontsize=8)
+    ax.set_title(title, fontsize=9); ax.set_ylim(0, 1.0 if key == "AUROC_negc" else 0.65)
+    if key == "AUROC_negc": ax.axhline(0.5, color="k", lw=0.8, ls=":")
+axs[0].legend(fontsize=6.5, frameon=False, loc="upper left")
+fig.tight_layout(); fig.savefig(OUT / "fig_control.pdf"); plt.close(fig)
 print("figures:", sorted(p.name for p in OUT.glob("*.pdf")))
