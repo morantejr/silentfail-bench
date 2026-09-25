@@ -1,0 +1,111 @@
+{
+  "population_n": 34,
+  "silent_failures": 12,
+  "audit_only": {
+    "ray2333_grm_gemma2_2b_rewardmodel_ft": {
+      "AUROC_negc_full": 0.441,
+      "truncated_rows": 20
+    },
+    "ray2333_grm_llama3_2_3b_rewardmodel_ft": {
+      "AUROC_negc_full": 0.489,
+      "truncated_rows": 15
+    },
+    "skywork_skywork_reward_v2_llama_3_1_8b": {
+      "AUROC_negc_full": 0.591,
+      "truncated_rows": 15
+    },
+    "skywork_skywork_reward_v2_llama_3_2_1b": {
+      "AUROC_negc_full": 0.712,
+      "truncated_rows": 15
+    },
+    "skywork_skywork_reward_v2_qwen3_1_7b": {
+      "AUROC_negc_full": 0.572,
+      "truncated_rows": 17
+    },
+    "skywork_skywork_reward_v2_qwen3_4b": {
+      "AUROC_negc_full": 0.587,
+      "truncated_rows": 17,
+      "corr_prefix_vs_full_c": 0.346
+    },
+    "tiger_lab_acecoderm_32b": {
+      "AUROC_negc_full": 0.557,
+      "truncated_rows": 25
+    },
+    "tiger_lab_acecoderm_7b": {
+      "AUROC_negc_full": 0.428,
+      "truncated_rows": 31
+    },
+    "panel_m4_full": {
+      "M1_AUROC_u_full": 0.439,
+      "primary_M1_prefix": 0.508,
+      "A2_P2_gain_gt_0p10": false,
+      "M3_vs_primary_c": -0.182,
+      "CI95": [
+        -0.384,
+        0.171
+      ]
+    },
+    "panel_m5_with_acecode": {
+      "M1_AUROC_u_full": 0.475,
+      "primary_M1_prefix": 0.508,
+      "A2_P2_gain_gt_0p10": false,
+      "M3_vs_primary_c": -0.146,
+      "CI95": [
+        -0.371,
+        0.302
+      ]
+    }
+  },
+  "reselect": {
+    "skywork_skywork_reward_v2_llama_3_1_8b": {
+      "n_reselected": 33,
+      "changed_vs_primary": 23,
+      "gold_missing": 0,
+      "gold_error_excluded": [
+        "sympy__sympy-17318"
+      ],
+      "failures": 11,
+      "M1_AUROC_u": 0.483,
+      "M2_AUROC_negc": 0.736,
+      "M3": -0.252,
+      "CI95": [
+        -0.468,
+        0.283
+      ],
+      "p": 0.7782,
+      "panel": [
+        "ray2333_grm_gemma2_2b_rewardmodel_ft",
+        "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+        "skywork_skywork_reward_v2_llama_3_2_1b",
+        "skywork_skywork_reward_v2_qwen3_1_7b",
+        "tiger_lab_acecoderm_7b"
+      ],
+      "inference": "eligible"
+    },
+    "tiger_lab_acecoderm_7b": {
+      "n_reselected": 33,
+      "changed_vs_primary": 23,
+      "gold_missing": 0,
+      "gold_error_excluded": [
+        "pylint-dev__pylint-4661"
+      ],
+      "failures": 11,
+      "M1_AUROC_u": 0.607,
+      "M2_AUROC_negc": 0.463,
+      "M3": 0.145,
+      "CI95": [
+        -0.112,
+        0.629
+      ],
+      "p": 0.1853,
+      "panel": [
+        "ray2333_grm_gemma2_2b_rewardmodel_ft",
+        "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+        "skywork_skywork_reward_v2_llama_3_2_1b",
+        "skywork_skywork_reward_v2_qwen3_1_7b",
+        "skywork_skywork_reward_v2_llama_3_1_8b"
+      ],
+      "inference": "eligible"
+    }
+  }
+}
