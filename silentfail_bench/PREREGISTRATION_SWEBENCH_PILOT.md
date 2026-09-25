@@ -338,3 +338,66 @@ have each contributed ≥ 3 usable trajectories, whichever first; never on a
 favourable point estimate. Same bars. Estimated cost ≈ $5 generation +
 container gold. Requires Docker again on this machine. Runs only on
 explicit decision.
+
+---
+
+# Amendment 4e (revised) — wide-repository replication on SWE-bench Multilingual — 2026-09-25, before any trajectory exists
+
+**Why revised.** 4e named SWE-smith / SWE-rebench. Neither is gradable by the
+official `swebench` 5.x harness (their repositories have no harness specs),
+and SWE-smith needs its own Docker-based harness, which this machine no
+longer has. **SWE-bench Multilingual** (300 instances, **41 repositories**,
+9 languages; `swe-bench/SWE-Bench_Multilingual`) is a self-describing 5.x
+dataset with official images and eval scripts, supported by mini-swe-agent's
+batch runner. It attacks the binding constraint directly: 41 independent
+repository clusters against Verified's 12. It also changes the language mix,
+which is a generalization axis, not a confound.
+
+**Infrastructure change, declared.** No Colima. Agent environments run in
+Modal sandboxes (`environment_class: swerex_modal`); the LLM calls stay
+local through the same OpenAI key. Gold runs through `modal/gold_modal.py`,
+which mirrors `swebench.harness.run_evaluation.run_instance` (5.0.2) step
+for step in a Modal sandbox built from the dataset's own `image`, and grades
+with the harness's own `get_eval_report`. **Precondition:** before any model
+patch is graded, the runner must pass an oracle pair on Verified (reference
+patch resolves; empty patch does not) and a reference-patch oracle on ≥ 3
+Multilingual instances spanning ≥ 3 languages.
+
+**Sampling.** Fixed seed 20260922. From each of the 41 repositories, up to 3
+instances drawn uniformly without replacement (repositories with fewer take
+all) → ≈115 instances. `k = 4`, `gpt-5-mini`, 40-step limit, same
+`swebench.yaml` base config, same selection critic
+(`Skywork-Reward-V2-Qwen3-4B`) and the same m = 4 audit panel as the primary.
+Cost cap: $15 OpenAI, $15 Modal. Instances whose gold errors are excluded
+(`gold_error`), as in the pilot.
+
+**Population, positive class, metrics, splits: as the primary.** Rank norms
+fit on train repositories only (70/30 by repository, same salt).
+
+**Inference floor.** Fewer than **20** positives → no conclusion in either
+direction; the run is reported descriptively only.
+
+**Predictions (bars fixed now).**
+- **R-P1 (null replication).** Primary-protocol panel `u` (4k prefix):
+  `AUROC(u) < 0.60` and its repo-clustered 95% CI includes 0.50.
+- **R-P2 (the marginal positive, confirmatory).** Amendment-3 protocol
+  (same pruning, same windows) `AUROC(u_max) > 0.60` **and** the CI lower
+  bound `> 0.50` **and** the within-repository permutation `p < 0.05`.
+- **R-P3 (the ruler).** `AUROC(u_max) > AUROC(lines added)` on the same
+  rows (point estimate; paired CI reported).
+- Reported alongside, no prediction: every single critic at 4k and 16k;
+  the LLM-judge panel (J1) if credits allow; incremental-value model.
+
+**Readings.** R-P2 passes → windowed disagreement is a real, weak detector
+and the paper's end state moves to "narrower positive"; the confirmatory
+study the proposal promised is warranted for `u_max`, not for `u`. R-P2
+fails with R-P1 passing → the Verified `u_max` result was a twelve-positive
+fluctuation; end state "null survives", now with 41 repositories. R-P1
+fails (u works here) → the Verified null does not generalize and the paper
+is rewritten around the difference.
+
+**Stopping rule.** Unchanged: stop when the repo-clustered 95% CI on the
+primary quantity has half-width ≤ 0.08, or when 40 repositories have each
+contributed ≥ 3 usable trajectories, whichever first; never on a
+favourable point estimate. Since the sample is fixed at ≈115 instances, the
+rule decides only whether a second draw is warranted.
