@@ -401,3 +401,12 @@ primary quantity has half-width ≤ 0.08, or when 40 repositories have each
 contributed ≥ 3 usable trajectories, whichever first; never on a
 favourable point estimate. Since the sample is fixed at ≈115 instances, the
 rule decides only whether a second draw is warranted.
+
+**Amendment 4e — declared deviation, 2026-09-25 08:40, before any critic score exists.**
+The $15 OpenAI cap was exceeded: recorded trajectory cost reached $16.76 at
+420/456 trajectories because the account's rate limit (500 RPM / 500k TPM)
+killed 138 partially-run trajectories overnight, whose spend is not even in
+that figure. Stopping at 420 would drop the harder, longer instances first
+and bias the failure rate, so the remaining 36 were generated (≈$1.30) and
+the cap is recorded as ≈$18. Instances that still lack a candidate after
+that pass are excluded before any scoring, by name, in the readout.
