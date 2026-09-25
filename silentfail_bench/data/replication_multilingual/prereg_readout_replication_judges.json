@@ -1,0 +1,76 @@
+{
+ "analysis": "Amendment 4c (pre-registered): single-family LLM judge panel (OpenAI); gpt-5-mini is also the agent model",
+ "population_n": 77,
+ "silent_failures": 35,
+ "bar": 0.665,
+ "conditions": {
+  "J1": {
+   "judges": {
+    "gpt-5": {
+     "AUROC_detect": 0.662,
+     "missing": 0,
+     "M3_vs_primary_c": 0.102,
+     "CI95": [
+      -0.084,
+      0.279
+     ]
+    },
+    "gpt-5-mini": {
+     "AUROC_detect": 0.604,
+     "missing": 0,
+     "M3_vs_primary_c": 0.045,
+     "CI95": [
+      -0.121,
+      0.218
+     ]
+    },
+    "gpt-5-nano": {
+     "AUROC_detect": 0.576,
+     "missing": 0,
+     "M3_vs_primary_c": 0.016,
+     "CI95": [
+      -0.146,
+      0.182
+     ]
+    }
+   },
+   "u_LLM": {
+    "AUROC": 0.514,
+    "M3_vs_primary_c": -0.045,
+    "CI95": [
+     -0.22,
+     0.13
+    ]
+   },
+   "best_single": {
+    "judge": "gpt-5",
+    "AUROC": 0.662
+   }
+  },
+  "J2": {
+   "judges": {
+    "gpt-5": {
+     "AUROC_detect": 0.615,
+     "missing": 0,
+     "M3_vs_primary_c": 0.056,
+     "CI95": [
+      -0.134,
+      0.244
+     ]
+    },
+    "gpt-5-mini": {
+     "AUROC_detect": 0.519,
+     "missing": 0,
+     "M3_vs_primary_c": -0.041,
+     "CI95": [
+      -0.213,
+      0.137
+     ]
+    },
+    "gpt-5-nano": {
+     "missing": 13
+    }
+   }
+  }
+ }
+}

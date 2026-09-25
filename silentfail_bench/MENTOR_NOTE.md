@@ -779,8 +779,9 @@ result. Draft v0.3.
 
 Declared deviations: $18.30 generation vs the $15 cap (rate limit killed 138
 partial trajectories; stopping at 420/456 would have biased the sample);
-26% empty patches; 7 `gold_error`. LLM judges on the 77 rows: running
-(≈$4), reported when in.
+26% empty patches; 7 `gold_error`. LLM judges on the 77 rows ($4.60), patch in view: gpt-5 0.662, gpt-5-mini
+0.604, gpt-5-nano 0.576; disagreement 0.514. The judge signal shrank from
+0.72–0.75 to 0.60–0.66; still the best single detector in the study.
 
 Infrastructure record: `DEFECTS.md` (swe-rex apt layer; orphaned sandboxes;
 batch runner's preds.json skip; OpenAI 500 RPM / 500k TPM).

@@ -224,7 +224,8 @@ Draft v0.3 (`paper/main.pdf`, 12 pages, 8 figures).
 repos). Panel `u` 0.565 [0.43, 0.71] vs the critic's 0.560 — **the null
 replicates** (R-P1). `u_max` 0.541 [0.40, 0.68], within-repo p 0.53 — **the
 windowed positive does not** (R-P2). The lines-added ruler fell to 0.508:
-a Verified regularity, not a law. Every reward model 0.36–0.58.
+a Verified regularity, not a law. Every reward model 0.36–0.58; LLM judges
+0.58–0.66 with disagreement 0.514.
 
 **Changed.** End state fixed: **null survives**. The pivot is closed; the
 paper is the negative result, now on 53 repositories and 47 positives
@@ -232,4 +233,4 @@ combined. Remaining work is writing: citations, mentor read, AAAI cut.
 
 ---
 
-## Next entry (pending): LLM judges on the replication rows; mentor read of v0.3
+## Next entry (pending): mentor read of v0.3; citations; AAAI cut
