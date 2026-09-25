@@ -1,0 +1,8 @@
+{"instance_id": "astropy__astropy-14539", "candidate": 2, "g": 1}
+{"instance_id": "astropy__astropy-14598", "candidate": 3, "g": 0}
+{"instance_id": "django__django-15569", "candidate": 1, "g": 1}
+{"instance_id": "pylint-dev__pylint-8898", "candidate": 2, "g": 0}
+{"instance_id": "scikit-learn__scikit-learn-13328", "candidate": 1, "g": 1}
+{"instance_id": "sphinx-doc__sphinx-10449", "candidate": 0, "g": 1}
+{"instance_id": "sphinx-doc__sphinx-10673", "candidate": 0, "g": 1}
+{"instance_id": "sympy__sympy-16886", "candidate": 3, "g": 1}

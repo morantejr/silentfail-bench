@@ -38,7 +38,7 @@ def run_one(ts, pred: dict, log_dir: Path, timeout: int) -> dict:
         def sh(cmd: str, to: int | None = None) -> tuple[int, str]:
             p = sb.exec("bash", "-c", cmd + " 2>&1", timeout=to); out = p.stdout.read(); p.wait(); return p.returncode, out
         def put(path: str, data: str) -> None:          # write a file through the process's stdin (no filesystem API needed)
-            p = sb.exec("bash", "-c", f"cat > {path}"); p.stdin.write(data.encode()); p.stdin.write_eof(); p.wait()
+            p = sb.exec("bash", "-c", f"cat > {path}"); p.stdin.write(data.encode()); p.stdin.write_eof(); p.stdin.drain(); p.wait()
         put("/tmp/patch.diff", pred["model_patch"] or "")
         applied, out = False, ""
         if (pred["model_patch"] or "").strip():

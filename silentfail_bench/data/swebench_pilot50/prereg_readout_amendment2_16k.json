@@ -56,7 +56,7 @@
     "skywork_skywork_reward_v2_llama_3_1_8b": {
       "n_reselected": 34,
       "changed_vs_primary": 24,
-      "gold_missing": 9
+      "gold_missing": 1
     },
     "tiger_lab_acecoderm_7b": {
       "n_reselected": 34,
@@ -82,5 +82,5 @@
     }
   },
   "needs_gold_file": "data/swebench_pilot50/l4/out/gpu_scores_16k/needs_gold.jsonl",
-  "needs_gold_n": 9
+  "needs_gold_n": 1
 }

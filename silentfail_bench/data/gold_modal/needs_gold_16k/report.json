@@ -1,0 +1,137 @@
+{
+ "run_id": "needs_gold_16k",
+ "dataset": "SWE-bench/SWE-bench_Verified",
+ "total": 9,
+ "resolved_ids": [
+  "astropy__astropy-14539",
+  "django__django-15569",
+  "scikit-learn__scikit-learn-13328",
+  "sphinx-doc__sphinx-10449",
+  "sphinx-doc__sphinx-10673",
+  "sympy__sympy-16886"
+ ],
+ "unresolved_ids": [
+  "astropy__astropy-14598",
+  "pylint-dev__pylint-8898"
+ ],
+ "error_ids": [
+  "sympy__sympy-17318"
+ ],
+ "oracle": [
+  {
+   "instance_id": "astropy__astropy-14539",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 58,
+   "f2p": "2/2",
+   "p2p": "46/46"
+  },
+  {
+   "instance_id": "astropy__astropy-14539",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 47,
+   "f2p": "0/2",
+   "p2p": "46/46"
+  }
+ ],
+ "details": [
+  {
+   "instance_id": "astropy__astropy-14539",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 58,
+   "f2p": "2/2",
+   "p2p": "46/46"
+  },
+  {
+   "instance_id": "astropy__astropy-14539",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 47,
+   "f2p": "0/2",
+   "p2p": "46/46"
+  },
+  {
+   "instance_id": "astropy__astropy-14539",
+   "model_name_or_path": "reselect16k_cand2",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 39,
+   "f2p": "2/2",
+   "p2p": "46/46"
+  },
+  {
+   "instance_id": "astropy__astropy-14598",
+   "model_name_or_path": "reselect16k_cand3",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 41,
+   "f2p": "0/1",
+   "p2p": "175/175"
+  },
+  {
+   "instance_id": "django__django-15569",
+   "model_name_or_path": "reselect16k_cand1",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 11,
+   "f2p": "2/2",
+   "p2p": "242/242"
+  },
+  {
+   "instance_id": "pylint-dev__pylint-8898",
+   "model_name_or_path": "reselect16k_cand2",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 10,
+   "f2p": "0/1",
+   "p2p": "17/18"
+  },
+  {
+   "instance_id": "scikit-learn__scikit-learn-13328",
+   "model_name_or_path": "reselect16k_cand1",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 6,
+   "f2p": "1/1",
+   "p2p": "9/9"
+  },
+  {
+   "instance_id": "sphinx-doc__sphinx-10449",
+   "model_name_or_path": "reselect16k_cand0",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "1/1",
+   "p2p": "30/30"
+  },
+  {
+   "instance_id": "sphinx-doc__sphinx-10673",
+   "model_name_or_path": "reselect16k_cand0",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "1/1",
+   "p2p": "9/9"
+  },
+  {
+   "instance_id": "sympy__sympy-16886",
+   "model_name_or_path": "reselect16k_cand3",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 6,
+   "f2p": "1/1",
+   "p2p": "42/42"
+  },
+  {
+   "instance_id": "sympy__sympy-17318",
+   "model_name_or_path": "reselect16k_cand1",
+   "error": "patch apply failed"
+  }
+ ]
+}
