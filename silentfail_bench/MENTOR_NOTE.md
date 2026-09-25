@@ -1036,3 +1036,16 @@ qualifier. The conclusion's "fifty" and "forty-one" are gone, and the full
 paper's abstract now matches the short one at 37. `check_consistency.py`
 enforces this: an unqualified benchmark-total count fails the check, verified
 by removing the qualifier from each file in turn and confirming exit 1.
+
+**§23 addendum 2.** The reward-model count was inconsistent and had survived
+two correction passes. Counted from `scripts/gpu_rescore.py` and the committed
+score files, the study used **eight** reward models: six chat-preference
+(GRM-2B, GRM-3B, Skywork-1B/1.7B/4B/8B) and two code-trained (AceCodeRM-7B
+and -32B). The extended abstract said seven and is corrected; the submission
+cut already said eight. A third mention, "two of the seven critics" in the 8k
+ladder, was **correct but read as a contradiction** — only seven models have a
+score at all three lengths, because the 32B has no 4k pass — and now says so.
+`check_consistency.py` derives the count from the code and checks every
+"six/seven/eight … models|critics|chat-preference" claim in both papers,
+allowing a narrower number only where the text states the restriction.
+Bite-tested in both directions.

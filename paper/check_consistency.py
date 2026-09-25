@@ -52,6 +52,25 @@ check("endpoint fixed-weight pooled", pooled["fixed_unit_weights_no_fitting"]["d
 check("endpoint LORO pooled", pooled["logistic_LORO"]["delta"], -0.030 if "-0.030" in tex or "$-0.030$" in tex else None)
 
 # --- analysed repository counts ---
+print("\nreward-model count (from scripts/gpu_rescore.py):")
+sys.path.insert(0, "silentfail_bench/scripts")
+from gpu_rescore import CRITICS, CRITICS_32B          # noqa: E402
+allc = CRITICS + CRITICS_32B
+n_chat = sum(1 for _, k in allc if k == "seqcls"); n_code = len(allc) - n_chat
+WORD = {6: "six", 7: "seven", 8: "eight", 9: "nine"}
+check("total reward models", len(allc), n_chat + n_code)
+for f in ("paper/main.tex", "paper/main_short.tex"):
+    src = Path(f).read_text()
+    bad = []
+    for m in re.finditer(r"(six|seven|eight|nine) (reward models|critics|chat-preference)(.{0,110})", src, re.S):
+        word, noun, after = m.group(1), m.group(2), m.group(3)
+        want = {"chat-preference": n_chat}.get(noun, len(allc))
+        if WORD.get(want) == word: continue
+        if re.search(r"all three lengths|complete ladder|no 4k pass|L4|panel|auditor", after): continue   # a legitimately narrower set, said so
+        bad.append(f"{word} {noun}")
+    print(f"  {'ok  ' if not bad else 'FAIL'}  {f}: {bad or 'all counts agree with the code'}")
+    if bad: fail.append(f"{f} model count")
+
 print("\nrepository counts as written in the prose (analysed sets):")
 import itertools
 for f in ("paper/main.tex", "paper/main_short.tex"):
