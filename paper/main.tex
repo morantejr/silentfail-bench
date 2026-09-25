@@ -255,6 +255,9 @@ Amendment 4e replication (OpenAI + Modal) & 456 trajectories, 114 instances, 41 
 
 \section{Glossary and the shape of the study}
 \footnotesize
+\textbf{Reading the figures.} Colour means the same thing throughout: \textcolor[HTML]{2b6cb0}{\textbf{blue}} is panel disagreement, the signal under test; \textcolor[HTML]{7f8c8d}{\textbf{grey}} is a single critic acting alone; \textcolor[HTML]{b7791f}{\textbf{gold}} is a baseline that needs no model at all (lines added to the patch); \textcolor[HTML]{c0392b}{\textbf{red}} marks silent failures or the most distant comparison in a panel. Every AUROC axis carries a dotted line at 0.5, marked \emph{chance}; a gold line, where one appears, is the structural baseline a signal has to beat to be worth deploying.
+
+\bigskip
 \begin{tabularx}{\linewidth}{@{}lX@{}}\toprule
 Term & Meaning in this paper \\\midrule
 \emph{trajectory} & one complete attempt by the agent at one task: everything it read, ran and wrote, ending in a patch \\
