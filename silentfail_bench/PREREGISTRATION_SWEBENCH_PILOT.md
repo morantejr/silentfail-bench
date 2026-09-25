@@ -452,3 +452,69 @@ claimed. Fails → the paper says "a third to a half of committed trajectories
 are silent failures" and nothing about concentration. F-P2 passes →
 selection-conditional evaluation is shown to matter, which is the paper's
 protocol claim, measured. Cost ≈ $10 Modal.
+
+---
+
+# Amendment 5 — the selector axis — 2026-09-25, declared before any strong-selector score exists
+
+**Motivation.** Three independent reviews converge on one objection: the
+selecting critic is a 4B chat reward model that barely ranks failures, so
+"what does an audit signal add after selection" has not been asked in the
+regime the proposal named. Amendment 4f made this concrete — on Multilingual
+the selector has no signal in either arm (0.43 unselected, 0.51 committed),
+so there was nothing for selection to consume. This amendment re-runs the
+entire protocol with selectors that do have signal, on the candidate pools
+already generated. No new trajectories.
+
+**Selectors (each re-selects independently over the same pools).**
+1. `S_judge`: **gpt-5**, problem statement + final diff, the J1 prompt
+   already used for auditing, scoring *every* candidate. As a detector on
+   committed rows it reached 0.72 (Verified) and 0.66 (Multilingual), so it
+   is known to carry signal.
+2. `S_swerm`: **SWE-RM** (`arXiv:2512.21919`) if the weights are publicly
+   available and loadable; otherwise recorded as not run, with the reason.
+3. `S_4b`: the primary 4B chat RM, unchanged, as the reference arm.
+
+**Population.** For each selector: argmax over the four candidates by that
+selector's score; the committed candidate defines the population, with the
+same exclusions (empty patch, gold error, no visible pass). Newly committed
+candidates lacking gold are graded by the Modal runner whose oracle pairs
+have already passed on both datasets. The audit panel is the same m=4 chat
+RMs and is disjoint from every selector by construction.
+
+**Quantities, per selector and benchmark.**
+- Failure rate of the committed arm, and of the Amendment-4f random arm
+  restricted to the same instances (paired).
+- `AUROC(-c)` **in the candidate pool**: within-instance, whether the
+  selector's score ranks failing candidates below passing ones across all
+  graded candidates available for that instance.
+- `AUROC(-c)` **on the committed set**.
+- `AUROC(u)` on the committed set, panel rank norms fit on training
+  repositories of that selector's committed rows.
+- Registered endpoint: LORO out-of-fold `ΔAUROC(M_{c+u} − M_c)`.
+
+**Predictions (bars fixed now).**
+- **S-P1 (the regime is entered):** for `S_judge`, `AUROC(-c)` in the
+  candidate pool > 0.65, and the committed-arm failure rate is *below* the
+  random arm's (a selector with signal picks better). If S-P1 fails, the
+  selector is not strong on this population and S-P2/S-P3 are reported
+  descriptively only.
+- **S-P2 (selection consumes the selector's signal):** `AUROC(-c)` in the
+  pool minus `AUROC(-c)` on the committed set > 0.10. This is the 0.81 → 0.61
+  effect, tested on a selector that has signal, on both benchmarks.
+- **S-P3 (the paper's question, confirmatory):** on the committed set of a
+  selector that passed S-P1, `AUROC(u) > 0.60` **and** the registered
+  endpoint `ΔAUROC > +0.05` with a repository-clustered CI excluding zero.
+
+**Readings.** S-P3 passes → disagreement *does* carry residual signal once
+the selector is strong, the null is specific to weak selectors, and the
+paper is rewritten around that condition. S-P3 fails with S-P1 and S-P2
+passing → the null holds in the regime the proposal named, which is the
+strongest form of the result and removes the reviews' main objection.
+S-P1 fails for every selector → the study cannot enter the regime with
+these pools and says so.
+
+**Inference floor.** Unchanged: fewer than 10 positives in a selector's
+committed set → descriptive only for that selector.
+
+**Cost cap.** $40 OpenAI, $30 Modal. Declared before any call.
