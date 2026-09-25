@@ -12,12 +12,16 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: Stage 0 complete (2026-09-24).** 41 SWE-bench Verified instances
-> with official gold, six reward-model critics including the proposal's own,
-> two selection regimes, patch in view: **H1 not supported** at 12 positives
-> (panel `u` 0.45–0.51 vs the critic's own score 0.53–0.62), and two
-> integers off the diff (added lines 0.665) outrank every critic. Open:
-> code-trained critics. See [`UPDATES.md`](UPDATES.md).
+> **Status: pilot + Amendments 1–4 complete (2026-09-24); draft v0.2.** 41
+> SWE-bench Verified instances with official gold; seven reward-model
+> critics at 4k/8k/16k, three LLM judges, two selection regimes, windowed
+> auditing, test–retest. **H1 not supported on any single window**
+> (panel `u` 0.44–0.54; LLM-judge disagreement 0.53); windowed `u_max`
+> 0.686 clears the 0.665 structural bar with permutation p 0.04 (free) /
+> 0.21 (within repo) on 12 positives. Individual critics given the solution
+> at length reach 0.71–0.75; the earlier "critics hold no judgment"
+> mechanism is withdrawn (test–retest r ≥ 0.98). Paper:
+> [`paper/main.pdf`](paper/main.pdf). See [`UPDATES.md`](UPDATES.md).
 
 ## Layout
 

@@ -165,4 +165,36 @@ multi-window `u_max` (Amendment 3, pre-registered, running on the L4).
 
 ---
 
-## Next entry (pending): AceCodeRM result; mentor decision on Amendment 3 vs negative-result paper
+## L4 · Amendments 2 (true 16k), 3 (windows), 4 (reviewer-driven) — 2026-09-24
+
+**Done.** Algoverse L4 (24 GB): all seven critics at a true 16k and 8k on all
+164 candidates; Amendment 3 pruned overlapping windows on the 34 committed
+rows; Amendment 4 pre-registered from a skeptical-reviewer pass and run:
+(4a) incremental value beyond structure, (4b) window test–retest, (4c) LLM
+judges (OpenAI, $1.96), (4d) 8k ladder point. Draft v0.2. Detail:
+`MENTOR_NOTE.md` §15.
+
+**Learned.**
+- **Amendment 3 passed all three predictions**: `u_max` 0.686 > 0.665. Then
+  bounded: permutation p 0.04 free / 0.21 within repo; jackknife 0.657–0.731;
+  median two windows after pruning.
+- Longer context helps single critics (1B RM 0.712 at 16k), not
+  disagreement (panel 0.439 at 16k).
+- LLM judges with the patch in view reach 0.72–0.75; their disagreement
+  0.53; seeing the agent's own test runs does not help.
+- Test–retest r 0.98–0.99: **the "critics hold no judgment" mechanism is
+  withdrawn.** Critics are stable and content-driven; disagreement is the
+  wrong statistic.
+- No critic adds out-of-fold value beyond patch size (+u −0.03, +c +0.02).
+  The registered difficulty control was a near-oracle (0.95) and is
+  declared a defect.
+
+**Changed.** The paper's claim narrows from "no detector" to "disagreement is
+not the signal": critics carry a moderate signal individually; panel
+disagreement on a single window carries none; windowed `u_max` is a marginal,
+underpowered positive. Next decisive step is a wide-repository replication
+(Amendment 4e), not more Verified trajectories.
+
+---
+
+## Next entry (pending): mentor decision on Amendment 4e (wide-repo replication) vs submit the narrowed negative result

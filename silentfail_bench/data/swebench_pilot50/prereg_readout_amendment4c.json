@@ -1,0 +1,100 @@
+{
+ "analysis": "Amendment 4c (pre-registered): single-family LLM judge panel (OpenAI); gpt-5-mini is also the agent model",
+ "population_n": 34,
+ "silent_failures": 12,
+ "bar": 0.665,
+ "conditions": {
+  "J1": {
+   "judges": {
+    "gpt-5": {
+     "AUROC_detect": 0.72,
+     "missing": 0,
+     "M3_vs_primary_c": 0.098,
+     "CI95": [
+      -0.306,
+      0.241
+     ]
+    },
+    "gpt-5-mini": {
+     "AUROC_detect": 0.752,
+     "missing": 0,
+     "M3_vs_primary_c": 0.131,
+     "CI95": [
+      -0.283,
+      0.25
+     ]
+    },
+    "gpt-5-nano": {
+     "AUROC_detect": 0.58,
+     "missing": 0,
+     "M3_vs_primary_c": -0.042,
+     "CI95": [
+      -0.348,
+      0.124
+     ]
+    }
+   },
+   "u_LLM": {
+    "AUROC": 0.528,
+    "M3_vs_primary_c": -0.093,
+    "CI95": [
+     -0.296,
+     0.1
+    ]
+   },
+   "best_single": {
+    "judge": "gpt-5-mini",
+    "AUROC": 0.752
+   }
+  },
+  "J2": {
+   "judges": {
+    "gpt-5": {
+     "AUROC_detect": 0.663,
+     "missing": 0,
+     "M3_vs_primary_c": 0.042,
+     "CI95": [
+      -0.23,
+      0.278
+     ]
+    },
+    "gpt-5-mini": {
+     "AUROC_detect": 0.723,
+     "missing": 0,
+     "M3_vs_primary_c": 0.102,
+     "CI95": [
+      -0.132,
+      0.405
+     ]
+    },
+    "gpt-5-nano": {
+     "AUROC_detect": 0.438,
+     "missing": 0,
+     "M3_vs_primary_c": -0.184,
+     "CI95": [
+      -0.419,
+      0.027
+     ]
+    }
+   },
+   "u_LLM": {
+    "AUROC": 0.64,
+    "M3_vs_primary_c": 0.019,
+    "CI95": [
+     -0.276,
+     0.157
+    ]
+   },
+   "best_single": {
+    "judge": "gpt-5-mini",
+    "AUROC": 0.723
+   }
+  }
+ },
+ "predictions": {
+  "A4c-P1_best_single_J1_gt_bar": true,
+  "A4c-P2_uLLM_J1_gt_bar": false,
+  "A4c-P3_J2_minus_J1_best_judge": -0.029,
+  "A4c-P3_pass": false
+ }
+}

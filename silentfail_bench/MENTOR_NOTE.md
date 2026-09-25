@@ -646,3 +646,92 @@ in progress; the prediction for it is unchanged.
 4. **What remains genuinely open:** critics trained on code with execution
    feedback (AceCodeRM, pending), and multi-window auditing with `u_max`
    (proposed as Amendment 3 — not yet run, not yet decided).
+
+# 15. L4 results and Amendment 4 — the null narrows (2026-09-24)
+
+Everything here was pre-registered (Amendments 2/3 addendum, Amendment 4) or
+is labelled exploratory. Same 34 committed trajectories, 12 silent failures,
+repo-clustered bootstrap, 0.665 bar. Files:
+`prereg_readout_amendment{2_16k,3,4a,4b,4c,4d}.json`.
+
+## Amendment 2 at a true 16k (L4)
+
+| critic | 4k (Kaggle) | 8k | 16k | Δ16k−4k [CI] |
+|---|---|---|---|---|
+| Skywork-1B | 0.636 | 0.648 | **0.712** | +0.08 [−0.06, +0.19] |
+| Skywork-1.7B | 0.473 | 0.451 | 0.572 | +0.10 [0.00, +0.38] |
+| Skywork-4B (selector) | 0.468 | 0.466 | 0.587 | +0.12 [0.00, +0.32] |
+| Skywork-8B (named) | 0.534 | 0.561 | 0.591 | +0.06 [−0.08, +0.24] |
+| GRM-2B | 0.473 | 0.561 | 0.441 | −0.03 |
+| GRM-3B | 0.451 | 0.527 | 0.489 | +0.04 |
+| AceCodeRM-7B | 0.405 | 0.428* | 0.428* | *fell back to 4k on 153/164 rows |
+
+Panel `u` at 16k: **0.439** (m4), 0.475 (m5). A2-P2 fails. Longer context
+helps individual critics modestly; it does not help disagreement. The 1B
+crossing the bar is one of seven critics (perm p 0.02, uncorrected).
+
+## Amendment 3 — windowed auditing: all three predictions pass
+
+`u_max` **0.686** (A3-P1 > 0.665 ✓), gain over prefix +0.18 (A3-P2 ✓),
+named critic mean-window 0.652 (A3-P3 ✓). `u_mean` 0.678, `u_last` 0.610.
+
+Bounds, computed before interpreting (added to the readout after the first
+run, per the review): permutation p **0.04 free / 0.21 within repository**;
+jackknife over instances 0.657–0.731 (crosses the bar); leave-one-repo-out
+0.648–0.803; vs primary c +0.06 [−0.11, +0.33]. Pruning cut 69% of tokens →
+median **2 windows** (7 rows have one). In 43% of multi-window rows the max
+is not the last window.
+
+Honest reading: the only pre-registered prediction in the project that came
+true, on twelve positives, with a p-value that depends on how you shuffle.
+Not a detector; not nothing.
+
+## Amendment 4a — incremental value: none
+
+LORO out-of-fold. Registered base (structure + public solve rate) was at
+ceiling — the "difficulty" control predicts our failures at **0.95 alone**
+(one of the six public runs is gpt-5-mini, our agent; excluding it, 0.955).
+Declared defect; two labelled sensitivity variants. Structure-only base:
+`+u` −0.03 [−0.08, +0.04]; `+c` +0.02 [−0.10, +0.21]. The ruler claim holds
+in its defensible form: no incremental value.
+
+## Amendment 4b — test–retest: the mechanism claim is WITHDRAWN
+
+| | r_fmt | r_shift | r_adj | r_far |
+|---|---|---|---|---|
+| seven critics (range) | 0.98–0.99 | 0.86–0.95 | 0.20–0.56 | −0.39–0.47 |
+| per-window panel u | 0.91 | 0.73 | 0.42 | 0.43 |
+
+Pre-registered reading triggered: critics are stable to surface form; the
+low cross-window correlation reflects content. Draft v0.1's "critics do not
+hold a judgment" is replaced by "critics respond to content; the panel's
+aggregation is what fails." Fig. `fig_stability.pdf`.
+
+## Amendment 4c — LLM judges (single family, OpenAI; $1.96)
+
+| judge | J1 patch-in-view | J2 + last 6k tokens |
+|---|---|---|
+| gpt-5 | **0.720** | 0.663 |
+| gpt-5-mini (= the agent) | **0.752** | 0.723 |
+| gpt-5-nano | 0.580 | 0.438 |
+| disagreement u_LLM | 0.528 | 0.640 |
+
+A4c-P1 ✓ (best single > bar), A4c-P2 ✗ (u_LLM), A4c-P3 ✗ (execution-aware
+does not help: −0.03). Reading per pre-registration: the "no critic beats
+the ruler" claim narrows to reward models at 4k; the "disagreement is not the
+signal" claim now spans reward models and LLM judges.
+
+## What the whole ladder now says
+
+Individual critics with enough of the solution: 0.71–0.75. Every
+disagreement statistic on a single window: 0.44–0.64. Windowed `u_max`:
+0.686 with p 0.04/0.21. Draft v0.2 (`paper/main.pdf`) is rewritten around
+this dissociation. End state: **"null narrows"** — not "null survives", not
+"stronger auditing works". The decisive next experiment is repositories, not
+trajectories (Amendment 4e design; ~$5 + Docker).
+
+## Still pending
+- 9 re-selected candidates from the 16k Skywork-8B re-selection need gold
+  (`l4/out/gpu_scores_16k/needs_gold.jsonl`); needs Docker/Colima again.
+- AceCodeRM-32B: needs a ≥40 GB card (Modal A100 would do).
+- Kaggle token and OpenRouter key exposed in chat earlier: revoke.

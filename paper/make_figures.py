@@ -17,6 +17,8 @@ rows = [  # (label, u, negc, [ci_lo, ci_hi] of u - (-c) if known)
  ("+ AceCodeRM as 5th auditor", 0.473, 0.621, (-0.296, 0.104)),
  ("Proposal's 8B critic selecting, disjoint panel", 0.445, 0.602, (-0.564, 0.143)),
  ("Code-trained critic selecting, 5-RM panel", 0.542, 0.472, (-0.208, 0.452)),
+ ("Full trajectory, true 16k (L4), 4 chat RMs", 0.439, 0.587, (-0.384, 0.171)),
+ ("Pruned overlapping windows, $u_{\\max}$ (L4)", 0.686, 0.621, (-0.11, 0.333)),
 ]
 fig, ax = plt.subplots(figsize=(6.4, 3.0))
 y = np.arange(len(rows))[::-1]
@@ -26,7 +28,7 @@ for yi, (lab, u, nc, ci) in zip(y, rows):
 ax.axvline(0.5, color="k", lw=0.8, ls=":"); ax.axvline(0.665, color=GOLD, lw=1.6)
 ax.text(0.667, len(rows) - 0.55, "the ruler:\nlines added\nin the patch\n(0.665)", color=GOLD, fontsize=7.5, va="top")
 ax.set_yticks(y); ax.set_yticklabels([r[0] for r in rows], fontsize=7.5)
-ax.set_xlim(0.35, 0.75); ax.set_xlabel("AUROC for silent failure (12 positives / 22 successes)")
+ax.set_xlim(0.35, 0.78); ax.set_xlabel("AUROC for silent failure (12 positives / 22 successes)")
 ax.plot([], [], "o", color=BLUE, label="panel disagreement $u$"); ax.plot([], [], "s", color=GRAY, label="selecting critic's own score $-c$")
 ax.legend(loc="upper left", fontsize=7.5, frameon=False); fig.tight_layout(); fig.savefig(OUT / "fig_ladder.pdf"); plt.close(fig)
 
@@ -50,11 +52,12 @@ fig.tight_layout(); fig.savefig(OUT / "fig_instability.pdf"); plt.close(fig)
 cov = json.loads((D / "covariate_baseline.json").read_text())
 bars = [("lines added (patch)", 0.665, GOLD), ("step count", 0.657, GOLD), ("patch chars", 0.619, GOLD),
         ("best chat RM (1B, 1 of 6)", 0.636, GRAY), ("primary critic $c$ (prefix)", 0.621, GRAY), ("8B named critic", 0.534, GRAY),
-        ("AceCodeRM-7B (code-trained)", 0.405, GRAY), ("panel $u$ (prefix)", 0.508, BLUE), ("panel $u$ (patch in view)", 0.494, BLUE)]
+        ("AceCodeRM-7B (code-trained)", 0.405, GRAY), ("panel $u$ (prefix)", 0.508, BLUE), ("panel $u$ (patch in view)", 0.494, BLUE),
+        ("1B chat RM, full 16k (1 of 7)", 0.712, GRAY), ("panel $u_{\\max}$, pruned windows", 0.686, BLUE)]
 bars.sort(key=lambda b: b[1])
-fig, ax = plt.subplots(figsize=(6.4, 2.9))
+fig, ax = plt.subplots(figsize=(6.4, 3.3))
 ax.barh([b[0] for b in bars], [b[1] for b in bars], color=[b[2] for b in bars], height=0.65)
-ax.axvline(0.5, color="k", lw=0.8, ls=":"); ax.set_xlim(0.3, 0.75); ax.set_xlabel("AUROC for silent failure (same 34 trajectories, 12 positives)")
+ax.axvline(0.5, color="k", lw=0.8, ls=":"); ax.set_xlim(0.3, 0.8); ax.set_xlabel("AUROC for silent failure (same 34 trajectories, 12 positives)")
 for i, b in enumerate(bars): ax.text(b[1] + 0.005, i, f"{b[1]:.3f}", va="center", fontsize=7.5)
 ax.tick_params(axis="y", labelsize=8); fig.tight_layout(); fig.savefig(OUT / "fig_ruler.pdf"); plt.close(fig)
 
@@ -87,4 +90,37 @@ for x, t in boxes:
 for x in (0.18, 0.36, 0.56, 0.78): ax.annotate("", xy=(x + 0.02, 0.525), xytext=(x, 0.525), arrowprops=dict(arrowstyle="->", lw=1.2, color="k"))
 ax.text(0.5, 0.08, "estimand: does $u$ rank silent failures ($g{=}0$ among committed, agent-declared-done trajectories) beyond $c$?", ha="center", fontsize=8)
 ax.set_xlim(0, 1); ax.set_ylim(0, 1); fig.tight_layout(); fig.savefig(OUT / "fig_design.pdf"); plt.close(fig)
+
+# ---------- Fig 6: windowed auditing (Amendment 3) ----------
+a3 = json.loads((D / "prereg_readout_amendment3.json").read_text())
+fig, axs = plt.subplots(1, 2, figsize=(6.4, 2.8), gridspec_kw={"width_ratios": [1, 1.25]})
+ax = axs[0]
+items = [("$u_{\\max}$", a3["u_max"]["AUROC"], BLUE), ("$u_{\\mathrm{mean}}$", a3["u_mean"]["AUROC"], BLUE), ("$u_{\\mathrm{last}}$", a3["u_last"]["AUROC"], BLUE),
+         ("8B critic,\nmean window", a3["named_critic_mean_window"]["AUROC_negc"], GRAY), ("primary $u$\n(prefix)", 0.508, "#a9c4e0")]
+ax.bar([i[0] for i in items], [i[1] for i in items], color=[i[2] for i in items], width=0.65)
+jk = a3["u_max_robustness"]["jackknife_min_max"]; ax.plot([0, 0], jk, color="k", lw=1.2); ax.plot([-0.12, 0.12], [jk[0]] * 2, color="k", lw=1); ax.plot([-0.12, 0.12], [jk[1]] * 2, color="k", lw=1)
+ax.axhline(0.665, color=GOLD, lw=1.6); ax.axhline(0.5, color="k", lw=0.8, ls=":"); ax.set_ylim(0.4, 0.8); ax.set_ylabel("AUROC for silent failure")
+ax.text(4.4, 0.668, "ruler", color=GOLD, fontsize=7.5, ha="right", va="bottom")
+ax.set_title(f"windowed panel: perm. p = {a3['u_max']['p_perm']:.2f} (free), {a3['u_max']['p_perm_within_repo']:.2f} (within repo)", fontsize=8); ax.tick_params(axis="x", labelsize=7.5)
+ax = axs[1]; pc = a3["per_critic_window_aggregates_EXPLORATORY"]
+names = {"ray2333_grm_gemma2_2b_rewardmodel_ft": "GRM-2B", "ray2333_grm_llama3_2_3b_rewardmodel_ft": "GRM-3B", "skywork_skywork_reward_v2_llama_3_2_1b": "Skywork-1B",
+         "skywork_skywork_reward_v2_qwen3_1_7b": "Skywork-1.7B", "skywork_skywork_reward_v2_qwen3_4b": "Skywork-4B (selector)", "skywork_skywork_reward_v2_llama_3_1_8b": "Skywork-8B (named)", "tiger_lab_acecoderm_7b": "AceCodeRM-7B"}
+order = [k for k in names if k in pc]; yy = np.arange(len(order))[::-1]
+for yi, k in zip(yy, order):
+    ax.plot([pc[k]["AUROC_negmean"]], [yi], "o", color=GRAY, ms=5); ax.plot([pc[k]["AUROC_neglast"]], [yi], "D", color=BLUE, ms=5); ax.plot([pc[k]["AUROC_negmin"]], [yi], "^", color=RED, ms=5)
+ax.set_yticks(yy); ax.set_yticklabels([names[k] for k in order], fontsize=7.5); ax.axvline(0.5, color="k", lw=0.8, ls=":"); ax.axvline(0.665, color=GOLD, lw=1.6)
+ax.set_xlim(0.3, 0.85); ax.set_xlabel("single-critic AUROC over its windows (exploratory)", fontsize=8)
+ax.plot([], [], "o", color=GRAY, label="mean window"); ax.plot([], [], "D", color=BLUE, label="last window"); ax.plot([], [], "^", color=RED, label="min window"); ax.legend(fontsize=6.5, frameon=False, loc="lower right")
+fig.tight_layout(); fig.savefig(OUT / "fig_windows.pdf"); plt.close(fig)
+
+# ---------- Fig 7: test-retest stability (Amendment 4b) ----------
+st = json.loads((D / "prereg_readout_amendment4b.json").read_text())
+order = [k for k in names if k in st["critics"]]; labels = [names[k] for k in order] + ["panel $u$ (per window)"]
+vals = [st["critics"][k] for k in order] + [st["panel_u"]]
+fig, ax = plt.subplots(figsize=(6.4, 2.7)); x = np.arange(len(labels)); w = 0.2
+for j, (key, lab, col) in enumerate((("r_fmt", "same window, reformatted", BLUE), ("r_shift", "window shifted 128 tokens", "#6fa3d8"), ("r_adj", "adjacent windows (25% overlap)", GRAY), ("r_far", "first vs last window", RED))):
+    ax.bar(x + (j - 1.5) * w, [v[key] for v in vals], width=w, color=col, label=lab)
+ax.axhline(0, color="k", lw=0.6); ax.set_xticks(x); ax.set_xticklabels(labels, fontsize=7, rotation=20, ha="right"); ax.set_ylabel("Spearman r between scores"); ax.set_ylim(-0.5, 1.05)
+ax.legend(fontsize=6.5, frameon=False, ncol=2, loc="lower left"); ax.set_title("the same critic re-scored: stable to form, responsive to content", fontsize=9)
+fig.tight_layout(); fig.savefig(OUT / "fig_stability.pdf"); plt.close(fig)
 print("figures:", sorted(p.name for p in OUT.glob("*.pdf")))
