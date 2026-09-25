@@ -16,6 +16,7 @@ rows = [  # (label, u, negc, [ci_lo, ci_hi] of u - (-c) if known)
  ("Patch in view (4k), 4 chat RMs [Kaggle]", 0.494, 0.621, (-0.276, 0.111)),
  ("+ AceCodeRM as 5th auditor", 0.473, 0.621, (-0.296, 0.104)),
  ("Proposal's 8B critic selecting, disjoint panel", 0.445, 0.602, (-0.564, 0.143)),
+ ("  ... the same at a true 16k", 0.483, 0.736, (-0.468, 0.283)),
  ("Code-trained critic selecting, 5-RM panel", 0.542, 0.472, (-0.208, 0.452)),
  ("Full trajectory, true 16k (L4), 4 chat RMs", 0.439, 0.587, (-0.384, 0.171)),
  ("Pruned overlapping windows, $u_{\\max}$ (L4)", 0.686, 0.621, (-0.11, 0.333)),

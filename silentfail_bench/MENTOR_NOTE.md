@@ -735,3 +735,16 @@ trajectories (Amendment 4e design; ~$5 + Docker).
   (`l4/out/gpu_scores_16k/needs_gold.jsonl`); needs Docker/Colima again.
 - AceCodeRM-32B: needs a ≥40 GB card (Modal A100 would do).
 - Kaggle token and OpenRouter key exposed in chat earlier: revoke.
+
+## Addendum (2026-09-25): Modal closes the two open items
+- **AceCodeRM-32B** (fp16, A100-80GB; 131/164 rows at 8k, 33 at 16k): 0.557
+  as a detector, 0.50 by mean window. A2-P1 fails for the 32B as for the 7B.
+- **Named 8B critic re-selecting at a true 16k**, graded on Modal (oracle pair
+  passed; one patch ungradable → gold_error): 33 rows, 11 failures, `u` 0.483,
+  `−c` **0.736**, M3 −0.25 [−0.47, +0.28]. The critic sees its own failures;
+  the panel's disagreement does not.
+- Gold no longer needs Colima: `modal/gold_modal.py` mirrors the harness's
+  container sequence in a Modal sandbox and grades with the harness's parser.
+- **Amendment 4e (revised, pre-registered before generation):** SWE-bench
+  Multilingual, 41 repos, 114 instances × 4 candidates, agent sandboxes and
+  gold on Modal. Generation running.

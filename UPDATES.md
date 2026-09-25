@@ -197,4 +197,20 @@ underpowered positive. Next decisive step is a wide-repository replication
 
 ---
 
-## Next entry (pending): mentor decision on Amendment 4e (wide-repo replication) vs submit the narrowed negative result
+## Modal · 32B critic, remaining gold, replication launched — 2026-09-25
+
+**Done.** Modal replaces Colima and the L4: AceCodeRM-32B in fp16 on an
+A100-80GB; official gold for the 9 re-selected patches through a runner that
+mirrors the harness (oracle pair passed); Amendment 4e revised to SWE-bench
+Multilingual (41 repositories) and pre-registered; generation started.
+
+**Learned.** 32B code-trained critic: 0.557 (A2-P1 fails again). The named
+8B critic re-selecting at 16k: `u` 0.483, its own score 0.736 — the
+dissociation once more.
+
+**Changed.** Nothing in the claim; two loose ends closed. The replication
+decides between "null survives" and "narrower positive".
+
+---
+
+## Next entry (pending): Amendment 4e readout (R-P1..R-P3)
