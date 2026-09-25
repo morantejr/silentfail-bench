@@ -36,11 +36,16 @@ def slug(repo: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", repo.lower()).strip("_")
 
 
+MODE = "headtail"   # or "prefix": first max_tokens tokens only (the primary protocol's truncation)
+
+
 def build_input(tok, problem: str, text: str, max_tokens: int = MAX_TOKENS):
-    """Chat-formatted (user=problem, assistant=trajectory); long tails keep head+tail, flagged."""
+    """Chat-formatted (user=problem, assistant=trajectory); long tails keep head+tail (or a prefix), flagged."""
     ids = tok(text, add_special_tokens=False)["input_ids"]
     truncated = len(ids) > max_tokens
-    if truncated:
+    if truncated and MODE == "prefix":
+        text = tok.decode(ids[:max_tokens])
+    elif truncated:
         head, tail = max_tokens // 4, max_tokens - max_tokens // 4
         text = tok.decode(ids[:head]) + "\n\n[... middle of trajectory omitted ...]\n\n" + tok.decode(ids[-tail:])
     msgs = [{"role": "user", "content": problem}, {"role": "assistant", "content": text}]
@@ -111,7 +116,7 @@ def score(model, kind: str, enc) -> float:
 
 
 def main() -> None:
-    global MAX_TOKENS
+    global MAX_TOKENS, MODE
     ap = argparse.ArgumentParser()
     ap.add_argument("--bundle", type=Path, required=True)
     ap.add_argument("--out", type=Path, default=Path("gpu_scores"))
@@ -120,8 +125,11 @@ def main() -> None:
     ap.add_argument("--only", nargs="*", default=None, help="subset of critic repos")
     ap.add_argument("--include-32b", action="store_true", help="also score AceCodeRM-32B in 4-bit (24 GB GPU)")
     ap.add_argument("--max-tokens", type=int, default=MAX_TOKENS, help="Amendment 4d ladder point (default 16000)")
+    ap.add_argument("--mode", choices=["headtail", "prefix"], default="headtail", help="prefix = first max-tokens tokens (primary protocol)")
     a = ap.parse_args()
     MAX_TOKENS = a.max_tokens
+    global MODE
+    MODE = a.mode
     a.out.mkdir(parents=True, exist_ok=True)
     cands = [json.loads(l) for l in a.bundle.read_text().splitlines() if l.strip()]
     if a.limit: cands = cands[: a.limit]
@@ -197,7 +205,7 @@ def main() -> None:
             res[f"{c['instance_id']}#{c['candidate']}"] = {"score": v, "truncated": trunc, "n_tokens": ntok, "max_tokens_used": used}
             if (k + 1) % 20 == 0:
                 print(f"  {repo.split('/')[-1]}: {k+1}/{len(cands)} ({(time.time()-t1)/(k+1):.1f}s each)", flush=True)
-        dest.write_text(json.dumps({"critic": repo, "kind": kind, "max_tokens": MAX_TOKENS, "head": HEAD, "tail": TAIL,
+        dest.write_text(json.dumps({"critic": repo, "kind": kind, "max_tokens": MAX_TOKENS, "mode": MODE, "head": HEAD, "tail": TAIL,
                                     "load_8bit": a.load_8bit, "elapsed_s": round(time.time()-t0), "scores": res}, indent=1))
         print(f"[write] {dest} ({len(res)} scores, {time.time()-t0:.0f}s total)", flush=True)
         del model, tok; gc.collect(); torch.cuda.empty_cache()
