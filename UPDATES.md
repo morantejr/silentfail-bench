@@ -276,4 +276,23 @@ the registered endpoint (was +0.22, per-protocol). Nothing else.
 
 ---
 
-## Next entry (pending): mentor decision — submit v0.5 or Tier 2 selector axis
+## Verification pass · draft v0.6 — 2026-09-25
+
+**Done.** Two checks requested by external reads, no new data.
+
+**Learned.**
+- **Leak fix verified.** Stored `u` reproduces exactly from training-only
+  rank norms (max |diff| 0.0); the leaky variant differs by 0.023 and would
+  have given 0.523 not 0.508. Every reported `u` is post-fix.
+- **The endpoint's bound was estimator-dependent.** Four ways of computing
+  ΔAUROC(M_c+u − M_c) pooled: −0.119, −0.030, −0.014, **+0.013**. Signs
+  disagree; all intervals include zero; loosest upper bound **+0.12**.
+
+**Changed.** The paper quotes +0.12, not +0.04, and reports all four
+estimators instead of one. The conclusion now says "no *replicable* signal"
+and names the Verified u_max = 0.686 exception explicitly. Weaker claim,
+estimator-independent.
+
+---
+
+## Next entry (pending): mentor decision — submit v0.6 or run Amendment 5 (selector axis, declared, not run)

@@ -1,0 +1,131 @@
+{
+ "leak_verification": [
+  {
+   "benchmark": "verified",
+   "n_usable": 34,
+   "n_train_rows_used_for_norms": 30,
+   "max_abs_diff_vs_train_only_recompute": 0.0,
+   "max_abs_diff_vs_leaky_recompute": 0.022708,
+   "stored_matches_train_only": true,
+   "AUROC_u_stored": 0.508,
+   "AUROC_u_if_leaky": 0.523
+  },
+  {
+   "benchmark": "multilingual",
+   "n_usable": 77,
+   "n_train_rows_used_for_norms": 59,
+   "max_abs_diff_vs_train_only_recompute": 0.0,
+   "max_abs_diff_vs_leaky_recompute": 0.024457,
+   "stored_matches_train_only": true,
+   "AUROC_u_stored": 0.565,
+   "AUROC_u_if_leaky": 0.572
+  }
+ ],
+ "endpoint_robustness": [
+  {
+   "label": "verified",
+   "n": 34,
+   "positives": 12,
+   "raw_AUROC_negc": 0.621,
+   "raw_AUROC_u": 0.508,
+   "logistic_LORO": {
+    "AUROC_Mc": 0.527,
+    "AUROC_Mcu": 0.451,
+    "delta": -0.076,
+    "CI95": [
+     -0.157,
+     0.077
+    ]
+   },
+   "logistic_5fold_clustered": {
+    "AUROC_Mc": 0.644,
+    "AUROC_Mcu": 0.455,
+    "delta": -0.189,
+    "CI95": [
+     -0.283,
+     0.067
+    ]
+   },
+   "fixed_unit_weights_no_fitting": {
+    "AUROC_negc": 0.614,
+    "AUROC_negc_plus_u": 0.583,
+    "delta": -0.03,
+    "CI95": [
+     -0.165,
+     0.245
+    ]
+   },
+   "fold_averaged_delta_LORO": -0.152
+  },
+  {
+   "label": "multilingual",
+   "n": 77,
+   "positives": 35,
+   "raw_AUROC_negc": 0.56,
+   "raw_AUROC_u": 0.565,
+   "logistic_LORO": {
+    "AUROC_Mc": 0.459,
+    "AUROC_Mcu": 0.436,
+    "delta": -0.022,
+    "CI95": [
+     -0.132,
+     0.079
+    ]
+   },
+   "logistic_5fold_clustered": {
+    "AUROC_Mc": 0.473,
+    "AUROC_Mcu": 0.455,
+    "delta": -0.018,
+    "CI95": [
+     -0.08,
+     0.052
+    ]
+   },
+   "fixed_unit_weights_no_fitting": {
+    "AUROC_negc": 0.561,
+    "AUROC_negc_plus_u": 0.61,
+    "delta": 0.048,
+    "CI95": [
+     -0.066,
+     0.176
+    ]
+   },
+   "fold_averaged_delta_LORO": -0.145
+  },
+  {
+   "label": "pooled",
+   "n": 111,
+   "positives": 47,
+   "raw_AUROC_negc": 0.56,
+   "raw_AUROC_u": 0.542,
+   "logistic_LORO": {
+    "AUROC_Mc": 0.484,
+    "AUROC_Mcu": 0.454,
+    "delta": -0.03,
+    "CI95": [
+     -0.1,
+     0.042
+    ]
+   },
+   "logistic_5fold_clustered": {
+    "AUROC_Mc": 0.504,
+    "AUROC_Mcu": 0.491,
+    "delta": -0.014,
+    "CI95": [
+     -0.087,
+     0.065
+    ]
+   },
+   "fixed_unit_weights_no_fitting": {
+    "AUROC_negc": 0.559,
+    "AUROC_negc_plus_u": 0.571,
+    "delta": 0.013,
+    "CI95": [
+     -0.074,
+     0.12
+    ]
+   },
+   "fold_averaged_delta_LORO": -0.119
+  }
+ ]
+}

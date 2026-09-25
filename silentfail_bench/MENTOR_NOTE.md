@@ -852,3 +852,39 @@ concrete asks, all done at $0 from existing scores:
 
 Decision unchanged: submit v0.5 to a workshop/TMLR, or run the selector
 axis (Tier 2, ~$150) for a main-track attempt.
+
+# 19. Two verification results, draft v0.6 (2026-09-25)
+
+Both external reads asked for checks rather than experiments. Both ran.
+
+**1. Is Table 1 post the rank-normalization leak fix? Yes, verified.**
+Recomputing every stored `u` from raw panel scores with training-repository
+normalization reproduces the stored values exactly (max |diff| = 0.0, both
+benchmarks). The leaky computation differs by up to 0.023 and would have
+given AUROC(u) = 0.523 instead of 0.508 on Verified — so the fix is in, and
+it was never load-bearing. Stated in the instrument section with the numbers.
+
+**2. Is the endpoint's bound an artifact of the LORO logistic? Partly — and
+the paper now says so.** Four estimators of the same registered quantity,
+pooled: fold-averaged −0.119, LORO logistic −0.030, 5-fold clustered −0.014,
+**fixed unit weights (no fitted coefficients) +0.013**. They disagree in
+sign. Every interval includes zero; the loosest upper bound is **+0.12**.
+
+Consequence: the paper no longer headlines −0.03 [−0.10, +0.04]. Table 3 is
+now a four-estimator panel, the abstract quotes the range and the loosest
+bound, and the conclusion says "+0.12" not "+0.04". The claim is weaker by
+0.08 AUROC and estimator-independent, which is the right trade.
+
+Diagnosis of the spread, included in the paper: the fixed-weight variant
+reproduces raw AUROC(−c) (0.559 vs 0.560 pooled) while the logistic variants
+report M_c at 0.48–0.50, because pooling out-of-fold probabilities across
+folds with different intercepts scrambles the global ranking. It depresses
+both arms and largely cancels in the difference.
+
+**3. Conclusion wording (ChatGPT).** "did not detect those failures under any
+configuration" → "did not yield a **replicable** failure-detection signal",
+with the Verified u_max = 0.686 exception named explicitly in the conclusion
+rather than left to §4.4. The paper no longer implies nothing ever crossed a
+bar; one thing did, on twelve positives, and it did not replicate.
+
+Amendment 5 (selector axis) remains declared and not run, by decision.
