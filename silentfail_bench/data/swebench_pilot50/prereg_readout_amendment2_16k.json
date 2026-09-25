@@ -54,23 +54,46 @@
   },
   "reselect": {
     "skywork_skywork_reward_v2_llama_3_1_8b": {
-      "n_reselected": 34,
-      "changed_vs_primary": 24,
-      "gold_missing": 1
+      "n_reselected": 33,
+      "changed_vs_primary": 23,
+      "gold_missing": 0,
+      "gold_error_excluded": [
+        "sympy__sympy-17318"
+      ],
+      "failures": 11,
+      "M1_AUROC_u": 0.483,
+      "M2_AUROC_negc": 0.736,
+      "M3": -0.252,
+      "CI95": [
+        -0.468,
+        0.283
+      ],
+      "p": 0.7782,
+      "panel": [
+        "ray2333_grm_gemma2_2b_rewardmodel_ft",
+        "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+        "skywork_skywork_reward_v2_llama_3_2_1b",
+        "skywork_skywork_reward_v2_qwen3_1_7b",
+        "tiger_lab_acecoderm_7b"
+      ],
+      "inference": "eligible"
     },
     "tiger_lab_acecoderm_7b": {
-      "n_reselected": 34,
-      "changed_vs_primary": 24,
+      "n_reselected": 33,
+      "changed_vs_primary": 23,
       "gold_missing": 0,
-      "failures": 11,
-      "M1_AUROC_u": 0.589,
-      "M2_AUROC_negc": 0.482,
-      "M3": 0.107,
-      "CI95": [
-        -0.127,
-        0.571
+      "gold_error_excluded": [
+        "pylint-dev__pylint-4661"
       ],
-      "p": 0.25,
+      "failures": 11,
+      "M1_AUROC_u": 0.607,
+      "M2_AUROC_negc": 0.463,
+      "M3": 0.145,
+      "CI95": [
+        -0.112,
+        0.629
+      ],
+      "p": 0.1853,
       "panel": [
         "ray2333_grm_gemma2_2b_rewardmodel_ft",
         "ray2333_grm_llama3_2_3b_rewardmodel_ft",
@@ -80,7 +103,5 @@
       ],
       "inference": "eligible"
     }
-  },
-  "needs_gold_file": "data/swebench_pilot50/l4/out/gpu_scores_16k/needs_gold.jsonl",
-  "needs_gold_n": 1
+  }
 }

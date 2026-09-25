@@ -82,11 +82,14 @@ def main() -> None:
         for i in usable:
             ks = [(k, sc.get(f"{i}#{k}", {}).get("score", float("-inf"))) for k in range(4) if cands[(i, k)]["final_solution"].strip()]
             if ks: new_commit[i] = max(ks, key=lambda x: x[1])[0]
+        # g == -1 in gold_extra = harness could not apply/grade the patch -> gold_error exclusion, as in the pilot
+        gold_err = [i for i in new_commit if gold_extra.get((i, new_commit[i])) == -1]
+        for i in gold_err: del new_commit[i]
         changed = [i for i in new_commit if new_commit[i] != prim[i]["selected_candidate_index"]]
         have = {i: (prim[i]["g"] if new_commit[i] == prim[i]["selected_candidate_index"] else gold_extra.get((i, new_commit[i]))) for i in new_commit}
         missing = [i for i, g in have.items() if g is None]
         for i in missing: needs.append({"instance_id": i, "candidate": new_commit[i], "model_patch": cands[(i, new_commit[i])]["final_solution"], "model_name_or_path": f"a2_{crit}"})
-        r = {"n_reselected": len(new_commit), "changed_vs_primary": len(changed), "gold_missing": len(missing)}
+        r = {"n_reselected": len(new_commit), "changed_vs_primary": len(changed), "gold_missing": len(missing), "gold_error_excluded": gold_err}
         if not missing and len(new_commit) >= 10:
             yy = np.array([1 if have[i] == 0 else 0 for i in new_commit]); gg = [prim[i]["repo"] for i in new_commit]
             c = np.array([sc[f"{i}#{new_commit[i]}"]["score"] for i in new_commit], float)
