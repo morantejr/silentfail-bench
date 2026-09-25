@@ -57,16 +57,16 @@ sys.path.insert(0, "silentfail_bench/scripts")
 from gpu_rescore import CRITICS, CRITICS_32B          # noqa: E402
 allc = CRITICS + CRITICS_32B
 n_chat = sum(1 for _, k in allc if k == "seqcls"); n_code = len(allc) - n_chat
-WORD = {6: "six", 7: "seven", 8: "eight", 9: "nine"}
+WORD = {4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
 check("total reward models", len(allc), n_chat + n_code)
 for f in ("paper/main.tex", "paper/main_short.tex"):
     src = Path(f).read_text()
     bad = []
-    for m in re.finditer(r"(six|seven|eight|nine) (reward models|critics|chat-preference)(.{0,110})", src, re.S):
-        word, noun, after = m.group(1), m.group(2), m.group(3)
+    for m in re.finditer(r"\b(four|five|six|seven|eight|nine|ten) (reward models|critics|chat-preference)(.{0,110})", src, re.S | re.I):
+        word, noun, after = m.group(1).lower(), m.group(2).lower(), m.group(3)
         want = {"chat-preference": n_chat}.get(noun, len(allc))
         if WORD.get(want) == word: continue
-        if re.search(r"all three lengths|complete ladder|no 4k pass|L4|panel|auditor", after): continue   # a legitimately narrower set, said so
+        if re.search(r"all three lengths|complete ladder|no 4k pass|auditing|as auditors|audit panel", after): continue   # a stated subset: the m=4 audit panel, or the models with a full ladder
         bad.append(f"{word} {noun}")
     print(f"  {'ok  ' if not bad else 'FAIL'}  {f}: {bad or 'all counts agree with the code'}")
     if bad: fail.append(f"{f} model count")

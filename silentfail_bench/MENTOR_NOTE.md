@@ -1046,6 +1046,10 @@ cut already said eight. A third mention, "two of the seven critics" in the 8k
 ladder, was **correct but read as a contradiction** — only seven models have a
 score at all three lengths, because the 32B has no 4k pass — and now says so.
 `check_consistency.py` derives the count from the code and checks every
-"six/seven/eight … models|critics|chat-preference" claim in both papers,
-allowing a narrower number only where the text states the restriction.
-Bite-tested in both directions.
+number-word claim about models or critics in both papers, allowing a narrower
+number only where the text states the restriction ("at all three lengths",
+"no 4k pass", "auditing"). The first two versions of this check reported
+ALL CONSISTENT while being unable to catch anything, because the allowlist
+contained "panel" and then omitted "five"; both were found by injecting the
+error and confirming exit 1, not by reading the code. Four injected count
+errors are now caught and the clean tree passes.
