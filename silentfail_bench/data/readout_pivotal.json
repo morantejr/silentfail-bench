@@ -1,0 +1,121 @@
+{
+ "analysis": "Margin-stratified ('pivotal vote') check, exploratory, no new data.",
+ "reference": "Shu 2026, arXiv:2608.06940 - verification concentrates on single-vote-margin cases.",
+ "verified": {
+  "benchmark": "verified",
+  "n": 34,
+  "margin": {
+   "median": 1.766,
+   "iqr": [
+    0.707,
+    3.323
+   ]
+  },
+  "AUROC_small_margin_predicts_failure": 0.504,
+  "AUROC_small_margin_CI": [
+   0.099,
+   0.67
+  ],
+  "strata": {
+   "pivotal (closest third)": {
+    "n": 11,
+    "failures": 3,
+    "AUROC_u": 0.333,
+    "AUROC_u_CI": [
+     0.056,
+     1.0
+    ],
+    "AUROC_negc": 0.708
+   },
+   "middle": {
+    "n": 12,
+    "failures": 6,
+    "AUROC_u": 0.472,
+    "AUROC_u_CI": [
+     0.0,
+     1.0
+    ],
+    "AUROC_negc": 0.444
+   },
+   "comfortable (widest third)": {
+    "n": 11,
+    "failures": 3,
+    "AUROC_u": 0.75,
+    "AUROC_u_CI": [
+     0.357,
+     1.0
+    ],
+    "AUROC_negc": 0.625
+   }
+  }
+ },
+ "multilingual": {
+  "benchmark": "multilingual",
+  "n": 77,
+  "margin": {
+   "median": 0.832,
+   "iqr": [
+    0.312,
+    1.727
+   ]
+  },
+  "AUROC_small_margin_predicts_failure": 0.594,
+  "AUROC_small_margin_CI": [
+   0.465,
+   0.713
+  ],
+  "strata": {
+   "pivotal (closest third)": {
+    "n": 26,
+    "failures": 13,
+    "AUROC_u": 0.615,
+    "AUROC_u_CI": [
+     0.406,
+     0.831
+    ],
+    "AUROC_negc": 0.556
+   },
+   "middle": {
+    "n": 25,
+    "failures": 12,
+    "AUROC_u": 0.737,
+    "AUROC_u_CI": [
+     0.548,
+     0.913
+    ],
+    "AUROC_negc": 0.423
+   },
+   "comfortable (widest third)": {
+    "n": 26,
+    "failures": 10,
+    "AUROC_u": 0.356,
+    "AUROC_u_CI": [
+     0.141,
+     0.582
+    ],
+    "AUROC_negc": 0.637
+   }
+  }
+ },
+ "multiplicity_check": {
+  "method": "Permute failure labels within repository, recompute the MAXIMUM AUROC(u) across the three margin strata, 4000 draws.",
+  "verified": {
+   "observed_best": 0.75,
+   "null_median": 0.733,
+   "null_95th": 0.889,
+   "p": 0.485
+  },
+  "multilingual": {
+   "observed_best": 0.737,
+   "null_median": 0.719,
+   "null_95th": 0.799,
+   "p": 0.369
+  },
+  "winning_stratum": {
+   "verified": "comfortable (widest third)",
+   "multilingual": "middle"
+  },
+  "reading": "The best of three small strata reaches ~0.72-0.73 under the null, so neither observed best is remarkable. The winning stratum is also at opposite ends on the two benchmarks. Disagreement does not concentrate on close-call selections; the pivotal-vote pattern reported for code-review panels does not reproduce for selection margin here."
+ },
+ "conclusion": "Exploratory and negative. Selection margin itself barely predicts failure (0.504 / 0.594), and stratifying by it does not reveal a region where disagreement works. Reported so that the obvious reviewer question - 'did you look at the close calls?' - has an answer."
+}
