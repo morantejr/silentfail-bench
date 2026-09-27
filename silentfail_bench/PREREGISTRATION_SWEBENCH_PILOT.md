@@ -539,3 +539,43 @@ estimator's baseline is degenerate (M_c = 0.150 out of fold against a raw
 assumption-free estimator the endpoint is +0.029 [−0.082, +0.137], and
 AUROC(u) = 0.614 has a CI of [0.488, 0.736] including chance. Recorded as not
 holding, on the four-estimator standard adopted in Amendment 4.
+
+---
+
+# Amendment 6 — capability pilot for a newer agent — 2026-09-27, before any trajectory exists
+
+**Motivation.** The mentor asks for a more capable agent. Its feasibility turns
+entirely on price: the five stronger public runs cost $0.356–$0.658 per
+trajectory against our $0.040, which puts the experiment at $226–$678.
+`gpt-6-luna` is listed at $0.10/$0.50 per M tokens — **cheaper than the agent
+we used** — but no GPT-6 model has a published SWE-bench score, so its
+capability at agentic coding is unknown. This pilot measures it before any
+money is committed to a full run.
+
+**Design.** The **same 41 SWE-bench Verified instances** as the primary pilot,
+so the comparison is paired on identical tasks. `k = 1` (one attempt per
+instance; this is a capability measurement, not a selection experiment), the
+same mini-swe-agent scaffold, the same 40-step limit, the same harness gold.
+
+**Quantities.** Fraction of instances where the agent submits a non-empty
+patch; per-attempt failure rate under executed gold; cost per trajectory; and
+the paired difference in failure rate against gpt-5-mini on the same 41
+instances.
+
+**Predictions (bars fixed now).**
+- **P6-1 (it functions):** ≥ 80% of instances end with a submitted, non-empty
+  patch. Below that the scaffold does not drive this model and the option is
+  closed, as it was for the local 7B/14B agents in the pilot record.
+- **P6-2 (it is more capable):** per-attempt failure rate is at least 10 points
+  below gpt-5-mini's on the same instances.
+- **P6-3 (it is cheap):** measured cost per trajectory ≤ $0.040, i.e. no more
+  than the agent we used.
+
+**Readings.** All three pass → the mentor's agent axis is affordable inside
+the remaining credit and is worth proposing at full scale. P6-1 fails → record
+as a non-starter with the reason. P6-2 fails → the model is cheap but not more
+capable, so it does not address the objection.
+
+**This is explicitly a capability pilot and is not inferential.** No claim
+about disagreement, selection or silent failures is drawn from it; 41
+instances at k=1 cannot support one. Cost cap: $5.
