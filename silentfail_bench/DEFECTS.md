@@ -243,3 +243,36 @@ python at sandbox start (~10 s). Sandboxes then start in 6–90 s.
 **Also.** Killing the orchestrator does not stop its Modal sandboxes; they
 run to `runtime_timeout` and hold concurrency. Stop the `swe-rex` app
 explicitly (`modal app stop <id> -y`) before restarting.
+
+## Amendment 7's paused checkpoint was invisible to its own runner (found 2026-09-27, before resume)
+
+**Symptom (latent, not yet triggered).** The 100 trajectories generated before
+Amendment 7 was paused sat at `data/agent_axis/cand0/`. The runner's generate
+stage writes to `out/traj/cand{c}` and its bundle stage globs
+`out.glob("traj/cand*/*/*.traj.json")`. Against `--out data/agent_axis` that
+glob returned **0 files** while 100 existed one level up.
+
+**What would have happened on 1 October.** `gen` would have created a fresh
+`traj/cand0/` with no `preds.json`, so mini-swe-agent's skip logic
+(`--redo-existing` defaults off; it skips instance ids already in
+`preds.json`) would have had nothing to skip and regenerated all 114 from
+scratch. The original 100 would have been silently ignored by `bundle` as
+well. Cost of the silent redo: ~$0.4 of OpenAI plus ~$2.4 of Modal sandboxes,
+and, worse, no error message anywhere.
+
+**Why it was there.** The validated replication run uses
+`data/replication_multilingual/traj/cand{0..3}/`. The agent-axis run was
+launched with an output path one level shallower, and because generation was
+stopped for budget rather than by a failure, nothing ever exercised the
+bundle stage against it.
+
+**Fix.** `mv data/agent_axis/cand0 data/agent_axis/traj/cand0`. Verified after
+the move: the runner's glob returns 100, `preds.json` travelled with the
+directory and still holds 100 entries, and the layout now matches the
+validated run. Resume will skip those 100 and generate the remaining 14 of
+cand0 before starting cand1.
+
+**Class.** Same family as the two earlier silent no-ops recorded above: a path
+or skip predicate that disagrees with where the data actually is, failing by
+doing nothing rather than by raising. The check that catches it is to assert a
+non-zero count from the consumer's own glob, not to trust that files exist.
