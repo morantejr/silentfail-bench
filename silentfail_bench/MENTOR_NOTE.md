@@ -1097,8 +1097,23 @@ null now holds inside the selection-conditional regime the proposal named,
 with a selector that demonstrably ranks failures and re-commits
 three-quarters of the population. §4.5 is new.
 
-**The agent axis remains open, and is expensive.** gpt-5-mini fails 43.8% of
-Verified instances; the five stronger public runs fail 24–30%. A capable agent
-plus a capable selector drives the committed failure rate to ~15%, so holding
-35 positives needs **~250 instances rather than 155** — about **$270**, mostly
-generation. Recommend taking the Amendment 5 result to the mentor first.
+**The agent axis remains open, and I mis-costed it at first.** gpt-5-mini
+fails 43.8% of Verified instances; the five stronger public runs fail 24–30%.
+A capable agent plus a capable selector drives the committed failure rate to
+~15%, so holding ~35 positives needs **~250 instances rather than 155**.
+
+I first quoted **$270** from a guessed $0.25/trajectory. The leaderboard
+publishes real costs: the five stronger runs cost **$0.356–$0.658 per
+trajectory** (our gpt-5-mini cost $0.047 there and we measured $0.036, so the
+figures are comparable). Corrected:
+
+| instances | trajectories | generation (cheap–mean–dear) | judge | scoring | gold | total (mean agent) | failures |
+|---|---|---|---|---|---|---|---|
+| 150 | 600 | $214 – $298 – $395 | $12 | $3.46 | $0.68 | **$314** | ~22 |
+| 200 | 800 | $285 – $398 – $526 | $16 | $4.53 | $0.90 | **$419** | ~30 |
+| 250 | 1000 | $356 – $497 – $658 | $20 | $5.59 | $1.13 | **$524** | ~37 |
+
+So the real figure is **$314–$524**, not $270, and it is ~95% generation.
+Picking the cheapest capable agent (gemini-3-flash-high, $0.356/traj, 24.2%
+fail) rather than the mean brings 250 instances to about $383. Recommend
+taking the Amendment 5 result to the mentor before committing to this.
