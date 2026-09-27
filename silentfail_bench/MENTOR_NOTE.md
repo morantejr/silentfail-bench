@@ -1053,3 +1053,52 @@ ALL CONSISTENT while being unable to catch anything, because the allowlist
 contained "panel" and then omitted "five"; both were found by injecting the
 error and confirming exit 1, not by reading the code. Four injected count
 errors are now caught and the clean tree passes.
+
+# 24. The mentor's objection, tested (Amendment 5, 2026-09-27)
+
+*"Try to test the bench on more capable models; it is very likely that the
+framework works simply because you test a very hard bench on weak agent and
+selector."*
+
+The objection splits in two. **On the selector it was right, and is now
+answered. On the agent it is right and untested, and doing it makes the study
+harder, not easier.**
+
+**What the data already said.** The population is not unlearnable: on the same
+trajectories a 1B reward model reaches 0.712 and gpt-5 as a judge 0.720 /
+0.662, while every disagreement statistic sits at 0.44–0.69. Signal exists;
+disagreement does not capture it.
+
+**Amendment 5, run for $13.** gpt-5 scored all 620 candidates and re-selected.
+
+| | Verified | Multilingual |
+|---|---|---|
+| selector's pool AUROC | **0.712** [0.62, 0.81] | **0.706** [0.63, 0.78] |
+| (the 4B selector, for comparison) | 0.81 | 0.43 |
+| trajectories re-committed | 28 of 39 | 80 of 106 |
+| committed failure rate | 28% (was 35%) | 38% (was 45%) |
+| positives | 9 — **below the floor** | 32 |
+| AUROC(u) on the new set | 0.536 | 0.614 [0.488, 0.736] |
+| endpoint, assumption-free | −0.099 | **+0.029 [−0.082, +0.137]** |
+
+**S-P1 passes both. S-P2 passes on Multilingual** (0.706 → 0.591: a selector
+with signal, and selecting consumes it). **S-P3 does not hold.**
+
+**A near-miss worth recording.** The leave-one-repository-out logistic reported
+**+0.375 [+0.214, +0.522]** on Multilingual — a headline-grade positive that
+would have reversed the paper. It is an artifact: that estimator's baseline
+scores **0.150** out of fold against a raw AUROC(−c) of 0.591, and the gain
+tracks the baseline's deficit exactly (0.150→+0.375, 0.377→+0.195,
+0.588→+0.029). The four-estimator standard adopted in §4.6 caught it. Without
+that standard this project would have published a false positive.
+
+**What this does to the paper.** The largest stated limitation is closed: the
+null now holds inside the selection-conditional regime the proposal named,
+with a selector that demonstrably ranks failures and re-commits
+three-quarters of the population. §4.5 is new.
+
+**The agent axis remains open, and is expensive.** gpt-5-mini fails 43.8% of
+Verified instances; the five stronger public runs fail 24–30%. A capable agent
+plus a capable selector drives the committed failure rate to ~15%, so holding
+35 positives needs **~250 instances rather than 155** — about **$270**, mostly
+generation. Recommend taking the Amendment 5 result to the mentor first.

@@ -1,0 +1,19 @@
+{
+ "scores": {
+  "pallets__flask-5014": [
+   0.380615234375
+  ]
+ },
+ "committed": {
+  "pallets__flask-5014": 0
+ },
+ "audit": {
+  "pallets__flask-5014": {
+   "audit_0": -5.3203125,
+   "audit_1": -5.21484375,
+   "audit_2": -1.6259765625,
+   "audit_3": -1.4248046875
+  }
+ },
+ "c_sel_hf_id": "Skywork/Skywork-Reward-V2-Qwen3-4B"
+}

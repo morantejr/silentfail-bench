@@ -21,7 +21,7 @@ from silentfail.stats import auroc_fast, cluster_bootstrap_delta  # noqa: E402
 
 JUDGES = ["gpt-5", "gpt-5-mini", "gpt-5-nano"]
 PRICE = {"gpt-5": (1.25, 10.0), "gpt-5-mini": (0.25, 2.0), "gpt-5-nano": (0.05, 0.40)}   # $/M in, out
-TAIL_CHARS, DIFF_CAP, COST_CAP = 24_000, 60_000, 10.0
+TAIL_CHARS, DIFF_CAP, COST_CAP = 24_000, 60_000, 40.0
 ENV = Path.home() / "Library/Application Support/mini-swe-agent/.env"
 SYSTEM = ("You audit patches proposed by an automated software agent for a GitHub issue. "
           "You never see the maintainers' hidden tests. Estimate how likely the patch fully resolves the issue "
@@ -61,16 +61,18 @@ def run(a) -> None:
     from openai import OpenAI
     client = OpenAI()
     cands = [json.loads(l) for l in a.bundle.read_text().splitlines() if l.strip()]
-    committed = [c for c in cands if c["candidate"] == c["committed_index_primary"] and not c["excluded"]]
+    committed = cands if a.all_candidates else [c for c in cands if c["candidate"] == c["committed_index_primary"] and not c["excluded"]]
     if a.limit: committed = committed[: a.limit]
     a.cache.parent.mkdir(parents=True, exist_ok=True)
-    done = {(d["judge"], d["cond"], d["instance_id"]) for d in map(json.loads, a.cache.read_text().splitlines())} if a.cache.exists() else set()
+    done = {(d["judge"], d["cond"], d["instance_id"], d.get("candidate")) for d in map(json.loads, a.cache.read_text().splitlines())} if a.cache.exists() else set()
     spent = 0.0; lock = threading.Lock()
-    jobs = [(cond, judge, c) for cond in ("J1", "J2") for judge in JUDGES for c in committed if (judge, cond, c["instance_id"]) not in done]
+    conds = tuple(a.conds) if a.conds else ("J1", "J2"); judges = a.judges if a.judges else JUDGES
+    jobs = [(cond, judge, c) for cond in conds for judge in judges for c in committed if (judge, cond, c["instance_id"], c["candidate"]) not in done]
     print(f"[run] {len(jobs)} calls to make ({len(done)} cached), workers={a.workers}", flush=True)
     def one(job):
         nonlocal spent
         cond, judge, c = job
+        key = (judge, cond, c["instance_id"], c["candidate"])
         with lock:
             if spent > COST_CAP: return
         msgs = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt(c, cond)}]
@@ -91,7 +93,7 @@ def run(a) -> None:
                 rec.update({"p_resolved": None, "error": f"{type(e).__name__}: {str(e)[:200]}"}); time.sleep(3 * (attempt + 1))
         with lock:
             with a.cache.open("a") as f: f.write(json.dumps(rec) + "\n")
-            print(f"  {cond} {judge:11s} {c['instance_id']:40s} p={rec.get('p_resolved')} (${spent:.2f} so far)", flush=True)
+            print(f"  {cond} {judge:11s} {c['instance_id']:40s}#{c['candidate']} p={rec.get('p_resolved')} (${spent:.2f} so far)", flush=True)
     with ThreadPoolExecutor(max_workers=a.workers) as ex: list(ex.map(one, jobs))
     print(f"[done] est spend ${spent:.2f}", flush=True)
 
@@ -143,6 +145,8 @@ def main() -> None:
     ap.add_argument("--cache", type=Path, default=ROOT / "data/swebench_pilot50/llm_judges/judgments.jsonl")
     ap.add_argument("--out", type=Path, default=ROOT / "data/swebench_pilot50/prereg_readout_amendment4c.json")
     ap.add_argument("--limit", type=int, default=None); ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--all-candidates", action="store_true", help="selector mode: score every candidate, not only the committed one")
+    ap.add_argument("--judges", nargs="*", default=None); ap.add_argument("--conds", nargs="*", default=None)
     a = ap.parse_args(); (run if a.cmd == "run" else readout)(a)
 
 

@@ -316,4 +316,24 @@ conclusions, but the paper now matches its own data. Two PDFs: the full draft
 
 ---
 
-## Next entry (pending): mentor decision — submit or run Amendment 5 (declared, not run)
+## Amendment 5 · the selector axis, run — 2026-09-27
+
+**Done.** On the mentor's objection that the null may be an artifact of a weak
+agent and selector, Amendment 5 was run for $13: gpt-5 scored all 620
+candidates, re-selected, and the 59 newly committed patches were graded.
+
+**Learned.** The selector now has real signal — pool AUROC **0.712 / 0.706**,
+re-committing 28 of 39 and 80 of 106 trajectories. **S-P1 passes both**;
+**S-P2 passes on Multilingual** (0.706 → 0.591). **S-P3 does not hold**:
+disagreement gives +0.029 [−0.082, +0.137]. A leave-one-repo-out logistic
+reported +0.375 and would have reversed the paper; its baseline scores 0.150
+out of fold and the gain tracks that deficit — caught by the four-estimator
+standard.
+
+**Changed.** The paper's largest limitation is closed: the null holds in the
+selection-conditional regime the proposal named. New §4.5. Still open and
+costed: a stronger **agent** (~250 instances, ~$270).
+
+---
+
+## Next entry (pending): mentor decision on the agent axis

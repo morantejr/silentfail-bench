@@ -525,3 +525,17 @@ author decision before any analysis. 42 of 620 candidate scores from
 analysed, or used in any reported quantity**; `S_swerm` was never launched.
 The amendment stands as a pre-registered design for a future study. No
 result in this paper depends on it, and v0.5's conclusions are unchanged.
+
+**Amendment 5 — RUN (2026-09-27), outcome.** `S_judge` (gpt-5 over all 620
+candidates, $13.05) executed as declared; `S_swerm` recorded as **not run**
+under the escape hatch above (122 GB of causal-LM weights, no value head, no
+score token, 31-byte README — no documented scalar interface). **S-P1 passes
+on both benchmarks** (pool AUROC 0.712 / 0.706). **S-P2 passes on
+Multilingual** (0.706 → 0.591) and fails on Verified, which has 9 positives
+and is below the inference floor. **S-P3 does not hold**: on Multilingual the
+criterion as literally written is met by the estimator it names, but that
+estimator's baseline is degenerate (M_c = 0.150 out of fold against a raw
+0.591) and the apparent gain tracks the baseline's deficit; under the
+assumption-free estimator the endpoint is +0.029 [−0.082, +0.137], and
+AUROC(u) = 0.614 has a CI of [0.488, 0.736] including chance. Recorded as not
+holding, on the four-estimator standard adopted in Amendment 4.
