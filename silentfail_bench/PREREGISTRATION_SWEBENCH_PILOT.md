@@ -579,3 +579,26 @@ capable, so it does not address the objection.
 **This is explicitly a capability pilot and is not inferential.** No claim
 about disagreement, selection or silent failures is drawn from it; 41
 instances at k=1 cannot support one. Cost cap: $5.
+
+**Amendment 6 — RUN (2026-09-27), outcome.** All three predictions pass.
+**P6-1:** 41/41 instances submitted a non-empty patch (bar ≥80%).
+**P6-2:** per-attempt failure 30.0% against gpt-5-mini's 48.6% on the same 41
+instances, unconditional — **+18.6 points** (bar ≥10). Our own gpt-5-mini
+figure agrees with the public leaderboard run on those instances (48.8%) to
+0.2 points. An earlier 33.3% figure was the unselected-arm rate, which
+conditions on a non-empty patch and is not comparable.
+**P6-3:** $0.0050 per trajectory against $0.0401 — **8× cheaper** (bar
+≤$0.040). Total pilot cost $0.20.
+
+*Instrument failure #7, recorded.* The first run of this amendment returned
+0/41 submitted patches, which reads as "this model cannot drive the scaffold".
+It was our own misconfiguration: `model_class: litellm` unconditionally sends
+native function tools, which gpt-6-luna rejects on `/v1/chat/completions`;
+`drop_params: true` then dropped them silently, the model replied in correct
+text, and the model class — parsing only tool calls — aborted. Caught by
+sending the agent's own prompt directly to the model and seeing the expected
+output. Fixed with `model_class: litellm_response`.
+
+**Consequence.** The mentor's agent axis costs **≈$27 for 212 instances**
+(35 silent failures, matching the current study) using this agent, against
+$376 with gemini-3-flash-high. It fits inside the remaining credit.

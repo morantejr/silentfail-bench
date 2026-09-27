@@ -1,0 +1,55 @@
+{
+ "analysis": "Amendment 6 (pre-registered): capability pilot for gpt-6-luna. Descriptive only, not inferential.",
+ "design": "Same 41 SWE-bench Verified instances as the primary pilot, k=1, same scaffold, same 40-step limit, harness gold.",
+ "results": {
+  "trajectories": 41,
+  "submitted_non_empty_patch": 41,
+  "graded": 40,
+  "ungradable": 1,
+  "resolved": 28,
+  "failed": 12,
+  "per_attempt_failure_rate": 0.3,
+  "cost_total_usd": 0.204,
+  "cost_per_trajectory_usd": 0.005,
+  "oracle_pair": "reference resolves, empty fails"
+ },
+ "comparison_same_41_instances_unconditional": {
+  "gpt-5-mini public leaderboard run": 0.488,
+  "gpt-5-mini our own run": 0.486,
+  "gpt-6-luna": 0.3,
+  "note": "Our own run and the public run agree to 0.2 points, which validates the comparison. An earlier figure of 33.3% for gpt-5-mini was the unselected-arm rate, which conditions on producing a non-empty patch and so is not comparable; counting empty patches as failures, as the leaderboard does, gives 48.6%."
+ },
+ "predictions": {
+  "P6_1_functions": {
+   "value": 1.0,
+   "bar": 0.8,
+   "pass": true
+  },
+  "P6_2_more_capable": {
+   "points_better": 18.6,
+   "bar": 10.0,
+   "pass": true
+  },
+  "P6_3_cheap": {
+   "usd_per_traj": 0.005,
+   "bar": 0.04,
+   "pass": true,
+   "note": "8x cheaper than gpt-5-mini"
+  }
+ },
+ "instrument_failure_7": {
+  "symptom": "0 of 41 trajectories submitted a patch; every one exited RepeatedFormatError after 3 API calls.",
+  "false_reading": "That gpt-6-luna cannot drive an agent scaffold - the same conclusion reached for local 7B/14B agents.",
+  "cause": "Our config forced model_class: litellm, which unconditionally sends native function tools. gpt-6-luna rejects function tools on /v1/chat/completions (they conflict with its implicit reasoning effort); with drop_params: true litellm silently dropped the tools, the model replied in correct text, and the model class - which parses only tool calls - saw none and aborted. Switching to the text-based config did not help because our config overrode its model class too.",
+  "caught_by": "Sending the agent's own system+user prompt directly to the model, which returned exactly the expected format. Fixed by model_class: litellm_response (the Responses API, where the model does support tools).",
+  "rule_reaffirmed": "A rate of exactly 0% or 100% is an instrument, not a result."
+ },
+ "consequence": {
+  "agent_axis_now_affordable": true,
+  "cost_212_instances_35_failures_usd": 26.8,
+  "cost_250_instances_usd": 31.55,
+  "remaining_openai_credit_usd": 46.9,
+  "alternative_gemini_3_flash_high_usd": 376,
+  "caveat": "A more capable agent produces fewer silent failures (committed rate ~16% vs our 35%), so ~212 instances are needed to reach the 35 failures the current study has. Cheapness solves the budget problem, not the statistical one."
+ }
+}

@@ -1,0 +1,18 @@
+# mini-swe-agent overlay: gpt-6-luna, agent environment in a Modal sandbox.
+# Capability pilot only (Amendment 6). Key in mini-swe-agent's global .env.
+agent:
+  step_limit: 40
+  cost_limit: 0.25
+  mode: yolo
+environment:
+  environment_class: swerex_modal
+  cwd: /testbed
+  timeout: 120
+  startup_timeout: 600
+  runtime_timeout: 3600
+  deployment_timeout: 3600
+model:
+  model_class: litellm
+  model_name: gpt-6-luna
+  model_kwargs:
+    drop_params: true
