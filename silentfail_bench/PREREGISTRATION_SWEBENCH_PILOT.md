@@ -602,3 +602,51 @@ output. Fixed with `model_class: litellm_response`.
 **Consequence.** The mentor's agent axis costs **≈$27 for 212 instances**
 (35 silent failures, matching the current study) using this agent, against
 $376 with gemini-3-flash-high. It fits inside the remaining credit.
+
+---
+
+# Amendment 7 — the agent axis — 2026-09-27, declared before any trajectory exists
+
+**Motivation.** The remaining half of the mentor's objection: the null may be
+an artifact of a weak agent. Amendment 6 established that `gpt-6-luna` is
+both more capable than our agent (30.0% vs 48.6% per-attempt failure on
+identical instances) and 8x cheaper, which makes this testable inside the
+remaining credit.
+
+**Design — paired on instances.** The **same 114 SWE-bench Multilingual
+instances** as the replication, `k = 4`, the same scaffold, the same 40-step
+limit, the same m=4 audit panel, the same harness gold. The only thing that
+changes is the agent. Multilingual is chosen over Verified because its 41
+repositories are the axis that binds precision, and because the replication's
+selector-axis result lives there.
+
+**Two selection regimes, as in the rest of the study.**
+`S_4b`: the primary 4B chat reward model, for comparability with the primary
+protocol. `S_judge`: gpt-5 over all candidates, for the strong-selector
+condition, run only if the first regime clears the inference floor.
+
+**Quantities.** Silent-failure rate among committed trajectories; `AUROC(u)`;
+`AUROC(-c)`; the registered endpoint under all four estimators; and the paired
+difference in each against the gpt-5-mini run on these same instances.
+
+**Predictions (bars fixed now).**
+- **A7-P1 (the agent is capable here):** per-attempt failure rate on these
+  instances is at least 10 points below gpt-5-mini's on the same instances.
+  If this fails the agent is not more capable on Multilingual and the
+  amendment is descriptive only.
+- **A7-P2 (the null holds):** `AUROC(u) < 0.60` and its repository-clustered
+  CI includes 0.50.
+- **A7-P3 (the endpoint holds):** the assumption-free estimator of
+  `ΔAUROC(M_{c+u} − M_c)` has a CI including zero.
+
+**Readings.** A7-P2 and A7-P3 hold → the null survives a capable agent and a
+capable selector, and the mentor's objection is retired in full. Either fails
+→ the null is specific to weak agents, the paper's claim becomes conditional,
+and a confirmatory run is warranted before any positive claim is made.
+
+**Inference floor.** Unchanged: fewer than 10 silent failures in the committed
+set → descriptive only.
+
+**Cost, declared.** ~$2 generation and ~$9 judge on OpenAI credit; ~$7 of
+Modal, of which ~$3 is free-tier and the remainder is a small overage before
+the 1 October reset. Cap: $15 OpenAI, $12 Modal.
