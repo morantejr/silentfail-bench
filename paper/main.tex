@@ -79,6 +79,24 @@ Fifty instances were sampled with a fixed seed; generation completed for 41 (the
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_control.pdf}
 \caption{\textbf{Picking did not make things worse --- but it did use up the picker's own judgment.} One candidate the critic passed over, graded per instance, paired with the one it committed. Left: the committed candidate fails about as often as one passed over. Right: on Verified the selector tells failures from successes among candidates it rejected (0.81) far better than among those it chose (0.61); on Multilingual it could do neither.}\label{fig:control}\end{figure}
 
+\subsection{What the failures are: a test-derived taxonomy}\label{sec:taxonomy}
+A null invites the question of whether it averages over classes, one of which disagreement does detect. The harness answers this without asking a model: for every committed trajectory it records which \texttt{FAIL\_TO\_PASS} tests the patch turned green and which \texttt{PASS\_TO\_PASS} tests it broke. Five mutually exclusive classes exhaust the 47 silent failures (Table~\ref{tab:taxonomy}). Nearly two thirds are the dullest kind: the agent edited something, declared the task finished, broke nothing, and moved not one target test. A sixth broke previously passing tests without fixing the bug. Five cases, all on Multilingual, fixed the target and broke something else --- the only class where the agent did the work the task asked for and the accounting still records a failure.
+
+Disagreement detects none of them. Only one class clears the pre-registered inference floor of ten positives --- no progress, on Multilingual --- and there $\mathrm{AUROC}(u) = 0.534$ [0.367, 0.697] against the passing trajectories. The rest hold three to eight positives and range from 0.438 to 0.651 with no ordering that survives a glance at the intervals; we report them descriptively and draw nothing from them. The pooled null is not a mixture of a detectable subclass and an undetectable one.
+
+One incidental measurement belongs here, because it bounds what \emph{any} auditor on this benchmark can be checked against. The median analysed instance is guarded by exactly one \texttt{FAIL\_TO\_PASS} test, and 84 of 111 analysed rows are guarded by exactly one: 22 of 34 on Verified and 62 of 77 on Multilingual. ``Resolved'' is usually a single test's verdict, so the label our AUROCs are computed against is thinner than the word suggests.
+\begin{table}[t]\centering\footnotesize
+\begin{tabular}{lccr}\toprule
+What the executed tests say went wrong & Verified & Multilingual & Pooled \\\midrule
+No progress on the bug, broke nothing & 8 & 21 & 29 \\
+Broke something else, bug unfixed & 2 & 6 & 8 \\
+Fixed the bug, broke something else & 0 & 5 & 5 \\
+Partial fix: some target tests green & 1 & 3 & 4 \\
+Patch did not apply & 1 & 0 & 1 \\\midrule
+Total silent failures & 12 & 35 & 47 \\\bottomrule
+\end{tabular}
+\caption{\textbf{Most silent failures are quiet no-ops, not broken code.} Classes are mutually exclusive and exhaustive over committed trajectories the harness rejected, read from the executed test report rather than from a judge. Exploratory: run after the confirmatory results.}\label{tab:taxonomy}\end{table}
+
 \subsection{The safeguard does not: the ladder of nulls}
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_ladder.pdf}
 \caption{\textbf{Every way we tried to make disagreement work, on the pilot.} Each row is one configuration; 0.5 is a coin flip. Circles: panel disagreement $u$. Squares: the selecting critic's own score. The gold line is the simplest baseline we could find --- counting the lines added to the patch. Nothing crosses it here, and the one configuration that later did (Fig.~\ref{fig:windows}) failed to replicate (Fig.~\ref{fig:replication}).}\label{fig:ladder}\end{figure}
@@ -189,6 +207,13 @@ Fixed unit weights, no fitting & Verified & 0.614 & 0.583 & $-0.030$ & $[-0.17, 
 \end{tabular}
 \caption{The registered confirmatory endpoint under four estimators, repository-clustered bootstrap. Point estimates disagree in sign; every interval includes zero. The within-fold estimator drops repositories where no AUROC is defined and covers about half the rows, so its interval is wide; among the three full-coverage estimators the loosest pooled upper bound is $+0.12$. Raw $\mathrm{AUROC}(-c)$ is 0.621 / 0.560 / 0.560.}\label{tab:endpoint}\end{table}
 
+\subsection{Are the passes real? Label contamination and the endpoint}\label{sec:luckypass}
+Our positive class is failure, so a trajectory that passes its tests without solving the task is a mislabelled \emph{negative}. That is the one labelling error that could hide a real signal from us, because it inflates the apparent separability of both $c$ and $u$; the literature on weak and lucky gold reports it as a live problem~\citep{wang2025solved,agentlens2026}. Adjudicating semantic correctness would need gold re-run with stronger tests, which we cannot afford, so we bound it instead with executed evidence already on disk.
+
+The crude evasions are absent. No passing trajectory on either benchmark edited a file the reference test patch touches, and none edited any path matching a test-file convention. The harness restores test files before running, so tampering could not have worked, and nothing in our data suggests an agent tried. What remains is the subtler case: a patch that touches none of the files the reference patch touches and passes anyway. That is 0 of 22 passes on Verified and 4 of 42 on Multilingual, pooled 6.2\%. This is a proxy for the quantity that matters, not a measurement of it: a disjoint patch may be a legitimate alternative fix, and inspection suggests these four are, being five- to fifty-line edits in a neighbouring file of the same module. We therefore treat 6.2\% as an upper bound on contamination rather than an estimate of it. The contrast with the failures runs the reassuring way: 10 of 35 Multilingual failures are disjoint from the reference patch against 4 of 42 passes, so touching the files the reference touches goes with passing, as it should if the flag tracks anything real.
+
+The endpoint survives the worst case. Dropping the four flagged passes moves the pooled leave-one-repository-out $\DeltaAUROC$ from $-0.030$ to $-0.053$ [$-0.107$, $-0.012$] and the unfitted estimator from $+0.013$ to $-0.007$ [$-0.10$, $+0.10$]. Relabelling them as failures instead, the more punishing choice, gives $-0.024$ under both. $\mathrm{AUROC}(u)$ falls from 0.542 to 0.516 and to 0.484 respectively. Every scenario moves the result further from the safeguard working, never towards it, so label contamination of the kind this literature documents cannot be what produced our null. We note the asymmetry honestly: this check can only rule contamination out as an explanation of a null, and could not have rescued a positive.
+
 \subsection{A ruler beats the critics --- on one benchmark}
 \begin{figure}[t]\centering\includegraphics[width=\linewidth]{figures/fig_ruler.pdf}
 \caption{\textbf{On the pilot, two integers beat every model we ran.} Same 34 trajectories, same 12 positives. Gold bars need no model at all. Exploratory (declared as such): the covariates were registered as controls, not baselines.}\label{fig:ruler}\end{figure}
@@ -221,7 +246,7 @@ This explains the earlier false positive too. On HumanEval+ with an LLM-as-judge
 \item \textbf{Gold is the harness verdict.} It accepts some incorrect patches and rejects some correct ones~\citep{wang2025solved,rajan2026auditing,agentlens2026}; failure rates are lower bounds and every AUROC is attenuated by label noise.
 \item \textbf{Forty-seven positives.} Single-AUROC intervals are $\pm0.25$ (Verified) and $\pm0.14$ (Multilingual). Roughly twenty-five analyses were run on the twelve Verified positives without multiplicity correction; the replication is the correction: the configurations that cleared their bars on Verified did not clear them on Multilingual, while the replication's own prediction that the null would hold (R-P1) passed. The study supports failure to reject and an upper bound, not equivalence to chance; on the registered endpoint the bound is $+0.04$ pooled for the leave-one-repository-out logistic, $+0.12$ pooled across the three full-coverage estimators of it, and $+0.25$ on Verified alone (Table~\ref{tab:endpoint}); on single-protocol comparisons it is $+0.22$, and the widest interval in the sweep reaches $+0.45$. We quote the loosest that applies to the population in question.
 \item \textbf{Repository clustering.} Verified is 500 instances over 12 repositories (django 46\%); from six public submissions the ICC of resolution by repository is 0.033--0.053, an effective $n$ of 64--95 of 500 (Fig.~\ref{fig:pilot}). Clustered bootstraps with nine clusters are anti-conservative; we report null-calibrated coverage in the record. The paired ``beat the ruler by 0.10'' test has power $\approx$0.3 on Verified at any $n$, which is why the replication changed repositories rather than instances.
-\item \textbf{Exploratory analyses.} The diversity-versus-error-correlation comparison, the learned-combiner check, judge calibration, selection pressure at $n{=}2$ versus $n{=}4$, cross-benchmark transfer, agent self-verification as a feature, and a margin-stratified check were all run after the confirmatory results and are reported as exploratory, without multiplicity correction.
+\item \textbf{Exploratory analyses.} The diversity-versus-error-correlation comparison, the learned-combiner check, judge calibration, selection pressure at $n{=}2$ versus $n{=}4$, cross-benchmark transfer, agent self-verification as a feature, a margin-stratified check, the failure taxonomy of \S\ref{sec:taxonomy} and the label-contamination bound of \S\ref{sec:luckypass} were all run after the confirmatory results and are reported as exploratory, without multiplicity correction.
 \item \textbf{Input length and windows.} The primary scored a 4k prefix; the six chat RMs were scored at a true 8k and 16k; \texttt{AceCodeRM-7B} fell back to 4k on 153/164 rows. Pruning left most trajectories at one to three windows; $u_{\max}$ is a maximum of noisy statistics and biased upward under the null.
 \item \textbf{Declared deviations.} 41 instances, not 50 (generation stalled on host disk; the missing nine were set by list order). Amendment 4a's registered difficulty control was a near-oracle (0.95) and was replaced by a labelled structure-only base. The replication's \$15 generation cap was exceeded (\$18.30; the account's rate limit killed 138 partial trajectories) because stopping at 420/456 would have dropped the harder instances first. 26\% of replication candidates submitted no patch; 7 committed patches were ungradable and excluded.
 \end{itemize}
@@ -299,6 +324,33 @@ Amendment 4e & replicate on 41 repositories (37 analysed) & every promising Veri
 Amendment 4f & selection concentrates failures & it does not; but it does consume the selector's own signal \\
 Registered endpoint & --- & disagreement adds nothing to the selector: pooled bound $+0.12$ AUROC \\\bottomrule
 \end{tabularx}
+\normalsize
+
+\section{How the claim changed under scrutiny}\label{sec:history}
+\footnotesize
+The analysis was pre-registered; the write-up was not, and a negative result is easy to reverse-engineer once the data is in. This appendix is the audit trail. Every draft of this paper is a commit in the released repository, and the table records what each one changed about the claim rather than about the prose.
+
+Two features of it are worth stating, because they are the reason we offer it. The direction of travel is monotone: every revision narrowed the claim, weakened a number, or withdrew one, and none strengthened one. And the two corrections that mattered most were self-inflicted rather than requested. The mechanism announced in v0.1 was refuted by our own test--retest data in v0.2, before any reviewer saw it. The single-estimator bound reported in v0.5 was replaced in v0.6 by four estimators because we could not defend relying on one, and that decision is what identified the Amendment 5 result as an artefact two days later, where a single estimator would have reversed the paper's conclusion. Readers should discount the claim for the fact that its author chose the analyses; they can at least see which way the choices went.
+
+\medskip
+\begin{tabularx}{\linewidth}{@{}llX@{}}\toprule
+Draft & Date & What changed about the claim \\\midrule
+v0.1 & 24 Sep & First draft. One benchmark, 9 repositories. Claimed disagreement fails \emph{and} explained it by critic instability, and claimed two structural integers beat every critic tested. \\
+v0.2 & 24 Sep & Test--retest withdrew the instability mechanism: the critics are stable ($r\geq0.98$), so the v0.1 explanation was wrong. A single-family panel of LLM judges added. Title changed accordingly. \\
+v0.2.1 & 24 Sep & A 32B code-trained critic and the true 16k context added. Neither helps. \\
+v0.3 & 25 Sep & Replication on 41 instances over 37 analysed repositories. Every Verified point estimate that had cleared a bar fell to chance: the windowed statistic, patch size, and the standout 1B critic. This is what turned a null into a null with its own positives explained as noise. \\
+v0.4 & 25 Sep & Retitled and rescoped. Contributions restated as measurement rather than insight; full related work at 64 references. \\
+v0.5 & 25 Sep & The registered endpoint computed for the first time. Earlier drafts reported $\mathrm{AUROC}(u)$ alone, which is not the registered quantity. Six instrument failures enumerated. \\
+v0.6 & 25 Sep & A rank-normalisation leak found and fixed in the stored $u$. The single leave-one-repository-out number replaced by four estimators, because their signs disagree; the reported bound became the loosest of them, $+0.12$. \\
+v0.6.1 & 25 Sep & Bound restated as pooled-only, with the per-benchmark value $+0.25$ given separately. The within-fold estimator demoted, with its fold and row coverage stated. \\
+v0.9 & 25--27 Sep & Readability pass: plain-language summary, figure keys, consistent colour semantics. Eleven numerical errors and four figure-versus-table inconsistencies fixed against the source data, and a consistency checker added and bite-tested so that class of error cannot recur. Reward-model count corrected from seven to eight. \\
+ & 27 Sep & Amendment 5, answering the objection that a weak selector produced the result: \texttt{gpt-5} ranks failures across the candidate pool at 0.71 and re-commits three quarters of the population, and the endpoint does not move ($+0.029$). A single-estimator reading of the same data gave $+0.375$; the four-estimator rule adopted in v0.6 identified it as a baseline artefact. \\
+ & 27 Sep & Newer-generation judges: individually the best detectors in the study, their disagreement the worst, so the dissociation widens as critics improve. E2 reported: no decorrelated panel exists among off-the-shelf critics. \\
+v0.9.1 & 27 Sep & This appendix. The test-derived failure taxonomy (\S\ref{sec:taxonomy}) and the lucky-pass label-contamination bound (\S\ref{sec:luckypass}), both exploratory, neither of which moves the result. \\\bottomrule
+\end{tabularx}
+
+\medskip
+No drafts were labelled v0.7 or v0.8; the label advanced from v0.6 to v0.9 in a single step and the intervening work is grouped under v0.9 above.
 \normalsize
 
 \section{Operating points and alternative disagreement statistics}

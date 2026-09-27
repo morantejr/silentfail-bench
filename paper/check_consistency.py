@@ -90,5 +90,85 @@ for f, tag, want in ((D / "swebench_pilot50/pilot_free_scored.jsonl", "pilot", 9
     pop = [r for r in rows if not r["excluded"] and r["visible_pass"]]
     check(f"{tag} repos", len({r['repo'] for r in pop}), want)
 
+# --- Amendment 8: failure taxonomy and lucky-pass bound vs their source JSON ---
+print("\nfailure taxonomy (E5) vs data/readout_failure_taxonomy.json:")
+tax = json.loads((D / "readout_failure_taxonomy.json").read_text())
+ROWS = [("No progress on the bug, broke nothing", "no progress on the bug, broke nothing"),
+        ("Broke something else, bug unfixed", "broke something else, bug unfixed"),
+        ("Fixed the bug, broke something else", "fixed the bug, broke something else"),
+        ("Partial fix: some target tests green", "partial fix"),
+        ("Patch did not apply", "patch did not apply")]
+for tex_label, json_key in ROWS:
+    m = re.search(re.escape(tex_label) + r" & (\d+) & (\d+) & (\d+) \\\\", tex)
+    if not m:
+        print(f"  FAIL  taxonomy row missing from Table: {tex_label}"); fail.append(f"taxonomy row {json_key}"); continue
+    tv, tm, tp = (int(x) for x in m.groups())
+    jv = tax["verified"]["classes"].get(json_key, 0); jm = tax["multilingual"]["classes"].get(json_key, 0)
+    jp = tax["pooled_classes"].get(json_key, 0)
+    ok = (tv, tm, tp) == (jv, jm, jp) and tv + tm == tp
+    print(f"  {'ok  ' if ok else 'FAIL'}  {json_key[:40]:42s} table ({tv},{tm},{tp}) vs json ({jv},{jm},{jp})")
+    if not ok: fail.append(f"taxonomy {json_key}")
+check("taxonomy total failures", tax["pooled_n_failures"], 47 if "47 silent failures" in tex else None)
+# the one class above the inference floor, quoted in the prose
+mlc = tax["multilingual"]["per_class"]["no progress on the bug, broke nothing"]
+check("above-floor class AUROC_u", mlc["AUROC_u"], 0.534 if "0.534" in tex else None)
+print(f"  {'ok  ' if not mlc['below_inference_floor'] else 'FAIL'}  the quoted class is above the inference floor (n={mlc['n']})")
+if mlc["below_inference_floor"]: fail.append("quoted taxonomy class below floor")
+# guard-test counts must match the analysed populations
+gv, gm = tax["verified"]["guard_tests"], tax["multilingual"]["guard_tests"]
+for txt, got in ((f"{gv['pop_with_single_f2p_test']} of {tax['verified']['n_analysed']} on Verified", gv),
+                 (f"{gm['pop_with_single_f2p_test']} of {tax['multilingual']['n_analysed']} on Multilingual", gm)):
+    ok = txt in tex
+    print(f"  {'ok  ' if ok else 'FAIL'}  guard-test phrase present: '{txt}'")
+    if not ok: fail.append(f"guard-test phrase '{txt}'")
+tot = gv["pop_with_single_f2p_test"] + gm["pop_with_single_f2p_test"]
+totn = tax["verified"]["n_analysed"] + tax["multilingual"]["n_analysed"]
+ok = f"{tot} of {totn} analysed rows" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  pooled guard-test count: '{tot} of {totn} analysed rows'")
+if not ok: fail.append("pooled guard-test count")
+
+print("\nlucky-pass bound vs data/readout_luckypass.json:")
+lp = json.loads((D / "readout_luckypass.json").read_text())
+for tag, bench in (("Verified", "verified"), ("Multilingual", "multilingual")):
+    d = lp[bench]["among_passes"]["disjoint_from_reference_patch"]
+    ok = f"{d['n']} of {d['of']} passes on {tag}" in tex or f"{d['n']} of {d['of']} on {tag}" in tex
+    print(f"  {'ok  ' if ok else 'FAIL'}  disjoint passes on {tag}: {d['n']} of {d['of']}")
+    if not ok: fail.append(f"disjoint passes {tag}")
+P = lp["pooled"]
+def phrase(name, want):
+    """Anchor to the exact sentence, not a bare number: these values also occur in the tables."""
+    ok = want in tex
+    print(f"  {'ok  ' if ok else 'FAIL'}  {name}: {'found' if ok else 'MISSING'} -> {want[:74]}")
+    if not ok: fail.append(f"luckypass {name}")
+
+def money(x): return f"{x:+.3f}".replace("+", "+").replace("-", "-")
+rate = P["suspect_rate_of_passes"] * 100
+phrase("pooled suspect rate", f"pooled {rate:.1f}\\%")
+# the same rate is restated later in the paragraph; both occurrences must agree
+n_rate = tex.count(f"{rate:.1f}\\%")
+print(f"  {'ok  ' if n_rate == 2 else 'FAIL'}  suspect rate stated consistently in both places (found {n_rate}, want 2)")
+if n_rate != 2: fail.append("luckypass suspect rate restated")
+
+df = lp["multilingual"]["among_failures_for_contrast"]["disjoint_from_reference_patch"]
+phrase("disjoint-failure contrast", f"{df['n']} of {df['of']} Multilingual failures are disjoint")
+
+AL, DR, RL = P["as_labelled"], P["drop_suspect_passes"], P["relabel_suspect_as_failure"]
+def m(v): return f"${v:+.3f}$".replace("+", "+")
+lo, hi = DR["logistic_LORO"]["CI95"]
+phrase("drop LORO with interval",
+       f"from {m(AL['logistic_LORO']['delta'])} to {m(DR['logistic_LORO']['delta'])} [{m(lo)}, {m(hi)}]")
+phrase("drop unfitted estimator",
+       f"from {m(AL['fixed_unit_weights']['delta'])} to {m(DR['fixed_unit_weights']['delta'])}")
+rl, ru = RL["logistic_LORO"]["delta"], RL["fixed_unit_weights"]["delta"]
+print(f"  {'ok  ' if abs(rl - ru) < 1e-9 else 'FAIL'}  relabel deltas coincide, as the prose claims ({rl} vs {ru})")
+if abs(rl - ru) >= 1e-9: fail.append("luckypass relabel 'under both'")
+phrase("relabel delta", f"gives {m(rl)} under both")
+phrase("AUROC_u under all three scenarios",
+       f"falls from {AL['raw_AUROC_u']:.3f} to {DR['raw_AUROC_u']:.3f} and to {RL['raw_AUROC_u']:.3f}")
+# the estimator must still reproduce the paper's published endpoint on the unmodified labels
+rb = next(r for r in rob["endpoint_robustness"] if r["label"] == "pooled")
+check("luckypass reproduces published LORO", AL["logistic_LORO"]["delta"], rb["logistic_LORO"]["delta"])
+check("luckypass reproduces published unit", AL["fixed_unit_weights"]["delta"], rb["fixed_unit_weights_no_fitting"]["delta"])
+
 print("\n" + ("ALL CONSISTENT" if not fail else f"{len(fail)} MISMATCH(ES): " + "; ".join(fail)))
 sys.exit(1 if fail else 0)

@@ -1,0 +1,358 @@
+{
+  "analysis": "Lucky-pass contamination of g=1 and headline sensitivity to it. Exploratory.",
+  "reference": "AgentLens 2025, arXiv:2511.03696 - ~10.7% of resolved SWE-bench trajectories pass for the wrong reason.",
+  "why_it_matters": "positive class is failure, so a lucky pass is a mislabelled negative; it would inflate apparent separability of both c and u.",
+  "verified": {
+    "benchmark": "verified",
+    "n_analysed": 34,
+    "n_passes": 22,
+    "n_failures": 12,
+    "among_passes": {
+      "disjoint_from_reference_patch": {
+        "n": 0,
+        "of": 22
+      },
+      "guarded_by_exactly_one_test": {
+        "n": 14,
+        "of": 22
+      },
+      "adds_two_lines_or_fewer": {
+        "n": 2,
+        "of": 22
+      },
+      "edited_a_file_the_test_patch_touches": {
+        "n": 0,
+        "of": 22
+      },
+      "edited_any_test_path": {
+        "n": 0,
+        "of": 22
+      },
+      "disjoint_AND_one_test": {
+        "n": 0,
+        "of": 22
+      }
+    },
+    "among_failures_for_contrast": {
+      "disjoint_from_reference_patch": {
+        "n": 1,
+        "of": 12
+      },
+      "edited_any_test_path": {
+        "n": 0,
+        "of": 12
+      }
+    },
+    "median_file_overlap_passes": 1.0,
+    "median_file_overlap_failures": 1.0,
+    "suspect_definition": "passing rows whose patch touches no file the reference patch touches",
+    "n_suspect": 0,
+    "suspect_rate_of_passes": 0.0,
+    "suspect_ids": [],
+    "scenarios": {
+      "as_labelled": {
+        "n": 34,
+        "positives": 12,
+        "raw_AUROC_u": 0.508,
+        "raw_AUROC_negc": 0.621,
+        "logistic_LORO": {
+          "delta": -0.076,
+          "CI95": [
+            -0.159,
+            0.089
+          ]
+        },
+        "logistic_5fold": {
+          "delta": -0.189,
+          "CI95": [
+            -0.283,
+            0.075
+          ]
+        },
+        "fixed_unit_weights": {
+          "delta": -0.03,
+          "CI95": [
+            -0.165,
+            0.24
+          ]
+        }
+      },
+      "drop_suspect_passes": {
+        "n": 34,
+        "positives": 12,
+        "raw_AUROC_u": 0.508,
+        "raw_AUROC_negc": 0.621,
+        "logistic_LORO": {
+          "delta": -0.076,
+          "CI95": [
+            -0.159,
+            0.089
+          ]
+        },
+        "logistic_5fold": {
+          "delta": -0.189,
+          "CI95": [
+            -0.283,
+            0.075
+          ]
+        },
+        "fixed_unit_weights": {
+          "delta": -0.03,
+          "CI95": [
+            -0.165,
+            0.24
+          ]
+        }
+      },
+      "relabel_suspect_as_failure": {
+        "n": 34,
+        "positives": 12,
+        "raw_AUROC_u": 0.508,
+        "raw_AUROC_negc": 0.621,
+        "logistic_LORO": {
+          "delta": -0.076,
+          "CI95": [
+            -0.159,
+            0.089
+          ]
+        },
+        "logistic_5fold": {
+          "delta": -0.189,
+          "CI95": [
+            -0.283,
+            0.075
+          ]
+        },
+        "fixed_unit_weights": {
+          "delta": -0.03,
+          "CI95": [
+            -0.165,
+            0.24
+          ]
+        }
+      }
+    }
+  },
+  "multilingual": {
+    "benchmark": "multilingual",
+    "n_analysed": 77,
+    "n_passes": 42,
+    "n_failures": 35,
+    "among_passes": {
+      "disjoint_from_reference_patch": {
+        "n": 4,
+        "of": 42
+      },
+      "guarded_by_exactly_one_test": {
+        "n": 36,
+        "of": 42
+      },
+      "adds_two_lines_or_fewer": {
+        "n": 8,
+        "of": 42
+      },
+      "edited_a_file_the_test_patch_touches": {
+        "n": 0,
+        "of": 42
+      },
+      "edited_any_test_path": {
+        "n": 0,
+        "of": 42
+      },
+      "disjoint_AND_one_test": {
+        "n": 4,
+        "of": 42
+      }
+    },
+    "among_failures_for_contrast": {
+      "disjoint_from_reference_patch": {
+        "n": 10,
+        "of": 35
+      },
+      "edited_any_test_path": {
+        "n": 0,
+        "of": 35
+      }
+    },
+    "median_file_overlap_passes": 1.0,
+    "median_file_overlap_failures": 1.0,
+    "suspect_definition": "passing rows whose patch touches no file the reference patch touches",
+    "n_suspect": 4,
+    "suspect_rate_of_passes": 0.095,
+    "suspect_ids": [
+      "gohugoio__hugo-12343",
+      "immutable-js__immutable-js-2006",
+      "micropython__micropython-10095",
+      "vuejs__core-11589"
+    ],
+    "scenarios": {
+      "as_labelled": {
+        "n": 77,
+        "positives": 35,
+        "raw_AUROC_u": 0.565,
+        "raw_AUROC_negc": 0.56,
+        "logistic_LORO": {
+          "delta": -0.022,
+          "CI95": [
+            -0.133,
+            0.08
+          ]
+        },
+        "logistic_5fold": {
+          "delta": -0.018,
+          "CI95": [
+            -0.079,
+            0.052
+          ]
+        },
+        "fixed_unit_weights": {
+          "delta": 0.048,
+          "CI95": [
+            -0.074,
+            0.175
+          ]
+        }
+      },
+      "drop_suspect_passes": {
+        "n": 73,
+        "positives": 35,
+        "raw_AUROC_u": 0.529,
+        "raw_AUROC_negc": 0.561,
+        "logistic_LORO": {
+          "delta": -0.068,
+          "CI95": [
+            -0.142,
+            -0.007
+          ]
+        },
+        "logistic_5fold": {
+          "delta": -0.099,
+          "CI95": [
+            -0.183,
+            -0.027
+          ]
+        },
+        "fixed_unit_weights": {
+          "delta": 0.013,
+          "CI95": [
+            -0.104,
+            0.137
+          ]
+        }
+      },
+      "relabel_suspect_as_failure": {
+        "n": 77,
+        "positives": 39,
+        "raw_AUROC_u": 0.485,
+        "raw_AUROC_negc": 0.555,
+        "logistic_LORO": {
+          "delta": -0.033,
+          "CI95": [
+            -0.079,
+            0.007
+          ]
+        },
+        "logistic_5fold": {
+          "delta": -0.007,
+          "CI95": [
+            -0.039,
+            0.024
+          ]
+        },
+        "fixed_unit_weights": {
+          "delta": -0.016,
+          "CI95": [
+            -0.123,
+            0.09
+          ]
+        }
+      }
+    }
+  },
+  "pooled": {
+    "n": 111,
+    "n_suspect": 4,
+    "suspect_rate_of_passes": 0.062,
+    "as_labelled": {
+      "n": 111,
+      "positives": 47,
+      "raw_AUROC_u": 0.542,
+      "raw_AUROC_negc": 0.56,
+      "logistic_LORO": {
+        "delta": -0.03,
+        "CI95": [
+          -0.101,
+          0.042
+        ]
+      },
+      "logistic_5fold": {
+        "delta": -0.014,
+        "CI95": [
+          -0.091,
+          0.063
+        ]
+      },
+      "fixed_unit_weights": {
+        "delta": 0.013,
+        "CI95": [
+          -0.08,
+          0.12
+        ]
+      }
+    },
+    "drop_suspect_passes": {
+      "n": 107,
+      "positives": 47,
+      "raw_AUROC_u": 0.516,
+      "raw_AUROC_negc": 0.554,
+      "logistic_LORO": {
+        "delta": -0.053,
+        "CI95": [
+          -0.107,
+          -0.012
+        ]
+      },
+      "logistic_5fold": {
+        "delta": -0.03,
+        "CI95": [
+          -0.079,
+          0.013
+        ]
+      },
+      "fixed_unit_weights": {
+        "delta": -0.007,
+        "CI95": [
+          -0.102,
+          0.099
+        ]
+      }
+    },
+    "relabel_suspect_as_failure": {
+      "n": 111,
+      "positives": 51,
+      "raw_AUROC_u": 0.484,
+      "raw_AUROC_negc": 0.54,
+      "logistic_LORO": {
+        "delta": -0.024,
+        "CI95": [
+          -0.062,
+          0.006
+        ]
+      },
+      "logistic_5fold": {
+        "delta": -0.038,
+        "CI95": [
+          -0.103,
+          0.009
+        ]
+      },
+      "fixed_unit_weights": {
+        "delta": -0.024,
+        "CI95": [
+          -0.11,
+          0.068
+        ]
+      }
+    }
+  }
+}

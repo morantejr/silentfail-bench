@@ -661,3 +661,85 @@ these trajectories and no quantity has been computed from them.** Generation
 resumes after the reset. Should the design change before then, this note
 stands as the record that the first 100 trajectories existed and were not
 inspected.
+
+# Amendment 8 — failure taxonomy and label-contamination bound — 2026-09-27, declared after the confirmatory results and reported as exploratory
+
+**Honesty note, first.** Unlike Amendments 1–7 this one is written *after* the
+quantities below were computed. It is therefore exploratory in the strict
+sense and carries no pre-registered thresholds, no multiplicity correction and
+no power claim. It is recorded here because the project's rule is that every
+analysis in the paper appears in this file, including the ones that do not
+earn the protection of a prior declaration.
+
+**Why these two.** Both are reviewer questions that the existing data can
+answer for nothing. Neither can produce a positive finding for the safeguard;
+both can only fail to rescue the null, which is the asymmetry a reader should
+hold against them.
+
+## E5 — what the silent failures actually are
+
+**Question.** Does the pooled null average over failure classes, one of which
+disagreement detects?
+
+**Method.** Every committed trajectory's executed harness report is already on
+disk. For Verified this is the union of the 14 batched `run_evaluation` runs
+under `logs/run_evaluation/sf_*/silentfail/`, which carry full test names; for
+Multilingual it is the `silentfail_replication` rows of
+`data/gold_modal/replication_multilingual/report.json`, which carry
+`FAIL_TO_PASS` and `PASS_TO_PASS` counts as fractions. Both joins were
+validated by requiring that the report's `resolved` field reproduce the stored
+`g` for every analysed row: 34/34 and 77/77, zero mismatches. Classes are
+derived from the test counts alone, never from a model's opinion, and are
+mutually exclusive and exhaustive. Per class we report `AUROC(u)` against the
+passing trajectories, with the pre-registered inference floor of 10 positives
+applied: classes below it are descriptive only.
+
+**Result.** Of 47 silent failures: 29 made no progress and broke nothing, 8
+broke something else with the bug unfixed, 5 fixed the bug and broke something
+else, 4 were partial fixes, 1 patch did not apply. The one class above the
+floor (no progress, Multilingual, n=21) gives `AUROC(u) = 0.534 [0.367,
+0.697]`. No class is detectable. Incidental: the median analysed instance is
+guarded by exactly one `FAIL_TO_PASS` test and 84 of 111 rows are guarded by
+exactly one.
+
+**Cost.** $0. No new gold, no new generation, no API calls. The ~$2 budgeted
+for an LLM-judged taxonomy was not spent, because the executed tests answer
+the question better than a judge would.
+
+## Lucky-pass contamination of the `g=1` labels
+
+**Question.** Our positive class is failure, so a trajectory that passes for
+the wrong reason is a mislabelled negative, which inflates the apparent
+separability of both `c` and `u`. Could that be what produced the null?
+
+**Method.** Three flags per passing row, all from executed evidence and the
+cached benchmark datasets: the patch touches no file the reference patch
+touches; the instance is guarded by exactly one `FAIL_TO_PASS` test; the patch
+adds two lines or fewer. Also recorded: whether the patch touched any file the
+reference *test* patch touches, or any path matching a test convention. The
+primary flag is file-disjointness from the reference patch. This is a **proxy
+and an upper bound**, not a semantic judgement: a disjoint patch may be a
+legitimate alternative fix. Sensitivity is then run two ways — drop the
+flagged passes, and relabel them as failures — recomputing `AUROC(u)` and the
+endpoint under the same three full-coverage estimators used in the paper. The
+estimator implementation was validated by reproducing the published
+`as_labelled` pooled values exactly (−0.030, −0.014, +0.013).
+
+**Result.** Zero test-file tampering on either benchmark. Disjoint passes: 0
+of 22 on Verified, 4 of 42 on Multilingual, pooled 6.2%; the four are five- to
+fifty-line edits in a neighbouring file of the same module. Among failures the
+disjoint rate is higher (10 of 35 on Multilingual), which is the expected
+direction. Sensitivity: dropping moves the pooled LORO delta from −0.030 to
+−0.053 [−0.107, −0.012] and the unfitted estimator from +0.013 to −0.007;
+relabelling gives −0.024 under both. `AUROC(u)` falls from 0.542 to 0.516 and
+0.484. Every scenario moves further from the safeguard working.
+
+**Cost.** $0. Gold patches come from the already-cached benchmark datasets.
+
+**Reading.** Label contamination cannot explain the null. It remains true, and
+is stated in the paper's limitations, that harness gold is imperfect in both
+directions and that every AUROC here is attenuated by label noise.
+
+**Scripts.** `scripts/readout_failure_taxonomy.py`,
+`scripts/readout_luckypass.py`. Outputs `data/readout_failure_taxonomy.json`,
+`data/readout_luckypass.json`.
