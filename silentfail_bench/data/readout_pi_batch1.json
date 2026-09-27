@@ -1,0 +1,168 @@
+{
+ "verified": {
+  "n": 34,
+  "failures": 12,
+  "critics": [
+   "ray2333_grm_gemma2_2b_rewardmodel_ft",
+   "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+   "skywork_skywork_reward_v2_llama_3_1_8b",
+   "skywork_skywork_reward_v2_llama_3_2_1b",
+   "skywork_skywork_reward_v2_qwen3_1_7b",
+   "skywork_skywork_reward_v2_qwen3_4b",
+   "tiger_lab_acecoderm_7b"
+  ],
+  "E2_diversity": {
+   "n_panels": 35,
+   "error_corr_range": [
+    0.71,
+    0.891
+   ],
+   "quality_range": [
+    0.482,
+    0.616
+   ],
+   "AUROC_u_range": [
+    0.436,
+    0.659
+   ],
+   "corr_AUROCu_vs_error_corr": 0.086,
+   "partial_corr_controlling_quality": -0.106,
+   "proposal_predicted": "negative (lower error correlation -> higher AUROC(u))",
+   "best_panel": {
+    "members": [
+     "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+     "skywork_skywork_reward_v2_llama_3_1_8b",
+     "skywork_skywork_reward_v2_llama_3_2_1b",
+     "skywork_skywork_reward_v2_qwen3_4b"
+    ],
+    "quality": 0.595,
+    "error_corr": 0.832,
+    "AUROC_u": 0.659
+   },
+   "worst_panel": {
+    "members": [
+     "ray2333_grm_gemma2_2b_rewardmodel_ft",
+     "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+     "skywork_skywork_reward_v2_llama_3_1_8b",
+     "skywork_skywork_reward_v2_qwen3_1_7b"
+    ],
+    "quality": 0.523,
+    "error_corr": 0.786,
+    "AUROC_u": 0.436
+   }
+  },
+  "LC_learned_combiner": {
+   "u alone (published)": {
+    "logistic_oof": 0.307,
+    "fixed_weights_oof": 0.504
+   },
+   "4 raw panel scores": {
+    "logistic_oof": 0.636,
+    "fixed_weights_oof": 0.428
+   },
+   "c alone": {
+    "logistic_oof": 0.527,
+    "fixed_weights_oof": 0.386
+   },
+   "c + u": {
+    "logistic_oof": 0.451,
+    "fixed_weights_oof": 0.439
+   },
+   "c + 4 raw panel scores": {
+    "logistic_oof": 0.625,
+    "fixed_weights_oof": 0.367
+   }
+  },
+  "CD_candidate_diversity": {
+   "instances_with_2plus_patches": 34,
+   "mean_pairwise_patch_overlap": 0.175,
+   "median_pairwise_patch_overlap": 0.103,
+   "frac_instances_with_near_identical_patches_overlap_gt_0.9": 0.059,
+   "mean_selector_score_spread": 2.344,
+   "reading": "overlap 1.0 = the candidates are the same patch; 0.0 = no shared changed lines"
+  }
+ },
+ "multilingual": {
+  "n": 77,
+  "failures": 35,
+  "critics": [
+   "ray2333_grm_gemma2_2b_rewardmodel_ft",
+   "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+   "skywork_skywork_reward_v2_llama_3_1_8b",
+   "skywork_skywork_reward_v2_llama_3_2_1b",
+   "skywork_skywork_reward_v2_qwen3_1_7b",
+   "skywork_skywork_reward_v2_qwen3_4b",
+   "tiger_lab_acecoderm_7b"
+  ],
+  "E2_diversity": {
+   "n_panels": 35,
+   "error_corr_range": [
+    0.737,
+    0.839
+   ],
+   "quality_range": [
+    0.512,
+    0.56
+   ],
+   "AUROC_u_range": [
+    0.458,
+    0.653
+   ],
+   "corr_AUROCu_vs_error_corr": 0.024,
+   "partial_corr_controlling_quality": 0.082,
+   "proposal_predicted": "negative (lower error correlation -> higher AUROC(u))",
+   "best_panel": {
+    "members": [
+     "ray2333_grm_gemma2_2b_rewardmodel_ft",
+     "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+     "skywork_skywork_reward_v2_qwen3_1_7b",
+     "skywork_skywork_reward_v2_qwen3_4b"
+    ],
+    "quality": 0.553,
+    "error_corr": 0.768,
+    "AUROC_u": 0.653
+   },
+   "worst_panel": {
+    "members": [
+     "ray2333_grm_gemma2_2b_rewardmodel_ft",
+     "skywork_skywork_reward_v2_llama_3_2_1b",
+     "skywork_skywork_reward_v2_qwen3_1_7b",
+     "tiger_lab_acecoderm_7b"
+    ],
+    "quality": 0.532,
+    "error_corr": 0.757,
+    "AUROC_u": 0.458
+   }
+  },
+  "LC_learned_combiner": {
+   "u alone (published)": {
+    "logistic_oof": 0.443,
+    "fixed_weights_oof": 0.565
+   },
+   "4 raw panel scores": {
+    "logistic_oof": 0.375,
+    "fixed_weights_oof": 0.412
+   },
+   "c alone": {
+    "logistic_oof": 0.459,
+    "fixed_weights_oof": 0.439
+   },
+   "c + u": {
+    "logistic_oof": 0.436,
+    "fixed_weights_oof": 0.484
+   },
+   "c + 4 raw panel scores": {
+    "logistic_oof": 0.428,
+    "fixed_weights_oof": 0.403
+   }
+  },
+  "CD_candidate_diversity": {
+   "instances_with_2plus_patches": 76,
+   "mean_pairwise_patch_overlap": 0.215,
+   "median_pairwise_patch_overlap": 0.156,
+   "frac_instances_with_near_identical_patches_overlap_gt_0.9": 0.026,
+   "mean_selector_score_spread": 1.353,
+   "reading": "overlap 1.0 = the candidates are the same patch; 0.0 = no shared changed lines"
+  }
+ }
+}

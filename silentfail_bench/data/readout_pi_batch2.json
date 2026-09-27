@@ -1,0 +1,140 @@
+{
+ "verified": {
+  "n": 34,
+  "failures": 12,
+  "TB_agent_verification": {
+   "frac_that_ran_any_test": 1.0,
+   "failure_rate_if_ran_tests": 0.353,
+   "failure_rate_if_never_tested": null,
+   "AUROC_never_tested_predicts_failure": 0.5,
+   "AUROC_fewer_tests_predicts_failure": 0.621,
+   "CI": [
+    0.442,
+    0.9
+   ]
+  },
+  "CAL_judge_calibration": {
+   "judges": {
+    "gpt-5": {
+     "brier": 0.223,
+     "ECE": 0.156,
+     "mean_stated_p_resolved": 0.657,
+     "actual_resolve_rate": 0.647
+    },
+    "gpt-5-mini": {
+     "brier": 0.23,
+     "ECE": 0.192,
+     "mean_stated_p_resolved": 0.751,
+     "actual_resolve_rate": 0.647
+    },
+    "gpt-5-nano": {
+     "brier": 0.247,
+     "ECE": 0.161,
+     "mean_stated_p_resolved": 0.729,
+     "actual_resolve_rate": 0.647
+    },
+    "gpt-6-luna": {
+     "brier": 0.198,
+     "ECE": 0.192,
+     "mean_stated_p_resolved": 0.839,
+     "actual_resolve_rate": 0.647
+    },
+    "gpt-6-sol": {
+     "brier": 0.212,
+     "ECE": 0.194,
+     "mean_stated_p_resolved": 0.703,
+     "actual_resolve_rate": 0.647
+    }
+   },
+   "note": "Brier: lower is better; 0.25 = always saying 50%. ECE: gap between stated and actual."
+  },
+  "E3_selection_pressure": {
+   "best_of_2": {
+    "n": 34,
+    "failures": 12,
+    "AUROC_u": 0.542
+   },
+   "best_of_4": {
+    "n": 33,
+    "failures": 12,
+    "AUROC_u": 0.444
+   }
+  }
+ },
+ "multilingual": {
+  "n": 77,
+  "failures": 35,
+  "TB_agent_verification": {
+   "frac_that_ran_any_test": 0.532,
+   "failure_rate_if_ran_tests": 0.439,
+   "failure_rate_if_never_tested": 0.472,
+   "AUROC_never_tested_predicts_failure": 0.517,
+   "AUROC_fewer_tests_predicts_failure": 0.539,
+   "CI": [
+    0.398,
+    0.674
+   ]
+  },
+  "CAL_judge_calibration": {
+   "judges": {
+    "gpt-5": {
+     "brier": 0.283,
+     "ECE": 0.239,
+     "mean_stated_p_resolved": 0.666,
+     "actual_resolve_rate": 0.545
+    },
+    "gpt-5-mini": {
+     "brier": 0.341,
+     "ECE": 0.338,
+     "mean_stated_p_resolved": 0.776,
+     "actual_resolve_rate": 0.545
+    },
+    "gpt-5-nano": {
+     "brier": 0.27,
+     "ECE": 0.175,
+     "mean_stated_p_resolved": 0.711,
+     "actual_resolve_rate": 0.545
+    },
+    "gpt-6-luna": {
+     "brier": 0.298,
+     "ECE": 0.264,
+     "mean_stated_p_resolved": 0.757,
+     "actual_resolve_rate": 0.545
+    },
+    "gpt-6-sol": {
+     "brier": 0.228,
+     "ECE": 0.185,
+     "mean_stated_p_resolved": 0.687,
+     "actual_resolve_rate": 0.545
+    }
+   },
+   "note": "Brier: lower is better; 0.25 = always saying 50%. ECE: gap between stated and actual."
+  },
+  "E3_selection_pressure": {
+   "best_of_2": {
+    "n": 77,
+    "failures": 35,
+    "AUROC_u": 0.556
+   },
+   "best_of_4": {
+    "n": 77,
+    "failures": 35,
+    "AUROC_u": 0.565
+   }
+  }
+ },
+ "XB_cross_benchmark_transfer": {
+  "structure only": {
+   "verified->multilingual": 0.502,
+   "multilingual->verified": 0.496
+  },
+  "structure + c + u": {
+   "verified->multilingual": 0.516,
+   "multilingual->verified": 0.542
+  },
+  "u alone": {
+   "verified->multilingual": 0.564,
+   "multilingual->verified": 0.508
+  }
+ }
+}

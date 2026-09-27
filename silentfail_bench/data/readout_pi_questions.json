@@ -1,0 +1,167 @@
+{
+ "analysis": "Seven analyses requested as 'what would a PI push on'. All exploratory, none pre-registered, all from data already on disk. No new compute.",
+ "E2_the_proposals_own_mechanism_experiment": {
+  "status": "RUN AT LAST - it had been listed as not run in every prior draft",
+  "method": "All 35 four-member panels from the 7 reward models. For each: mean individual AUROC (quality), mean pairwise correlation of errors (rank-normalised score minus gold), and AUROC(u).",
+  "error_correlation_range": {
+   "verified": [
+    0.71,
+    0.891
+   ],
+   "multilingual": [
+    0.737,
+    0.839
+   ]
+  },
+  "corr_AUROCu_vs_error_corr": {
+   "verified": 0.086,
+   "multilingual": 0.024
+  },
+  "partial_corr_controlling_quality": {
+   "verified": -0.106,
+   "multilingual": 0.082
+  },
+  "proposal_predicted": "strongly negative: decorrelated errors should buy residual detection value",
+  "finding": "Two things, and the first is the more important. (1) There is no decorrelated panel to be had: every one of the 35 panels has pairwise error correlation between 0.71 and 0.89. The diversity knob the proposal assumed exists does not turn for off-the-shelf critics. (2) Within that narrow range, error correlation does not predict AUROC(u) - the partial correlation is -0.11 and +0.08, opposite signs across benchmarks and both near zero. The mechanism the proposal named cannot be exercised, and where it can be varied slightly it does nothing."
+ },
+ "LC_is_it_disagreement_or_the_panel": {
+  "method": "Feed the four raw panel scores to a learned combiner instead of only their spread, out of fold.",
+  "fixed_weight_estimator": {
+   "verified": {
+    "u alone": 0.504,
+    "4 raw panel scores": 0.428
+   },
+   "multilingual": {
+    "u alone": 0.565,
+    "4 raw panel scores": 0.412
+   }
+  },
+  "finding": "The four raw scores do not beat their spread on either benchmark under the assumption-free estimator. The claim strengthens: it is not that disagreement is the wrong function of the panel - on the committed population the panel carries nothing to extract."
+ },
+ "CD_candidate_diversity": {
+  "mean_pairwise_patch_overlap": {
+   "verified": 0.175,
+   "multilingual": 0.215
+  },
+  "near_identical_share": {
+   "verified": 0.06,
+   "multilingual": 0.03
+  },
+  "finding": "The four candidates are genuinely different patches, sharing 18-22% of changed lines. So Amendment 4f's result - that selection did not concentrate failure - is NOT explained by the selector having nothing to choose between. It had real choices and still did not concentrate failure."
+ },
+ "TB_agent_self_verification": {
+  "ran_any_test": {
+   "verified": 1.0,
+   "multilingual": 0.53
+  },
+  "failure_rate": {
+   "multilingual_tested": 0.439,
+   "multilingual_never_tested": 0.472
+  },
+  "AUROC_fewer_tests_predicts_failure": {
+   "verified": 0.621,
+   "multilingual": 0.539
+  },
+  "finding": "Whether the agent verified its own work barely predicts silent failure (0.52 on the benchmark where it varies). On Verified every trajectory ran a test, so the feature has no variance there. This contradicts the intuition that behavioural signals should work on this population."
+ },
+ "CAL_judge_calibration": {
+  "finding": "Every judge is overconfident. Stated resolve probabilities average 0.66-0.84 against actual rates of 0.55-0.65; ECE runs 0.16-0.34. Several judges have Brier scores at or above 0.25, which is what you get by always saying 50%. gpt-6-luna is the most overconfident (says 0.84, actual 0.65) while being among the best rankers. Judges rank moderately and know poorly.",
+  "verified": {
+   "gpt-5": {
+    "brier": 0.223,
+    "ECE": 0.156,
+    "mean_stated_p_resolved": 0.657,
+    "actual_resolve_rate": 0.647
+   },
+   "gpt-5-mini": {
+    "brier": 0.23,
+    "ECE": 0.192,
+    "mean_stated_p_resolved": 0.751,
+    "actual_resolve_rate": 0.647
+   },
+   "gpt-5-nano": {
+    "brier": 0.247,
+    "ECE": 0.161,
+    "mean_stated_p_resolved": 0.729,
+    "actual_resolve_rate": 0.647
+   },
+   "gpt-6-luna": {
+    "brier": 0.198,
+    "ECE": 0.192,
+    "mean_stated_p_resolved": 0.839,
+    "actual_resolve_rate": 0.647
+   },
+   "gpt-6-sol": {
+    "brier": 0.212,
+    "ECE": 0.194,
+    "mean_stated_p_resolved": 0.703,
+    "actual_resolve_rate": 0.647
+   }
+  },
+  "multilingual": {
+   "gpt-5": {
+    "brier": 0.283,
+    "ECE": 0.239,
+    "mean_stated_p_resolved": 0.666,
+    "actual_resolve_rate": 0.545
+   },
+   "gpt-5-mini": {
+    "brier": 0.341,
+    "ECE": 0.338,
+    "mean_stated_p_resolved": 0.776,
+    "actual_resolve_rate": 0.545
+   },
+   "gpt-5-nano": {
+    "brier": 0.27,
+    "ECE": 0.175,
+    "mean_stated_p_resolved": 0.711,
+    "actual_resolve_rate": 0.545
+   },
+   "gpt-6-luna": {
+    "brier": 0.298,
+    "ECE": 0.264,
+    "mean_stated_p_resolved": 0.757,
+    "actual_resolve_rate": 0.545
+   },
+   "gpt-6-sol": {
+    "brier": 0.228,
+    "ECE": 0.185,
+    "mean_stated_p_resolved": 0.687,
+    "actual_resolve_rate": 0.545
+   }
+  }
+ },
+ "E3_selection_pressure": {
+  "verified": {
+   "best_of_2": 0.542,
+   "best_of_4": 0.444
+  },
+  "multilingual": {
+   "best_of_2": 0.556,
+   "best_of_4": 0.565
+  },
+  "finding": "No consistent pressure effect. The proposal predicted the null would deepen as n grows; it deepens on one benchmark and is flat on the other."
+ },
+ "XB_cross_benchmark_transfer": {
+  "values": {
+   "structure only": {
+    "verified->multilingual": 0.502,
+    "multilingual->verified": 0.496
+   },
+   "structure + c + u": {
+    "verified->multilingual": 0.516,
+    "multilingual->verified": 0.542
+   },
+   "u alone": {
+    "verified->multilingual": 0.564,
+    "multilingual->verified": 0.508
+   }
+  },
+  "finding": "Nothing transfers. Every model fitted on one benchmark scores 0.50-0.56 on the other, whether built from structure, from the critic scores, or from disagreement alone."
+ },
+ "what_remains_unexamined": [
+  "Failure taxonomy (proposal E5): what kinds of silent failure these are, and whether any class is detectable. Needs labelling ~47 failures.",
+  "Lucky passes: AgentLens reports 10.7% of passing SWE trajectories pass by accident; our g=1 labels have never been checked for this.",
+  "Other domains (proposal E6): WebArena/ALFWorld. Genuinely expensive; recommended dropped."
+ ]
+}
