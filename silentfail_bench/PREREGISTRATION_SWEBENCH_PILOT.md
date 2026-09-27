@@ -650,3 +650,14 @@ set → descriptive only.
 **Cost, declared.** ~$2 generation and ~$9 judge on OpenAI credit; ~$7 of
 Modal, of which ~$3 is free-tier and the remainder is a small overage before
 the 1 October reset. Cap: $15 OpenAI, $12 Modal.
+
+**Amendment 7 — PAUSED (2026-09-27), not analysed.** Generation stopped
+partway through the first of four candidate passes: 100 of 456 trajectories
+(99 with a non-empty patch, 1 step-limited). Stopped for budget, not for any
+result — Modal sandboxes on Multilingual images cost $0.0236 per trajectory
+against the $0.013 measured on Verified, which would have put the run ~$9
+past the free tier before the 1 October reset. **No gold has been run on
+these trajectories and no quantity has been computed from them.** Generation
+resumes after the reset. Should the design change before then, this note
+stands as the record that the first 100 trajectories existed and were not
+inspected.
