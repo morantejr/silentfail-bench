@@ -99,6 +99,22 @@ These exist because violating them has already cost this project real time.
   need is on disk. If an analysis would cost money, write it up as a proposed
   amendment with an itemised estimate instead of running it.
 
+## Known gaps in the existing tooling
+
+Do not assume a green checker means the paper is clean. These holes are known:
+
+- `check_consistency.py` checks figure rows against the table but **never the table
+  against the figure**, so a Table 1 row missing from `make_figures.py` is invisible
+  to it. At least three table rows are currently not plotted.
+- `make_figures.py` hardcodes values rather than reading the JSON, so a figure can
+  drift from its source silently. One dead variable in it holds a wrong confidence
+  interval that is never drawn.
+- Several figure captions assert superlatives about their own plotted data
+  ("nothing crosses it", "beat every model"). Three were false and have been fixed;
+  re-derive the rest from the plotted values rather than trusting the prose.
+- `readout_tier15.json` holds a stale `widest_upper_in_sweep`, superseded by the
+  paper. Check for other superseded JSON fields the paper no longer agrees with.
+
 ## You have authority to edit
 
 Make the fixes directly in `paper/main.tex`, `paper/main_short.tex`,
