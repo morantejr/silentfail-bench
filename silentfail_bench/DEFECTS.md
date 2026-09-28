@@ -578,3 +578,33 @@ inside `OpenRouterModel._query` for a single full trajectory and record which
 provider served each turn, because the leak rate is near half and the controlled
 tests are clean, which points at something that varies per request rather than
 something in the payload.
+
+## Correction: the leaked markup was cosmetic, and I said otherwise (2026-09-28)
+
+The entry above attributes DeepSeek's poor pilot performance partly to internal
+tool-call markup leaking into the text channel. **That attribution was wrong and
+is withdrawn.** Measured directly against the action regex on the pinned-provider
+run: of 350 assistant turns containing leaked markup, **350 parse to exactly one
+action and 0 fail**; of 695 clean turns, likewise 695 parse and 0 fail. The leak
+is noise in the transcript, not a functional defect, and stripping it would
+change nothing.
+
+Two hypotheses for the leak were tested and both failed. Replaying a real
+leaking conversation prefix five times each: with the hardcoded `BASH_TOOL`
+sent, 0 of 5 leaked; with `tools` overridden to `[]`, 0 of 5; with the key
+absent, 1 of 5. It is stochastic sampling behaviour of the model, not a
+consequence of the payload.
+
+**What the poor performance actually is.** 7 of 41 trajectories exhausted the
+40-step limit, which is genuine agent behaviour and a real capability signal.
+3 of 41 died on `RepeatedFormatError`, and the plausible cause is the output cap:
+this model emits reasoning tokens before content, so a 4,000-token cap can
+occasionally be consumed entirely by reasoning, leaving an empty turn that parses
+to zero actions. `max_tokens` is raised to 16,000 in the config.
+
+**The consequence for the pilot result.** P10-1's 75.6% is a more honest
+capability measurement than the previous entry implied. It is still depressed by
+the three format deaths, which are ours, but it is not contaminated by the
+markup. I reported it as contaminated to the operator before measuring, which
+was the same species of error this file exists to record: asserting a cause
+before testing it.

@@ -35,6 +35,18 @@ model:
     # HTTP 402 before running anything. The scaffold then dies on KeyError:
     # 'choices' because the error payload has none. This is a reasoning model,
     # so the cap must leave room for reasoning tokens as well as the command.
-    max_tokens: 4000
+    max_tokens: 16000
+    # Pin the provider. OpenRouter routes across 28 hosts for these open weights
+    # and picks the cheapest first, which is rate-limited (429) and correlated with
+    # both the connection errors and the tool-call markup leaking into the text
+    # channel from turn 0 in 10 of 21 trajectories. Morph is verified clean and has
+    # the cheapest OUTPUT rate, which dominates for a reasoning model.
+    #
+    # max_tokens raised 4000 -> 16000: this model spends output budget on reasoning
+    # BEFORE content, so a tight cap occasionally starves the action entirely and the
+    # turn parses to zero actions. Three of 41 trajectories died that way.
+    provider:
+      order: [Morph, Sail Research, DeepInfra]
+      allow_fallbacks: false
     drop_params: true
     temperature: 0.0
