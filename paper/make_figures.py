@@ -49,7 +49,7 @@ ax.axvline(0.665, color=GOLD, lw=1.6)
 ax.annotate("ruler: lines added (0.665)", xy=(0.665, -1.05), xytext=(0.668, -1.05), color=GOLD, fontsize=6.5, va="center")
 ax.set_yticks(y); ax.set_yticklabels([r[0] for r in rows], fontsize=6.2)
 ax.set_ylim(-1.5, len(rows) - 0.25)
-ax.set_xlim(0.35, 0.80); ax.set_xlabel("AUROC for silent failure (12 positives / 22 successes)", fontsize=8)
+ax.set_xlim(0.35, 0.80); ax.set_xlabel("AUROC for silent failure (primary: 12/34; re-selection rows 11–12)", fontsize=8)
 legend_key(ax, [("o", BLUE, "panel disagreement $u$ (the signal under test)"), ("s", GRAY, "selecting critic's own score $-c$")],
     loc="lower center", bbox_to_anchor=(0.5, -0.20), ncol=2, fontsize=6.5)
 fig.tight_layout(); fig.savefig(OUT / "fig_ladder.pdf", bbox_inches="tight"); plt.close(fig)

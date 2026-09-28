@@ -368,6 +368,21 @@ _w = _tier["D_simultaneous_bound"]["widest_upper_in_sweep"]["upper"]
 ok = abs(_w - 0.63) < 1e-9 and "+0.63" in tex
 print(f"  {'ok  ' if ok else 'FAIL'}  tier15 widest_upper_in_sweep is {_w}, paper quotes +0.63")
 if not ok: fail.append("tier15 widest upper")
+# mixed-sign corrected A5 deltas must not be narrated as agreeing in sign
+# (do not match the legitimate phrase "disagree in sign")
+ok = re.search(r"(?<!dis)agree in sign", tex) is None and re.search(r"(?<!dis)agree in sign", short) is None
+print(f"  {'ok  ' if ok else 'FAIL'}  banned false 'agree in sign' for mixed A5 deltas")
+if not ok: fail.append("agree in sign")
+ok = "six instrument failures" not in short and "seven instrument failures" in short
+print(f"  {'ok  ' if ok else 'FAIL'}  short paper instrument-failure count is seven")
+if not ok: fail.append("short instrument count")
+ok = (r"\textbf{P2} (Goodhart)" in tex or "P2 (Goodhart)" in tex) and "A2-P1" in tex \
+     and "fails at 0.621" in tex and "fails at 0.405" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  named P2 and A2-P1 failures disclosed with source values")
+if not ok: fail.append("P2/A2-P1 disclosure")
+ok = "Nothing that rose above the ruler on Verified rose above chance" not in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  banned overclaimed replication superlative")
+if not ok: fail.append("replication superlative")
 
 print("\n" + ("ALL CONSISTENT" if not fail else f"{len(fail)} MISMATCH(ES): " + "; ".join(fail)))
 sys.exit(1 if fail else 0)
