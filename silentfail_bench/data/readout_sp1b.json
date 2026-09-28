@@ -1,0 +1,41 @@
+{
+  "analysis": "S-P1's second registered condition: is the gpt-5 committed arm's failure rate below the random arm's?",
+  "registered_text": "S-P1 (the regime is entered): for S_judge, AUROC(-c) in the candidate pool > 0.65, AND the committed-arm failure rate is below the random arm's.",
+  "note": "The paper reported only the pool-AUROC half and declared S-P1 passed. This is the half that was missing.",
+  "verified": {
+    "benchmark": "verified",
+    "paired_instances": 31,
+    "committed_failure_rate": 0.258,
+    "random_failure_rate": 0.323,
+    "paired_difference": -0.065,
+    "paired_difference_CI": [
+      -0.2,
+      0.0
+    ],
+    "discordant": {
+      "committed_fails_random_passes": 0,
+      "committed_passes_random_fails": 2
+    },
+    "picks_differ": 24,
+    "S_P1b_committed_below_random": true,
+    "S_P1b_strictly_below_with_CI": false
+  },
+  "multilingual": {
+    "benchmark": "multilingual",
+    "paired_instances": 79,
+    "committed_failure_rate": 0.354,
+    "random_failure_rate": 0.456,
+    "paired_difference": -0.101,
+    "paired_difference_CI": [
+      -0.165,
+      -0.042
+    ],
+    "discordant": {
+      "committed_fails_random_passes": 0,
+      "committed_passes_random_fails": 8
+    },
+    "picks_differ": 54,
+    "S_P1b_committed_below_random": true,
+    "S_P1b_strictly_below_with_CI": true
+  }
+}

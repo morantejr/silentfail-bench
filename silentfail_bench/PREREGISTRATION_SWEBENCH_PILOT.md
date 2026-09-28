@@ -743,3 +743,123 @@ directions and that every AUROC here is attenuated by label noise.
 **Scripts.** `scripts/readout_failure_taxonomy.py`,
 `scripts/readout_luckypass.py`. Outputs `data/readout_failure_taxonomy.json`,
 `data/readout_luckypass.json`.
+
+# Amendment 7a — clarification of Amendment 7's inference rules — 2026-09-27, appended BEFORE any gold exists for the agent axis
+
+**Standing of this amendment.** No gold has been run on any agent-axis
+trajectory and no quantity has been computed from the 100 that exist. Their
+contents are hashed in `data/agent_axis/CHECKPOINT_HASHES.json` (100 files,
+rollup `cb1968d5d5728902f4b24b83ad26f651f19586e2a98883834e6b2e1b27f92a9c`),
+taken before this text was written, so a reader can verify that the rules
+below were fixed before any outcome was visible. The trajectories are
+preserved and will not be regenerated; see DEFECTS.md for the path defect that
+would have silently discarded them.
+
+**Why it is needed.** Amendment 7 as written commits a statistical error that
+external review identified and that we accept. It treats `AUROC(u) < 0.60`
+with a CI including 0.50, and an endpoint CI including zero, as *confirmation*
+of the null. A confidence interval that includes the null is absence of
+evidence, not evidence of absence, and with few positives a wide interval will
+include the null almost regardless of the truth. As written, A7 could have
+"confirmed" the null by being underpowered. Four further gaps: the strong
+selector arm was conditional, there was no gate on the new selector actually
+having signal on the new pool, the capability comparison did not fix how empty
+patches enter the denominator, and the reading claimed the mentor's objection
+would be "retired in full".
+
+The following supersede the corresponding parts of Amendment 7. Everything
+else in Amendment 7 stands.
+
+## 1. The strong-selector arm is mandatory, not conditional
+
+Amendment 7 said the `gpt-5` selection pass would run "only if the first regime
+clears the inference floor". That is withdrawn. The cell the objection is
+actually about is **capable agent crossed with capable selector**, so `gpt-5`
+selection over the new candidate pool runs regardless of what the 4B arm does.
+If budget permits only one selection arm, it is the `gpt-5` arm.
+
+## 2. A gate on the selector, on the new pool
+
+`gpt-5`'s pool `AUROC(-c)` over graded candidates of the new agent must exceed
+**0.65**, and its committed arm's failure rate must be below the random arm's
+(the same conjunction S-P1 registered, both halves reported this time). If the
+gate fails, the strong-selector cell is not entered and every quantity from it
+is descriptive only. Selector signal does not transfer across agents by
+assumption: gpt-5 ranked the gpt-5-mini pool at 0.71, and that is not evidence
+about a gpt-6-luna pool.
+
+## 3. The capability comparison has a fixed denominator
+
+A7-P1 compares per-attempt failure rates. **Failure rate is computed
+unconditionally: every attempt is a denominator entry, and an empty patch or a
+step-limit exit counts as a failure.** Both arms use the same rule. This is
+stated because the ambiguity already produced a near-miss in Amendment 6, where
+the conditional rate (30.0% against our 33.3%) and the unconditional rate
+(30.0% against 48.6%) gave opposite verdicts, and only the unconditional rate
+agreed with the public leaderboard (48.8%). Conditional rates may be reported
+alongside, labelled as such, and never as the criterion.
+
+## 4. The primary estimator is the unfitted one
+
+The operational primary endpoint is the **fixed unit-weight estimator**
+(`z(-c) + z(u)`, standardiser fit on the training fold, no fitted
+coefficients). The leave-one-repository-out logistic and the 5-fold clustered
+logistic are reported as secondary. This is a change of primary estimator and
+we declare it as such. It is not opportunistic: the logistic's baseline
+degenerated to 0.150 against a raw 0.591 in Amendment 5, which is the failure
+mode that would otherwise decide this experiment, and the unfitted estimator's
+baseline reproduces the raw value by construction. Raw `AUROC(-c)` will be
+printed beside every out-of-fold baseline so that a degenerate baseline is
+visible rather than inferred.
+
+## 5. Inference floor raised to 20, and it is a floor on *failures*
+
+Fewer than **20 silent failures** in the committed set → descriptive only, no
+confirmatory reading in either direction. The old floor of 10 is retained only
+as the threshold below which a quantity is not computed at all.
+
+## 6. A null claim requires an upper bound below a declared margin
+
+This replaces A7-P2 and A7-P3. The equivalence margin is **`ΔAUROC = +0.05`**,
+the same threshold Amendment 5 registered as the effect size worth acting on.
+
+- **A7-P3′ (the null is established):** the primary estimator's upper 95%
+  confidence bound is **below +0.05**. Only this licenses "disagreement adds
+  nothing in this regime".
+- **A7-P3′′ (a positive):** the primary estimator's point estimate exceeds
+  +0.05 and its lower bound excludes zero. This licenses "disagreement carries
+  residual signal under a capable agent", and the paper is rewritten around it.
+- **Otherwise: inconclusive.** We report the point estimate and the upper
+  bound, and state that the design cannot separate no effect from an effect of
+  the size that would matter.
+
+**Declared in advance: the inconclusive branch is the likely one.** On 35
+failures Amendment 5's comparable cell returned `+0.029 [-0.08, +0.14]`, an
+upper bound nearly three times the margin. An upper bound below +0.05 needs a
+CI half-width under about 0.05, which this design will probably not reach at
+114 instances, and a capable agent produces *fewer* failures, which makes it
+harder still. We write this down now so that reporting "inconclusive" later is
+not read as a retreat, and so that a reader can see we did not expect to prove
+equivalence. A7 is powered to detect a positive result, not to establish a
+null.
+
+## 7. The reading, restated
+
+- A7-P3′′ fires → the null is specific to weak agents, and the paper's central
+  claim becomes conditional on agent capability.
+- A7-P3′ fires → the null holds in the strong-agent, strong-selector cell, and
+  the mentor's objection is answered on the axis it named.
+- Inconclusive → the paper reports the strong-agent cell as consistent with the
+  null and bounded above by whatever the data gives, and says plainly that the
+  objection is **narrowed, not retired**.
+
+The phrase "retired in full" is withdrawn from Amendment 7. No single
+experiment on one agent and one benchmark retires a capability objection in
+full, and claiming otherwise was an overstatement.
+
+## 8. What does not change
+
+Population, benchmark, agent, panel, `u` definition, rank norms fit on training
+repositories only, repository-clustered inference, and the cost caps are all as
+in Amendment 7. This amendment changes decision rules and reporting, not the
+instrument or the estimand.

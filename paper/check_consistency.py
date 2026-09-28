@@ -170,5 +170,68 @@ rb = next(r for r in rob["endpoint_robustness"] if r["label"] == "pooled")
 check("luckypass reproduces published LORO", AL["logistic_LORO"]["delta"], rb["logistic_LORO"]["delta"])
 check("luckypass reproduces published unit", AL["fixed_unit_weights"]["delta"], rb["fixed_unit_weights_no_fitting"]["delta"])
 
+# --- S-P1's second condition and the Amendment 5 narration ---
+print("\nS-P1 second condition vs data/readout_sp1b.json:")
+sp = json.loads((D / "readout_sp1b.json").read_text())
+short = Path("paper/main_short.tex").read_text()
+for bench, tag in (("verified", "Verified"), ("multilingual", "Multilingual")):
+    r = sp[bench]
+    want = f"{r['committed_failure_rate']:.3f} against {r['random_failure_rate']:.3f} on {tag}"
+    ok = want in tex
+    print(f"  {'ok  ' if ok else 'FAIL'}  paired rates on {tag}: {'found' if ok else 'MISSING'} -> {want}")
+    if not ok: fail.append(f"S-P1b rates {tag}")
+    lo, hi = r["paired_difference_CI"]
+    want2 = f"${r['paired_difference']:+.3f}$ [${lo:+.2f}$, ${hi:+.2f}$]".replace("+0.00", "0.00")
+    ok2 = want2 in tex
+    print(f"  {'ok  ' if ok2 else 'FAIL'}  paired difference on {tag}: {'found' if ok2 else 'MISSING'} -> {want2}")
+    if not ok2: fail.append(f"S-P1b difference {tag}")
+    # the registered condition must actually be met for the paper to say S-P1 passes
+    print(f"  {'ok  ' if r['S_P1b_committed_below_random'] else 'FAIL'}  S-P1b met on {tag} (paper claims S-P1 passes on both)")
+    if not r["S_P1b_committed_below_random"]: fail.append(f"S-P1b not met {tag}")
+    # the paper claims the reverse discordance never happens
+    print(f"  {'ok  ' if r['discordant']['committed_fails_random_passes'] == 0 else 'FAIL'}  zero reverse-discordant pairs on {tag}")
+    if r["discordant"]["committed_fails_random_passes"]: fail.append(f"reverse discordance {tag}")
+
+print("\nAmendment 5 must not be narrated as a clean null:")
+banned = [("S-P3 does not hold", "the registered criterion was met, then overruled"),
+          ("null now holds inside the regime", "the interval contains the registered +0.05"),
+          ("deliberately not run", "Amendment 5 was run")]
+for phrase, why in banned:
+    hits = [f for f, src in (("main.tex", tex), ("main_short.tex", short)) if phrase in src]
+    print(f"  {'ok  ' if not hits else 'FAIL'}  '{phrase}' absent ({why}){'' if not hits else ' -> still in ' + ', '.join(hits)}")
+    if hits: fail.append(f"banned phrase '{phrase}'")
+# anchored, because the bare word occurs in several places including this appendix's own history row
+required = [("main.tex", tex, "It is inconclusive."),
+            ("main.tex", tex, "that cell is \\emph{inconclusive} rather than null"),
+            ("main.tex", tex, "\\emph{consistent with} the null and does not establish it"),
+            ("main_short.tex", short, "The verdict is \\textbf{inconclusive}"),
+            ("main_short.tex", short, "consistent with the null and does not establish it")]
+for f, src, phrase in required:
+    ok = phrase in src
+    print(f"  {'ok  ' if ok else 'FAIL'}  {f}: {'found' if ok else 'MISSING'} -> {phrase[:62]}")
+    if not ok: fail.append(f"{f} missing '{phrase[:34]}'")
+
+print("\njudge claims vs data/readout_judges_gpt6.json:")
+jg = json.loads((D / "readout_judges_gpt6.json").read_text())
+best = {}
+for bench in ("verified", "multilingual"):
+    sj = jg[bench]["single_judges"]
+    best[bench] = max(sj, key=lambda k: sj[k][0])
+ok = best["verified"] == best["multilingual"] == "gpt-6-sol"
+print(f"  {'ok  ' if ok else 'FAIL'}  best single judge is gpt-6-sol on both ({best})")
+if not ok: fail.append("best judge identity")
+ok = "best ranker is\n\\texttt{gpt-6-sol}" in tex or "best ranker is \\texttt{gpt-6-sol}" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  paper names gpt-6-sol as the best ranker")
+if not ok: fail.append("paper names wrong best ranker")
+ok = "strongest single detector in the whole study" not in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  the 'two-thirds' claim no longer says 'whole study' (gpt-6-sol reaches {jg['multilingual']['single_judges']['gpt-6-sol'][0]})")
+if not ok: fail.append("two-thirds contradiction")
+# calibration: the paper must not call the best ranker the most overconfident
+ece = {b: {k: v["ECE"] for k, v in jg and json.loads((D / "readout_pi_batch2.json").read_text())[b]["CAL_judge_calibration"]["judges"].items()} for b in ("verified", "multilingual")}
+worst_ml = max(ece["multilingual"], key=ece["multilingual"].get)
+ok = worst_ml == "gpt-5-mini" and "largest error belongs to \\texttt{gpt-5-mini}" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  worst-calibrated on the replication is {worst_ml}, and the paper says so")
+if not ok: fail.append("calibration attribution")
+
 print("\n" + ("ALL CONSISTENT" if not fail else f"{len(fail)} MISMATCH(ES): " + "; ".join(fail)))
 sys.exit(1 if fail else 0)
