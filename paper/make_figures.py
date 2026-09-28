@@ -24,30 +24,34 @@ def chance(ax, x=True, at=0.5, label="chance"):
                       textcoords="offset points", ha="center", fontsize=6.5, color="k")
 
 # ---------- Fig 1: the ladder of nulls ----------
-rows = [  # (label, u, negc, [ci_lo, ci_hi] of u - (-c) if known)
+rows = [  # (label, u, negc, [ci_lo, ci_hi] of u - (-c)); must match Table 1 / tab:ladder
  ("Primary: prefix (4k), 4 chat RMs", 0.508, 0.621, (-0.373, 0.219)),
+ ("  robustness, m=3 family-disjoint", 0.545, 0.621, (-0.39, 0.23)),
  ("Submission window (diff + 3k tail)", 0.458, 0.530, (-0.35, 0.133)),
  ("Patch in view (4k), 4 chat RMs [Kaggle]", 0.494, 0.621, (-0.276, 0.111)),
  ("+ AceCodeRM as 5th auditor", 0.473, 0.621, (-0.296, 0.104)),
  ("Proposal's 8B critic selecting, disjoint panel", 0.455, 0.602, (-0.486, 0.26)),
  ("  ... the same at a true 16k", 0.483, 0.736, (-0.468, 0.283)),
  ("Code-trained critic selecting, 5-RM panel", 0.542, 0.472, (-0.208, 0.452)),
+ ("  the code-trained critic at 16k (33 rows)", 0.607, 0.463, (-0.11, 0.63)),
  ("Full trajectory, true 16k (L4), 4 chat RMs", 0.439, 0.621, (-0.384, 0.171)),
+ ("LLM judges (gpt-5 family), patch in view", 0.528, 0.621, (-0.30, 0.10)),
+ ("  execution-aware (+ last 6k tok)", 0.640, 0.621, (-0.28, 0.16)),
  ("Pruned overlapping windows, $u_{\\max}$ (L4)", 0.686, 0.621, (-0.11, 0.333)),
 ]
-fig, ax = plt.subplots(figsize=(6.6, 3.5))
+fig, ax = plt.subplots(figsize=(6.8, 4.55))
 y = np.arange(len(rows))[::-1]
 for yi, (lab, u, nc, ci) in zip(y, rows):
-    ax.plot([nc], [yi + 0.15], "s", color=GRAY, ms=6, zorder=3)
-    ax.plot([u], [yi - 0.15], "o", color=BLUE, ms=6, zorder=3)
+    ax.plot([nc], [yi + 0.12], "s", color=GRAY, ms=5, zorder=3)
+    ax.plot([u], [yi - 0.12], "o", color=BLUE, ms=5, zorder=3)
 chance(ax)
 ax.axvline(0.665, color=GOLD, lw=1.6)
-ax.annotate("ruler: lines added (0.665)", xy=(0.665, -0.9), xytext=(0.668, -0.9), color=GOLD, fontsize=7, va="center")
-ax.set_yticks(y); ax.set_yticklabels([r[0] for r in rows], fontsize=7.5)
-ax.set_ylim(-1.6, len(rows) - 0.3)
-ax.set_xlim(0.35, 0.80); ax.set_xlabel("AUROC for silent failure (12 positives / 22 successes)")
+ax.annotate("ruler: lines added (0.665)", xy=(0.665, -1.05), xytext=(0.668, -1.05), color=GOLD, fontsize=6.5, va="center")
+ax.set_yticks(y); ax.set_yticklabels([r[0] for r in rows], fontsize=6.2)
+ax.set_ylim(-1.5, len(rows) - 0.25)
+ax.set_xlim(0.35, 0.80); ax.set_xlabel("AUROC for silent failure (12 positives / 22 successes)", fontsize=8)
 legend_key(ax, [("o", BLUE, "panel disagreement $u$ (the signal under test)"), ("s", GRAY, "selecting critic's own score $-c$")],
-    loc="lower center", bbox_to_anchor=(0.5, -0.30), ncol=2)
+    loc="lower center", bbox_to_anchor=(0.5, -0.20), ncol=2, fontsize=6.5)
 fig.tight_layout(); fig.savefig(OUT / "fig_ladder.pdf", bbox_inches="tight"); plt.close(fig)
 
 # ---------- Fig 2: critic instability across input windows ----------

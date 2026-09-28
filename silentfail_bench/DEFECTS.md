@@ -335,3 +335,37 @@ quietly analysing a subset, not by raising. The general check: when an analysis
 re-selects a different unit, every per-unit flag in the filter must be re-read
 from the newly selected unit, and a test should assert the population size
 against an independent count.
+
+### #8 — Figure caption contradicted its own plotted points; short paper drifted after Amendment 5a *(reporting)*
+
+Found in the 2026-09-27 PI audit against HEAD after Amendment 5a.
+
+1. `fig:ladder` caption said "No circle crosses it" while `make_figures.py`
+   plotted pruned-window $u_{\max}=0.686$ against the ruler at 0.665. The table
+   caption already stated that only the last row clears the bar; the figure
+   caption did not. Fixed by rewriting the caption to say exactly one circle
+   crosses, and by extending `check_consistency.py` to ban the old sentence.
+
+2. `make_figures.py` plotted 9 of 13 Table-1 rows. The checker only verified
+   figure→table, so the missing rows (family-disjoint robustness, code-trained
+   16k, LLM judges, execution-aware) were invisible. Fixed by plotting every
+   table pair and adding the reverse check.
+
+3. `data/readout_tier15.json` still said the widest sweep upper bound was
+   +0.45 from the 5-RM code-trained row; the paper correctly quotes +0.63 from
+   the 16k code-trained row. JSON updated; checker now asserts 0.63.
+
+4. `main_short.tex` still said "about two-thirds" for the best detector and
+   still described Amendment 5 as "inconclusive rather than null" in
+   Limitations after Amendment 5a had moved S-P3 to a clean first-condition
+   failure. Synced to the long paper.
+
+5. Long-paper prose claimed "nothing built from disagreement is above chance
+   on either benchmark" while $u_{\max}=0.686$ and several point estimates sit
+   above 0.5. Narrowed to: aside from the unreplicated pilot $u_{\max}$, no
+   disagreement statistic clears chance with a CI excluding 0.5.
+
+**Class.** Caption/prose not derived from the plotted or tabulated values;
+checker asymmetry; short-paper drift after a registered verdict moved.
+
+6. `data/*/*` also swallowed `data/*/gpu_scores/scores*.json`, so Fig.~2's input was local-only. Re-included the directory and score files; committed the Kaggle/GPU score JSONs the figures need.

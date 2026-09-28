@@ -19,11 +19,19 @@ def check(name, a, b, tol=0.0015):
     print(f"  {'ok  ' if ok else 'FAIL'}  {name}: {a} vs {b}")
     if not ok: fail.append(name)
 
-# --- ladder: main.tex Table 1 rows vs the hardcoded rows in make_figures.py ---
+# --- ladder: main.tex tab:ladder rows vs the hardcoded rows in make_figures.py ---
 NUM = r"(?:\\textbf\{)?([0-9.]+)\}?"
+# Scope to the ladder table only. Matching every tabular in the paper falsely
+# treats endpoint / budget tables as missing figure rows.
+_ladder_anchor = tex.find("label{tab:ladder}")
+_ladder_chunk = tex[_ladder_anchor - 4500:_ladder_anchor] if _ladder_anchor >= 0 else ""
+_tab_start = _ladder_chunk.rfind("\\begin{tabular}")
+ladder_tex = _ladder_chunk[_tab_start:] if _tab_start >= 0 else ""
 tex_rows = {}
-for m in re.finditer(r"^(.{5,60}?) & " + NUM + r" & " + NUM + r" & \$?[+-]?[0-9.]+\$? & ", tex, re.M):
+for m in re.finditer(r"^(.{5,80}?) & " + NUM + r" & " + NUM + r" & \$?[+-]?[0-9.]+\$? & ", ladder_tex, re.M):
     label = re.sub(r"\\quad|\\textbf|\\[a-zA-Z]+|[{}$\\]", "", m.group(1)).strip()
+    if not label or label.lower().startswith("configuration"):
+        continue
     tex_rows[label] = (float(m.group(2)), float(m.group(3)))
 fig_rows = {re.sub(r"[${}\\]|\\\\max|_|\{|\}", "", k).strip(): (u, c)
             for k, u, c in re.findall(r'\("([^"]+)",\s*([0-9.]+),\s*([0-9.]+),', figs)
@@ -35,7 +43,15 @@ for k, (fu, fc) in sorted(fig_rows.items()):
     ok = pair in tex_pairs
     print(f"  {'ok  ' if ok else 'FAIL'}  {k[:46]:48s} ({fu}, {fc})" + ("" if ok else "  <- not in Table 1"))
     if not ok: fail.append(f"figure row {k[:40]}")
-print(f"  ({len(fig_rows)} plotted rows checked against {len(tex_pairs)} table rows)\n")
+print(f"  ({len(fig_rows)} plotted rows checked against {len(tex_pairs)} ladder-table rows)")
+print("ladder: every tab:ladder (u, -c) pair must also be plotted (the reverse direction)")
+fig_pairs = {(round(u, 3), round(c, 3)) for u, c in fig_rows.values()}
+for lab, (tu, tc) in sorted(tex_rows.items()):
+    pair = (round(tu, 3), round(tc, 3))
+    ok = pair in fig_pairs
+    print(f"  {'ok  ' if ok else 'FAIL'}  {lab[:46]:48s} ({tu}, {tc})" + ("" if ok else "  <- not plotted"))
+    if not ok: fail.append(f"unplotted table row {lab[:40]}")
+print()
 
 print("paper text vs source JSON:")
 a2 = json.loads((D / "swebench_pilot50/prereg_readout_amendment2.json").read_text())
@@ -332,6 +348,26 @@ _ns = [d["n"] for b in ("verified", "multilingual") for d in _tx[b]["per_class"]
 ok = f"range from {min(_bf):.3f} to {max(_bf):.3f}" in tex and f"hold {WORD.get(min(_ns), min(_ns))} to {WORD.get(max(_ns), max(_ns))} positives" in tex
 print(f"  {'ok  ' if ok else 'FAIL'}  below-floor classes: AUROC {min(_bf)}-{max(_bf)}, n {min(_ns)}-{max(_ns)}, both quoted")
 if not ok: fail.append("taxonomy below-floor range")
+
+print("\naudit: caption / headline / superseded JSON traps:")
+# fig:ladder used to claim no circle crosses the ruler while plotting u_max=0.686
+ok = "No circle crosses it" not in tex and "Exactly one circle crosses it" in tex and "0.686" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  fig:ladder caption acknowledges the plotted u_max crossing")
+if not ok: fail.append("fig:ladder caption")
+ok = "It does not work." not in tex and "It does not work." not in short
+print(f"  {'ok  ' if ok else 'FAIL'}  banned absolute 'It does not work.' absent from both papers")
+if not ok: fail.append("absolute does-not-work")
+ok = "about two-thirds" not in short
+print(f"  {'ok  ' if ok else 'FAIL'}  short paper no longer says 'about two-thirds' for the best detector")
+if not ok: fail.append("short two-thirds")
+ok = "inconclusive rather than null" not in short
+print(f"  {'ok  ' if ok else 'FAIL'}  short limitations no longer use the pre-correction A5 'inconclusive' gloss")
+if not ok: fail.append("short stale A5 gloss")
+_tier = json.loads((D / "readout_tier15.json").read_text())
+_w = _tier["D_simultaneous_bound"]["widest_upper_in_sweep"]["upper"]
+ok = abs(_w - 0.63) < 1e-9 and "+0.63" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  tier15 widest_upper_in_sweep is {_w}, paper quotes +0.63")
+if not ok: fail.append("tier15 widest upper")
 
 print("\n" + ("ALL CONSISTENT" if not fail else f"{len(fail)} MISMATCH(ES): " + "; ".join(fail)))
 sys.exit(1 if fail else 0)

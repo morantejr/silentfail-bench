@@ -231,10 +231,10 @@
    "multilingual": 0.217
   },
   "widest_upper_in_sweep": {
-   "row": "code-trained critic selecting; 5-RM panel (Verified)",
-   "upper": 0.452
+   "row": "the code-trained critic at 16k (33 rows)",
+   "upper": 0.63
   },
-  "note": "the +0.22 bound is per-protocol; the widest interval in the Table 1 sweep reaches +0.45"
+  "note": "SUPERSEDED FIELD HISTORY: an earlier draft quoted +0.45 from the 5-RM code-trained row's +0.452 upper bound. Table 1 / paper now correctly quote +0.63 from the carried-forward 16k code-trained re-selection row. Keep this object aligned with paper/main.tex."
  },
  "note": "A is the proposal's confirmatory endpoint computed with leave-one-repository-out in place of the 70/30 split that never reached 10 test positives; declared post-hoc substitution of the CV scheme, same estimand."
 }
