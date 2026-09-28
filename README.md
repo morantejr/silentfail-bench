@@ -12,17 +12,31 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: draft v0.6 (2026-09-25) — registered endpoint computed four ways: disagreement's incremental value over the selector is indistinguishable from zero under all of them, loosest upper bound +0.12 AUROC, pooled over 47 positives.**
-> SWE-bench Verified pilot (41 instances, 12 positives) plus a pre-registered
-> replication on SWE-bench Multilingual (114 instances, 41 repos, 35 positives),
-> seven reward-model critics at 4k/8k/16k and windowed, three LLM judges,
-> test–retest, official executed gold throughout. **H1 not supported and the
-> null replicates:** panel disagreement 0.565 [0.43, 0.71] vs the critic's own
-> 0.560; the Verified windowed positive (0.686) fell to 0.541 [0.40, 0.68];
-> the lines-added baseline fell to 0.508; best-of-4 by a 4B reward model did
-> not concentrate failure (control), but selection removed the selector's own
-> signal (0.81 → 0.61 on Verified). Paper:
-> [`paper/main.pdf`](paper/main.pdf). See [`UPDATES.md`](UPDATES.md).
+> **Status: draft v0.9.3 (2026-09-27) — the registered endpoint, computed four
+> ways, puts disagreement's incremental value over the selector's own score at
+> indistinguishable from zero, loosest pooled upper bound +0.12 over 47 failures
+> and 46 repositories.** A SWE-bench Verified pilot (41 instances, 12 positives)
+> plus a pre-registered replication on SWE-bench Multilingual (114 instances, 37
+> analysed repositories, 35 positives): eight reward-model critics at 4k/8k/16k
+> and windowed, five LLM judges across two model generations, test–retest, two
+> selection regimes, official executed gold throughout. **H1 not supported and
+> the null replicates:** panel disagreement 0.565 [0.43, 0.71] against the
+> critic's own 0.560; the Verified windowed positive (0.686) fell to 0.541; the
+> lines-added baseline fell to 0.508. Best-of-4 by a 4B reward model did not
+> concentrate failure, though selection did remove that selector's own signal on
+> Verified (0.81 → 0.61). Re-selecting with `gpt-5` leaves the result unchanged
+> in direction; that cell is reported as consistent with the null rather than
+> establishing it, since its upper bound still exceeds the +0.05 this project
+> declared actionable. Newer judges sharpen the dissociation: `gpt-6-sol` is the
+> best single detector in the study at 0.776–0.826 while the disagreement of that
+> newer pair is the worst at 0.41. **The agent axis is the one open question**
+> and resumes 1 October; see
+> [`silentfail_bench/RESUME_AMENDMENT7.md`](silentfail_bench/RESUME_AMENDMENT7.md).
+> Seven instrument failures are recorded in
+> [`silentfail_bench/DEFECTS.md`](silentfail_bench/DEFECTS.md), including one that
+> manufactured a result large enough to reverse the paper. Paper:
+> [`paper/main.pdf`](paper/main.pdf), 7-page cut
+> [`paper/main_short.pdf`](paper/main_short.pdf). See [`UPDATES.md`](UPDATES.md).
 
 ## Layout
 
