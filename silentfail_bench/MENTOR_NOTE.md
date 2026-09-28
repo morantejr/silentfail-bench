@@ -1117,3 +1117,104 @@ So the real figure is **$314–$524**, not $270, and it is ~95% generation.
 Picking the cheapest capable agent (gemini-3-flash-high, $0.356/traj, 24.2%
 fail) rather than the mean brings 250 instances to about $383. Recommend
 taking the Amendment 5 result to the mentor before committing to this.
+
+# 25. Section 24 is now partly wrong. A bug changed the selector answer (2026-09-27, later)
+
+Read this before section 24. A deliberate error hunt found a coding defect that
+changes the numbers I reported to you earlier today, and it changes them in both
+directions: the headline gets cleaner, and one secondary claim has to be
+withdrawn.
+
+## The defect
+
+Amendment 5 re-selects a committed candidate with `gpt-5`. The analysis then
+filtered its population using the agent-declared-complete flag of the candidate
+the **4B critic** had committed, which for three-quarters of instances is a
+different trajectory. The registered population is "committed,
+agent-declared-complete trajectories", so for this arm that flag has to come
+from the gpt-5-committed candidate. The bundle carried it per candidate all
+along.
+
+Verified is unaffected, checked rather than assumed. On Multilingual it silently
+dropped 16 instances whose gpt-5-committed trajectory was complete, non-empty
+and graded, purely because the 4B's pick had been empty. Amendment 2's
+re-selection rows were reimplemented and are unaffected.
+
+## What moved
+
+| Multilingual, gpt-5 committed set | Reported to you | Correct |
+|---|---|---|
+| rows / failures | 85 / 32 | 101 / 44 |
+| committed `AUROC(-c)` | 0.591 | 0.671 |
+| `AUROC(u)` | 0.614 | 0.591 |
+| endpoint, registered logistic | +0.375, baseline 0.150 | +0.012, baseline 0.575 |
+| endpoint, unfitted | +0.029 | −0.018 [−0.11, +0.07] |
+
+**S-P3 now fails on its own first condition.** `AUROC(u)` is 0.591 against a
+registered bar of 0.60, so the conjunction fails without any appeal to estimator
+validity. This is a genuine simplification: I no longer have to tell you that a
+pre-registered criterion was met and overruled.
+
+**S-P2 moves from pass to fail, and this one goes against us.** The gap is 0.035
+against a registered bar of 0.10. I can no longer claim that selection measurably
+consumes a strong selector's own signal. What survives is the narrower 0.81 to
+0.61 observation on the primary 4B selector on Verified, one selector, one
+benchmark, twelve positives.
+
+**And the alarming number dissolves.** The +0.375 with a baseline collapsed to
+0.150, which I described to you as a degenerate-baseline artefact of the
+logistic estimator, was the population defect. On the correct population that
+same estimator gives +0.012 with a sound baseline, and the three estimators
+agree in sign for the first time in this study. I keep the four-estimator
+standard anyway, because it is what made the anomaly visible.
+
+## The rest of the week
+
+- **Twenty further reporting errors**, found by auditing every registered
+  prediction and every number against source data. The most serious: the primary
+  hypothesis was registered as the bare inequality `AUROC(u) > 0.5` and *passed*
+  at 0.508 and 0.565 while the paper said every prediction failed. Registering a
+  threshold with no minimum effect size was a design error of mine; it is now
+  disclosed, and the decision not to treat it as a detector is labelled post hoc.
+  The go/no-go decision the registration calls the pilot's actual output had also
+  never been reported. Table 1 was missing a carried-forward row that widens the
+  sweep bound from +0.45 to +0.63.
+- **Amendment 8, at no cost.** A failure taxonomy read from executed tests rather
+  than a judge: of 47 silent failures, 29 made no progress and broke nothing, 8
+  broke something without fixing the bug, 5 fixed the bug and broke something
+  else. No class is detectable, so the null is not hiding a subclass. Plus a
+  lucky-pass contamination bound: no passing trajectory touched a test file, 4 of
+  64 passes are disjoint from the reference patch, and dropping or relabelling
+  those four moves the result further from the safeguard working.
+- **Amendment 7a**, appended before any gold exists and after hashing the paused
+  trajectories, so the rules are verifiably pre-outcome. It accepts an external
+  criticism I think is correct: Amendment 7 treated "the confidence interval
+  includes zero" as confirmation of the null, which would have let an
+  underpowered study confirm anything. A null claim now requires the upper bound
+  below a +0.05 margin. I also wrote down in advance that the inconclusive branch
+  is the likely one, because the design is powered to detect a positive and not
+  to establish a null.
+
+## Where the agent axis stands
+
+Paused at 100 of 456 trajectories, no gold run, nothing computed. It resumes when
+the Modal credit resets on 1 October and costs about $11 of OpenAI and $11 of
+Modal, both inside declared caps and both covered. It is fully prepared: a
+preflight that checks the five things that have actually gone wrong here, a
+pinned instance set, a runbook, and the analysis script written and dry-run
+against existing data where it reproduces every published value.
+
+**The honest forecast.** Under Amendment 7a's rules the existing replication cell
+would itself read inconclusive, upper bound +0.175 against a margin of +0.05. The
+agent axis will probably do the same. A capable agent produces fewer failures,
+which makes the study harder, exactly as section 24 said. I would rather run it
+and report "consistent with the null, bounded above by X" than leave your
+objection untouched, but I want you to know the likely outcome before I spend the
+credit.
+
+## What I would like from you
+
+1. Whether the S-P2 withdrawal changes your view of the paper's contribution.
+2. Whether to run the agent axis on 1 October, given that inconclusive is the
+   likely result, or to submit with the axis declared untested.
+3. A venue, since nothing is formatted and that decision sets the deadline.
