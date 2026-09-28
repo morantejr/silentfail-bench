@@ -531,3 +531,50 @@ scaffold, and four two-instance Modal sandbox pairs.
 **The rule this reinforces.** Smoke two instances before 41. Three of these five
 would have cost a full pilot run each if they had been discovered at scale, and
 the two that resemble model incapacity were both configuration.
+
+## Amendment 10 DeepSeek pilot: hung at 21/41, and the partial data is not a capability measurement (2026-09-28)
+
+**Do not read the numbers below as DeepSeek's capability.** They are the output
+of a run with at least two unresolved instrument problems, and reporting them as
+a model result would be precisely the error this project exists to prevent.
+
+**What happened.** A two-instance smoke passed cleanly: both Submitted, patches
+of 939 and 530 characters, $0.03 total, so the scaffold can drive this model.
+The 41-instance pilot then hung: 21 trajectory files, no new output for over ten
+minutes, orchestrator process alive, log static, and a `swe-rex` Modal app still
+deployed with seven running tasks. Stopped the orchestrator and explicitly
+stopped the app, per the orphaned-sandbox entry above. OpenRouter spend for the
+whole attempt: **$0.4619**.
+
+**Why the partial data is not usable.**
+- 13 of 40 recorded predictions carry a non-empty patch (32.5%), against
+  Amendment 10's P10-1 bar of 80%. For comparison gpt-6-luna produced 41 of 41.
+- 8 of 21 completed trajectories exited `LimitsExceeded`, hitting the 40-step
+  limit.
+- **325 of 659 assistant turns (49%) contain DeepSeek's internal tool-call
+  markup leaked into the text channel** as literal `</｜DSML｜ invoke>` and
+  similar. A text-action parser reading that is not reading the model's intended
+  action.
+- 36 observations carry connection errors and 3 carry timeouts, and the agent
+  can be seen in the trajectories saying "the environment is still having
+  connectivity issues. Let me retry", burning steps on retries.
+
+**Two hypotheses tested and neither reproduced.** The base `OpenRouterModel`
+hardcodes `"tools": [BASH_TOOL]` into every payload and the textbased subclass
+inherits it, which is the gpt-6-luna root cause exactly; but overriding `tools`
+to `[]` produced identical clean output on a controlled prompt, and the leak did
+not appear. OpenRouter routes across 28 providers for this model and a broken
+chat template at one of them would explain a ~50% rate; but six controlled
+requests with a long context all routed to Together and none leaked. **The cause
+is not yet known.** Truncation is ruled out: the final assistant turn in a
+step-limited trajectory was 204 characters against a 4,000-token cap.
+
+**Status.** P10-1, P10-2 and P10-3 remain unmeasured. No Amendment 10 quantity
+exists. The 21 trajectories are retained as evidence of the artefact and are
+explicitly not a pilot result.
+
+**Next diagnostic, for whoever picks this up.** Log the raw request and response
+inside `OpenRouterModel._query` for a single full trajectory and record which
+provider served each turn, because the leak rate is near half and the controlled
+tests are clean, which points at something that varies per request rather than
+something in the payload.
