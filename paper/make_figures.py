@@ -166,8 +166,24 @@ fig.tight_layout(); fig.savefig(OUT / "fig_stability.pdf", bbox_inches="tight");
 # ---------- Fig 8: replication on 41 repositories (Amendment 4e) ----------
 RP = Path("silentfail_bench/data/replication_multilingual")
 rr = json.loads((RP / "prereg_readout_replication.json").read_text()); rw = json.loads((RP / "readout_windows_secondary.json").read_text())
-ver = {"panel $u$ (prefix 4k)": (0.508, (0.373, 0.643)), "panel $u_{\\max}$ (windows)": (0.686, (0.657, 0.731)), "lines added (ruler)": (0.665, None),
-       "best single RM, 16k": (0.712, None), "best LLM judge, patch in view": (0.752, None)}
+# Verified point estimates from the same committed JSON the paper quotes (CI=None:
+# Fig 8 draws intervals only for Multilingual; a prior hardcoded Verified CI was dead).
+_pr = json.loads((D / "prereg_readout.json").read_text())
+_a3 = json.loads((D / "prereg_readout_amendment3.json").read_text())
+_cov = json.loads((D / "covariate_baseline.json").read_text())
+_a16 = json.loads((D / "prereg_readout_amendment2_16k_with32b.json").read_text())
+_a4c = json.loads((D / "prereg_readout_amendment4c.json").read_text())
+_best_rm16 = max(
+    v["AUROC_negc_full"] for v in _a16["audit_only"].values()
+    if isinstance(v, dict) and "AUROC_negc_full" in v
+)
+ver = {
+    "panel $u$ (prefix 4k)": (_pr["registered_m4"]["M1_AUROC_u"], None),
+    "panel $u_{\\max}$ (windows)": (_a3["u_max"]["AUROC"], None),
+    "lines added (ruler)": (_cov["single_covariate_AUROC"]["patch_added_lines"], None),
+    "best single RM, 16k": (_best_rm16, None),
+    "best LLM judge, patch in view": (_a4c["conditions"]["J1"]["best_single"]["AUROC"], None),
+}
 ml = {"panel $u$ (prefix 4k)": (rr["primary_prefix_u"]["M1_AUROC_u"], tuple(rr["primary_prefix_u"]["CI95_repo_clustered"])),
       "panel $u_{\\max}$ (windows)": (rr["windowed_u_max"]["AUROC"], tuple(rr["windowed_u_max"]["CI95_repo_clustered"])),
       "lines added (ruler)": (rr["ruler_lines_added"]["AUROC"], tuple(rr["ruler_lines_added"]["CI95_repo_clustered"])),

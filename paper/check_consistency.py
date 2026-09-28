@@ -242,7 +242,8 @@ ok = "strongest single detector in the whole study" not in tex
 print(f"  {'ok  ' if ok else 'FAIL'}  the 'two-thirds' claim no longer says 'whole study' (gpt-6-sol reaches {jg['multilingual']['single_judges']['gpt-6-sol'][0]})")
 if not ok: fail.append("two-thirds contradiction")
 # calibration: the paper must not call the best ranker the most overconfident
-ece = {b: {k: v["ECE"] for k, v in jg and json.loads((D / "readout_pi_batch2.json").read_text())[b]["CAL_judge_calibration"]["judges"].items()} for b in ("verified", "multilingual")}
+_batch2 = json.loads((D / "readout_pi_batch2.json").read_text())
+ece = {b: {k: v["ECE"] for k, v in _batch2[b]["CAL_judge_calibration"]["judges"].items()} for b in ("verified", "multilingual")}
 worst_ml = max(ece["multilingual"], key=ece["multilingual"].get)
 ok = worst_ml == "gpt-5-mini" and "largest error belongs to \\texttt{gpt-5-mini}" in tex
 print(f"  {'ok  ' if ok else 'FAIL'}  worst-calibrated on the replication is {worst_ml}, and the paper says so")
@@ -383,6 +384,49 @@ if not ok: fail.append("P2/A2-P1 disclosure")
 ok = "Nothing that rose above the ruler on Verified rose above chance" not in tex
 print(f"  {'ok  ' if ok else 'FAIL'}  banned overclaimed replication superlative")
 if not ok: fail.append("replication superlative")
+
+print("\naudit: code-path traps (E3 fold alignment, Fig8 Verified JSON, A5 script gate):")
+mf = Path(__file__).resolve().parent.joinpath("make_figures.py").read_text()
+ok = 'ver = {"panel $u$ (prefix 4k)": (0.508' not in mf and '_pr["registered_m4"]["M1_AUROC_u"]' in mf
+print(f"  {'ok  ' if ok else 'FAIL'}  make_figures.py loads Fig8 Verified points from committed JSON")
+if not ok: fail.append("Fig8 Verified hardcodes")
+_fig8 = {
+    "panel u": json.loads((D / "swebench_pilot50/prereg_readout.json").read_text())["registered_m4"]["M1_AUROC_u"],
+    "umax": json.loads((D / "swebench_pilot50/prereg_readout_amendment3.json").read_text())["u_max"]["AUROC"],
+    "lines": json.loads((D / "swebench_pilot50/covariate_baseline.json").read_text())["single_covariate_AUROC"]["patch_added_lines"],
+    "judge": json.loads((D / "swebench_pilot50/prereg_readout_amendment4c.json").read_text())["conditions"]["J1"]["best_single"]["AUROC"],
+}
+_a16f = json.loads((D / "swebench_pilot50/prereg_readout_amendment2_16k_with32b.json").read_text())
+_fig8["rm16"] = max(v["AUROC_negc_full"] for v in _a16f["audit_only"].values() if isinstance(v, dict) and "AUROC_negc_full" in v)
+# Anchor: primary AUROC(u) sentence + ruler/judge values already required elsewhere; refuse silent JSON drift.
+_anchor_u = f"$\\mathrm{{AUROC}}(u)=0.508$" in tex.replace(" ", "") or "AUROC$(u)=0.508$" in tex.replace(" ", "") \
+    or "gave $\\mathrm{AUROC}(u)=0.508$" in tex or "gave $\\mathrm{AUROC}(u) = 0.508$" in tex \
+    or "Primary: prefix (4k), 4 chat RMs & 0.508" in tex
+ok = _anchor_u and abs(_fig8["panel u"] - 0.508) < 1e-9 and abs(_fig8["umax"] - 0.686) < 1e-9 \
+    and abs(_fig8["lines"] - 0.665) < 1e-9 and abs(_fig8["rm16"] - 0.712) < 1e-9 and abs(_fig8["judge"] - 0.752) < 1e-9
+print(f"  {'ok  ' if ok else 'FAIL'}  Fig8 Verified JSON set matches paper anchors {_fig8}")
+if not ok: fail.append("Fig8 Verified JSON drift")
+_b2 = json.loads((D / "readout_pi_batch2.json").read_text())
+_e3v = _b2["verified"]["E3_selection_pressure"]
+# Fold-aligned value must stay in JSON. The claim-change appendix may name the
+# pre-fix 0.444 as history; the scientific body and short paper must not.
+_body = tex.split(r"\section{How the claim changed under scrutiny}")[0]
+ok = abs(_e3v["best_of_4"]["AUROC_u"] - 0.462) < 1e-9 and "0.444" not in _body and "0.444" not in short
+print(f"  {'ok  ' if ok else 'FAIL'}  E3 Verified best_of_4 AUROC_u is {_e3v['best_of_4']['AUROC_u']} (fold-aligned); stale 0.444 absent from body/short")
+if not ok: fail.append("E3 fold-aligned AUROC")
+# Inspect only the ECE binding line (not this assertion's own string literal).
+_ece_line = next(ln for ln in Path(__file__).read_text().splitlines() if "CAL_judge_calibration" in ln and "ECE" in ln)
+ok = "jg and" not in _ece_line and "_batch2[b]" in _ece_line
+print(f"  {'ok  ' if ok else 'FAIL'}  ECE loader reads batch2 without `jg and` short-circuit")
+if not ok: fail.append("ECE jg-and short-circuit")
+import subprocess
+_a5 = subprocess.run(
+    [sys.executable, str(Path(__file__).resolve().parents[1] / "silentfail_bench/scripts/prereg_readout_amendment5.py")],
+    capture_output=True, text=True,
+)
+ok = _a5.returncode == 2 and "DEFECTIVE" in (_a5.stderr + _a5.stdout)
+print(f"  {'ok  ' if ok else 'FAIL'}  defective A5 script refuses without --write-defective-archive (exit {_a5.returncode})")
+if not ok: fail.append("A5 defective script gate")
 
 print("\n" + ("ALL CONSISTENT" if not fail else f"{len(fail)} MISMATCH(ES): " + "; ".join(fail)))
 sys.exit(1 if fail else 0)

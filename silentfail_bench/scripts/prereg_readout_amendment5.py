@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """Amendment 5 readout: the selector axis (S-P1, S-P2, S-P3).
 
+DEPRECATED FOR PAPER NUMBERS. This script retains the defective population
+filter documented in DEFECTS.md #7 / Amendment 5a: after gpt-5 re-selects, it
+still filters with rows[i]["visible_pass"] from the *primary* committed
+candidate. Authoritative analysis is scripts/readout_amendment5_corrected.py
+→ data/selector_axis/readout_amendment5_corrected.json.
+
 Re-selects over the existing candidate pools with a strong selector, then asks
 whether panel disagreement adds anything on THAT selected set.
 """
@@ -12,6 +18,12 @@ ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT / "src")
 from silentfail.combine import _fit_standardizer, fit_logistic_irls  # noqa: E402
 from silentfail.scoring import apply_panel_u, fit_rank_norms  # noqa: E402
 from silentfail.stats import auroc_fast, cluster_bootstrap_delta  # noqa: E402
+
+_DEPRECATION = (
+    "prereg_readout_amendment5.py writes the DEFECTIVE 85-row population "
+    "(DEFECTS #7). Use scripts/readout_amendment5_corrected.py for paper numbers. "
+    "Re-run this script only with --write-defective-archive."
+)
 
 PANEL = ["ray2333_grm_gemma2_2b_rewardmodel_ft", "ray2333_grm_llama3_2_3b_rewardmodel_ft",
          "skywork_skywork_reward_v2_llama_3_2_1b", "skywork_skywork_reward_v2_qwen3_1_7b"]
@@ -114,8 +126,22 @@ def run(bench, rows_f, bundle_f, judge_cache, panel_dir, gold_extra_files, rando
     return out
 
 def main():
-    a = argparse.ArgumentParser(); a.add_argument("--out", type=Path, default=ROOT / "data/selector_axis/prereg_readout_amendment5.json"); a = a.parse_args()
-    rep = {"analysis": "Amendment 5 (pre-registered): the selector axis",
+    a = argparse.ArgumentParser(
+        description=_DEPRECATION,
+        epilog="Authoritative: python scripts/readout_amendment5_corrected.py",
+    )
+    a.add_argument("--out", type=Path, default=ROOT / "data/selector_axis/prereg_readout_amendment5.json")
+    a.add_argument(
+        "--write-defective-archive",
+        action="store_true",
+        help="Permit rewriting the archived defective readout (default: refuse).",
+    )
+    a = a.parse_args()
+    if not a.write_defective_archive:
+        print(_DEPRECATION, file=sys.stderr)
+        sys.exit(2)
+    print("WARNING: writing defective-population archive by explicit request.", file=sys.stderr)
+    rep = {"analysis": "Amendment 5 (pre-registered): the selector axis — DEFECTIVE POPULATION (see DEFECTS #7; superseded by readout_amendment5_corrected.json)",
            "S_swerm": "NOT RUN. ksshumab/SWE-RM publishes 122 GB of Qwen3-MoE causal-LM weights with no value head, "
                       "no sequence-classification head, a 31-byte README and the stock Qwen3-Coder agent chat template "
                       "(no verdict or score token). There is no documented interface for extracting a scalar reward; "

@@ -57,7 +57,7 @@
    "best_of_4": {
     "n": 33,
     "failures": 12,
-    "AUROC_u": 0.444
+    "AUROC_u": 0.462
    }
   }
  },

@@ -67,11 +67,13 @@ for tag,(rowf,scored,j5,j6) in BENCH.items():
     # ---------- E3: selection pressure ----------
     S = {f.stem.replace("scores_gpu_",""): json.loads(f.read_text())["scores"] for f in (ROOT/scored).glob("scores_gpu_*.json")}
     CSEL = "skywork_skywork_reward_v2_qwen3_4b"
-    train = np.array([rows[i]["split"]=="train" for i in pop])
     e3 = {}
     rng = np.random.default_rng(0)
     for k in (2, 4):
-        us, ys = [], []
+        # Train-fold flags must track the filtered population: rows skipped for
+        # insufficient candidates or missing panel scores must not leave a
+        # misaligned prefix of pop-level split flags (BUG-1 / DEFECTS #9).
+        us, ys, train_flags = [], [], []
         for idx, i in enumerate(pop):
             cs = rows[i]["candidate_scores"]
             avail = [j for j,v in enumerate(cs) if v == v and abs(v) != float("inf")]
@@ -80,9 +82,11 @@ for tag,(rowf,scored,j5,j6) in BENCH.items():
             pick = max(sub, key=lambda j: cs[j])
             kk = f"{i}#{pick}"
             if not all(kk in S.get(m,{}) for m in PANEL): continue
-            us.append({m: S[m][kk]["score"] for m in PANEL}); ys.append(y[idx])
+            us.append({m: S[m][kk]["score"] for m in PANEL})
+            ys.append(y[idx])
+            train_flags.append(rows[i]["split"] == "train")
         if len(ys) < 15: continue
-        fits = fit_rank_norms({m: [d[m] for d,t in zip(us,[rows[i]["split"]=="train" for i in pop][:len(us)]) if t] or [d[m] for d in us] for m in PANEL})
+        fits = fit_rank_norms({m: [d[m] for d, t in zip(us, train_flags) if t] or [d[m] for d in us] for m in PANEL})
         uu = np.array([apply_panel_u(d, fits)[1] for d in us]); yy = np.array(ys)
         e3[f"best_of_{k}"] = {"n": len(yy), "failures": int(yy.sum()), "AUROC_u": round(auroc_fast(yy, uu),3) if 0<yy.sum()<len(yy) else None}
     out["E3_selection_pressure"] = e3

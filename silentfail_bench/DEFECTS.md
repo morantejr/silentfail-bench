@@ -369,3 +369,38 @@ Found in the 2026-09-27 PI audit against HEAD after Amendment 5a.
 checker asymmetry; short-paper drift after a registered verdict moved.
 
 6. `data/*/*` also swallowed `data/*/gpu_scores/scores*.json`, so Fig.~2's input was local-only. Re-included the directory and score files; committed the Kaggle/GPU score JSONs the figures need.
+
+### #9 — E3 train-fold misalignment; Fig8 Verified hardcodes; ECE `jg and`; defective A5 script still runnable *(code / reporting)*
+
+Found in the 2026-09-27 PI code-correctness audit against HEAD after #8.
+
+1. `scripts/readout_pi_batch2.py` built E3 rank-norm fits with
+   `[rows[i]["split"]=="train" for i in pop][:len(us)]` — a prefix of the
+   *unfiltered* population's split flags — after skipping rows that lacked
+   enough candidates or panel scores. Train folds were therefore misaligned
+   with the filtered `us` list. On Verified best-of-4 this moved
+   $\mathrm{AUROC}(u)$ from the published exploratory 0.444 to 0.462 after
+   the fix. The paper never quoted either point estimate (only the
+   exploratory existence of the $n{=}2$ vs $n{=}4$ check). Regenerated
+   `data/readout_pi_batch2.json`; checker now pins 0.462 and bans stale 0.444.
+
+2. `paper/check_consistency.py` loaded ECE via `jg and json.loads(...)`.
+   Because `jg` is a non-empty dict it always short-circuited to the truthy
+   dict rather than the intended batch2 load — except that the subsequent
+   `[b]["CAL_judge_calibration"]...` indexing happened to work only when the
+   expression was parsed as `(jg and json.loads(...))[b]...`, which in Python
+   evaluates `json.loads` when `jg` is truthy. The idiom was still a landmine
+   (swap `jg` for an empty container and calibration checks go silent).
+   Replaced with an explicit `_batch2 = json.loads(...)` binding.
+
+3. `paper/make_figures.py` hard-coded Fig.~8's Verified AUROCs (and a dead
+   CI that was never drawn) while Multilingual already read from JSON. Point
+   estimates now load from the same committed readouts the paper quotes.
+
+4. `scripts/prereg_readout_amendment5.py` still wrote the defective 85-row
+   population if re-run. It now exits 2 unless `--write-defective-archive` is
+   passed, and its docstring points at `readout_amendment5_corrected.py`.
+
+**Class.** Filter/fold alignment keyed to the wrong index stream; defensive
+coding debt left next to a known population defect; figure values not wired
+to their JSON sources.

@@ -963,3 +963,23 @@ claim-change appendix as v0.9.4. They concern figure captions, figure↔table
 completeness, a superseded JSON field, short-paper drift, and one absolute
 prose claim that outran the plotted data. None changes a registered prediction
 or a corrected Amendment 5 verdict.
+
+# Code-path audit — 2026-09-27, post hoc (no thresholds)
+
+Continuation of the PI audit after the reporting pass. No new experiment, no
+new gold, no new thresholds. Findings and fixes are in DEFECTS.md #9 and the
+claim-change appendix as v0.9.6.
+
+1. Exploratory E3 (selection pressure, best-of-2 vs best-of-4) had train-fold
+   flags misaligned with the filtered score list in
+   `scripts/readout_pi_batch2.py`. Regenerating moves Verified best-of-4
+   $\mathrm{AUROC}(u)$ from 0.444 to 0.462. Neither value was quoted in either
+   paper; the exploratory mention of the check is unchanged. Written after
+   the regenerated number was visible.
+2. Fig.~8 Verified points are now loaded from committed JSON (was hardcoded);
+   checker ECE loader no longer uses a `jg and json.loads` idiom; the
+   defective Amendment 5 script refuses to overwrite its archive without an
+   explicit flag.
+
+None of these changes a registered prediction or a corrected Amendment 5
+verdict.
