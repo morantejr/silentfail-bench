@@ -53,10 +53,21 @@ $V scripts/run_replication_modal.py --stage rows --instances-file $I --out $O \
     --scores-dir $O/modal/prefix4k --gold-report data/gold_modal/a7_agent_axis/report.json
 ```
 
-## What still has to be written
+## The readout
 
-There is **no readout script for Amendment 7 yet**. It must implement the rules
-frozen in Amendment 7a, not the ones in Amendment 7:
+`scripts/readout_amendment7.py` implements Amendment 7a's rules, not Amendment
+7's. It was written and **dry-run in September**, before the data it is for
+exists, because a script first run on the day it matters is a script that fails
+that day. The dry run exercises every path against the gpt-5-mini replication
+data and asserts that all four estimators reproduce the values the paper already
+publishes:
+
+```bash
+.venv-swebench/bin/python scripts/readout_amendment7.py --dry-run
+```
+
+It exits non-zero if the machinery stops reproducing them. Run it before October
+in case anything upstream has drifted. The rules it enforces:
 
 - `gpt-5` selection is **mandatory**, not conditional on the 4B arm.
 - Gate: the selector's pool `AUROC(-c)` on the **new** pool must exceed 0.65,
@@ -69,10 +80,18 @@ frozen in Amendment 7a, not the ones in Amendment 7:
 - A null claim requires the **upper bound below +0.05**. "The CI includes zero"
   is not equivalence.
 
-`scripts/readout_amendment5_corrected.py` is the closest template: it already
-computes the three estimators, prints raw beside out-of-fold, reports the upper
-bound against the margin, and carries the paired committed-versus-random
-contrast. Copy its structure.
+Two things the dry run already established, worth knowing before October:
+
+- **The capability comparison may be indeterminate.** A7-P1 asks for an
+  unconditional per-attempt failure rate, but only 213 of the replication's 456
+  candidate slots have gold, so gpt-5-mini's rate is a band, 0.476 to 0.752, not
+  a point. The comparison is only decisive if the new agent's upper bound clears
+  the old agent's lower bound. The script reports the band and says so rather
+  than quoting a false point estimate.
+- **Under A7a's rules the replication cell itself would read INCONCLUSIVE**, with
+  an upper bound of +0.175 against a margin of +0.05. That is the branch
+  Amendment 7a predicted in advance would be the likely one. It is not a failure
+  of the experiment; it is the design being honest about its power.
 
 ## Budget
 
