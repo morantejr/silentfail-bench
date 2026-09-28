@@ -404,3 +404,83 @@ Found in the 2026-09-27 PI code-correctness audit against HEAD after #8.
 **Class.** Filter/fold alignment keyed to the wrong index stream; defensive
 coding debt left next to a known population defect; figure values not wired
 to their JSON sources.
+
+### #10 — Amendment 7 was declared “fully prepared,” but its production readout was a no-op and its workflow could not compute the registered gate *(analysis readiness)*
+
+Found in a second PI audit on 2026-09-27, before any agent-axis gold existed.
+
+1. `scripts/readout_amendment7.py --dry-run` reproduced published replication
+   values, but the production path looked for `data/agent_axis/rows.jsonl`
+   while `run_replication_modal.py --stage rows` writes
+   `replication_scored.jsonl`. Worse, after loading it the script reached the
+   end without computing or writing any Amendment 7 result. A successful dry
+   run therefore did not exercise the code path that mattered.
+
+2. `RESUME_AMENDMENT7.md` implemented only the 4B selector. It did not score
+   all candidates with the mandatory `gpt-5` selector, construct the random
+   arm, or grade enough candidates to compute `gpt-5`'s pool AUROC and A7-P1's
+   all-attempt capability rate.
+
+3. The preflight checked the 100 paused IDs against the larger 128-instance
+   replication input, not the pinned 114-instance agent-axis set. That would
+   not catch accidentally resuming on the 14 excluded instances.
+
+4. The ~$3 gold estimate covered one selected arm. Complete all-attempt gold
+   is about four times that, making the Modal total about $20.40 rather than
+   $11.40 and exceeding the registered $12 cap.
+
+5. The newly appended mentor note said the corrected Amendment 5 estimators
+   “agree in sign,” although their deltas are `+0.012`, `−0.024`, and
+   `−0.018`. That exact false claim had already been removed from the paper.
+
+**Fix.** Amendment 7b freezes candidate-indexed gold, a hash-defined random
+arm, a conservative rule for the partially graded old-agent comparator, and a
+$22 Modal cap that remains inside the October free credit. A local preparation
+script refuses any bundle other than 114×4. The production readout now
+validates every required source, computes both selector arms and every gate,
+and writes JSON; partial inputs fail closed. The preflight uses the pinned set.
+The mentor and README status text were corrected, and the consistency checker
+now rejects recurrence.
+
+**Class.** Dry-run coverage that bypassed production; documentation mistaken
+for executable workflow; registered denominator unsupported by the planned
+gold; budget derived from the wrong number of arms.
+
+### #11 — Amendment 7 readout changed the selector on tied scores *(pre-outcome implementation)*
+
+Found 2026-09-27, before agent-axis gold. `run_replication_modal.py` selects
+the first candidate when 4B scores tie; the prepared Amendment 7 readout used
+`max((score, candidate))`, which selects the last. The existing Multilingual
+bundle has four four-way ties (`fastlane__fastlane-20642`,
+`fastlane__fastlane-19304`, `preactjs__preact-3739`, and
+`projectlombok__lombok-3326`), each changing candidate 0 to 3 under the
+prepared code. The readout now uses the original first-tie rule, with a
+synthetic tie check and a dated pre-outcome clarification in Amendment 7c.
+
+**Class.** Reimplementation of an argmax with a different tie rule.
+
+### #12 — Two committed exploratory readouts did not regenerate *(provenance)*
+
+Found 2026-09-27 by rerunning eight readout scripts. Six JSON files reproduced
+exactly. `readout_pivotal.py` omitted the stored `multiplicity_check` and
+`conclusion` blocks. Recomputing the 4,000 within-repository permutations
+from source rows with one seed-0 random stream reproduces the stored null
+medians (0.733/0.719), 95th percentiles (0.889/0.799), and Monte Carlo
+probabilities (0.485/0.369) on Verified/Multilingual. The script now generates
+those blocks. `readout_luckypass.py` had a newer reference string than its
+stored JSON; its regenerated JSON is committed with that metadata correction.
+
+**Class.** Hand-extended JSON without a regenerating code path; stale output
+metadata.
+
+### #13 — “Replicated null” wording exceeded the endpoint's precision *(interpretation)*
+
+Found 2026-09-27. The pooled fixed-weight 95% interval has an upper bound of
++0.12 AUROC over 47 failures and 46 repositories, while +0.05 was declared
+actionable. The results replicate a lack of detectable gain, but cannot
+establish an effect smaller than the actionable margin. The main and short
+papers and README now state this distinction; the dated interpretation note
+preserves the fact that the correction was made after results. R-P1 keeps its
+registered name and verdict in the results table.
+
+**Class.** Null-hypothesis non-rejection described as a replicated null.

@@ -1165,8 +1165,9 @@ benchmark, twelve positives.
 0.150, which I described to you as a degenerate-baseline artefact of the
 logistic estimator, was the population defect. On the correct population that
 same estimator gives +0.012 with a sound baseline, and the three estimators
-agree in sign for the first time in this study. I keep the four-estimator
-standard anyway, because it is what made the anomaly visible.
+remain mixed in sign (+0.012, −0.024 and −0.018). I keep the multi-estimator
+standard because that disagreement is itself evidence against leaning on one
+fit.
 
 ## The rest of the week
 
@@ -1199,10 +1200,14 @@ standard anyway, because it is what made the anomaly visible.
 
 Paused at 100 of 456 trajectories, no gold run, nothing computed. It resumes when
 the Modal credit resets on 1 October and costs about $11 of OpenAI and $11 of
-Modal, both inside declared caps and both covered. It is fully prepared: a
-preflight that checks the five things that have actually gone wrong here, a
-pinned instance set, a runbook, and the analysis script written and dry-run
-against existing data where it reproduces every published value.
+Modal under the first estimate. A second PI audit found that estimate and the
+workflow were incomplete: selected-only gold could not compute the registered
+all-attempt capability denominator, and the production readout was a no-op.
+Amendment 7b now requires four candidate-indexed gold runs, revises the Modal
+estimate to about $20.40 (inside the $30 October free credit), pins the random
+arm, and makes partial inputs fail closed. The old dry run still reproduces the
+published endpoint values; readiness now also has an executable production
+path rather than a dry-run-only claim.
 
 **The honest forecast.** Under Amendment 7a's rules the existing replication cell
 would itself read inconclusive, upper bound +0.175 against a margin of +0.05. The

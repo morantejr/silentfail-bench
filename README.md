@@ -12,7 +12,7 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: draft v0.9.3 (2026-09-27) — the registered endpoint, computed four
+> **Status: draft v0.9.8 (2026-09-27) — the registered endpoint, computed four
 > ways, puts disagreement's incremental value over the selector's own score at
 > indistinguishable from zero, loosest pooled upper bound +0.12 over 47 failures
 > and 46 repositories.** A SWE-bench Verified pilot (41 instances, 12 positives)
@@ -20,7 +20,7 @@ about are exactly where its blind spots collect. **A null result is publishable*
 > analysed repositories, 35 positives): eight reward-model critics at 4k/8k/16k
 > and windowed, five LLM judges across two model generations, test–retest, two
 > selection regimes, official executed gold throughout. **H1 not supported and
-> the null replicates:** panel disagreement 0.565 [0.43, 0.71] against the
+> the lack of detectable gain replicates:** panel disagreement 0.565 [0.43, 0.71] against the
 > critic's own 0.560; the Verified windowed positive (0.686) fell to 0.541; the
 > lines-added baseline fell to 0.508. Best-of-4 by a 4B reward model did not
 > concentrate failure, though selection did remove that selector's own signal on
@@ -32,10 +32,10 @@ about are exactly where its blind spots collect. **A null result is publishable*
 > newer pair is the worst at 0.41. **The agent axis is the one open question**
 > and resumes 1 October; see
 > [`silentfail_bench/RESUME_AMENDMENT7.md`](silentfail_bench/RESUME_AMENDMENT7.md).
-> Seven instrument failures are recorded in
+> Ten numbered defects (including seven critic/instrument failures) are recorded in
 > [`silentfail_bench/DEFECTS.md`](silentfail_bench/DEFECTS.md), including one that
 > manufactured a result large enough to reverse the paper. Paper:
-> [`paper/main.pdf`](paper/main.pdf), 7-page cut
+> [`paper/main.pdf`](paper/main.pdf), 9-page submission version (body under six)
 > [`paper/main_short.pdf`](paper/main_short.pdf). See [`UPDATES.md`](UPDATES.md).
 
 ## Layout
@@ -49,7 +49,7 @@ about are exactly where its blind spots collect. **A null result is publishable*
 | [`UPDATES.md`](UPDATES.md) | **Research log — one entry per stage: done / learned / changed** |
 | `SilentFail_AAAI_Proposal.pdf` / `.tex` | The original proposal |
 | `paper/main.pdf` | The paper (full version) |
-| `paper/main_short.pdf` | The paper cut to 7 pages + references for a main-track submission |
+| `paper/main_short.pdf` | Nine-page submission version; body under six pages, then references |
 | [`archive/drafts/`](archive/drafts/) | Earlier drafts and write-ups, kept for the record |
 
 ## Two things a reader should know up front

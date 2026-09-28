@@ -161,10 +161,15 @@ def phrase(name, want):
 def money(x): return f"{x:+.3f}".replace("+", "+").replace("-", "-")
 rate = P["suspect_rate_of_passes"] * 100
 phrase("pooled suspect rate", f"pooled {rate:.1f}\\%")
-# the same rate is restated later in the paragraph; both occurrences must agree
-n_rate = tex.count(f"{rate:.1f}\\%")
-print(f"  {'ok  ' if n_rate == 2 else 'FAIL'}  suspect rate stated consistently in both places (found {n_rate}, want 2)")
-if n_rate != 2: fail.append("luckypass suspect rate restated")
+# The two rates in the detailed lucky-pass paragraph must agree. The version
+# history now mentions 6.2% too, so stop before the sensitivity paragraph.
+_lp0 = tex.index("label{sec:luckypass}")
+_lp1 = tex.index("The endpoint survives the worst case.", _lp0)
+_sec = tex[_lp0:_lp1]
+n_rate = _sec.count(f"{rate:.1f}\\%")
+ok = n_rate == 2 and r"\textbf{1.6\%}" in _sec
+print(f"  {'ok  ' if ok else 'FAIL'}  suspect rates in the detailed paragraph: heuristic {n_rate} mentions, inspection 1.6%")
+if not ok: fail.append("luckypass suspect rate restated")
 
 df = lp["multilingual"]["among_failures_for_contrast"]["disjoint_from_reference_patch"]
 phrase("disjoint-failure contrast", f"{df['n']} of {df['of']} Multilingual failures are disjoint")
@@ -427,6 +432,77 @@ _a5 = subprocess.run(
 ok = _a5.returncode == 2 and "DEFECTIVE" in (_a5.stderr + _a5.stdout)
 print(f"  {'ok  ' if ok else 'FAIL'}  defective A5 script refuses without --write-defective-archive (exit {_a5.returncode})")
 if not ok: fail.append("A5 defective script gate")
+
+print("\naudit: Amendment 7 readiness must be executable, not a dry-run claim:")
+_root = Path(__file__).resolve().parents[1]
+_a7 = (_root / "silentfail_bench/scripts/readout_amendment7.py").read_text()
+_a7test = (_root / "silentfail_bench/scripts/test_readout_amendment7.py").read_text()
+_pre = (_root / "silentfail_bench/scripts/preflight_amendment7.py").read_text()
+_prep = (_root / "silentfail_bench/scripts/prepare_amendment7.py").read_text()
+_runbook = (_root / "silentfail_bench/RESUME_AMENDMENT7.md").read_text()
+_prereg = (_root / "silentfail_bench/PREREGISTRATION_SWEBENCH_PILOT.md").read_text()
+_mentor = (_root / "silentfail_bench/MENTOR_NOTE.md").read_text()
+_readme = (_root / "README.md").read_text()
+ok = "production_readout(a)" in _a7 and "readout_amendment7.json" in _a7 \
+    and "replication_scored.jsonl" in _a7 and 'rows_f = out_dir / "rows.jsonl"' not in _a7
+print(f"  {'ok  ' if ok else 'FAIL'}  A7 production path computes and writes JSON; stale rows.jsonl load absent")
+if not ok: fail.append("A7 production no-op")
+ok = "configs/agent_axis_instances_multilingual.txt" in _pre \
+    and "configs/replication_instances_multilingual.txt" not in _pre
+print(f"  {'ok  ' if ok else 'FAIL'}  A7 preflight validates paused IDs against pinned 114-instance set")
+if not ok: fail.append("A7 preflight wrong set")
+ok = "a7-random-v1" in _prep and "expected_keys" in _prep and "range(4)" in _prep
+print(f"  {'ok  ' if ok else 'FAIL'}  A7 preparation freezes random arm and exact 114x4 candidate set")
+if not ok: fail.append("A7 random/gold preparation")
+ok = "a7-production-test:" in _a7test and "gold incomplete" in _a7test \
+    and "must_not_exist.json" in _a7test
+print(f"  {'ok  ' if ok else 'FAIL'}  A7 production fixture exercises joins and bites partial gold")
+if not ok: fail.append("A7 production fixture")
+for phrase, label in (
+    ("--all-candidates", "mandatory gpt-5 all-candidate scoring"),
+    ("a7_agent_axis_cand${C}", "four candidate-indexed gold runs"),
+    ("scripts/readout_amendment7.py", "production readout command"),
+    ("scripts/test_readout_amendment7.py", "production fixture command"),
+):
+    ok = phrase in _runbook
+    print(f"  {'ok  ' if ok else 'FAIL'}  A7 runbook contains {label}")
+    if not ok: fail.append(f"A7 runbook {label}")
+ok = "# Amendment 7b" in _prereg and "from $12 to\n**$22**" in _prereg \
+    and "no paid\noverage is authorized" in _prereg
+print(f"  {'ok  ' if ok else 'FAIL'}  A7b records corrected $22 free-credit cap before gold")
+if not ok: fail.append("A7b budget correction")
+ok = "agree in sign for the first time" not in _mentor \
+    and "+0.012, −0.024 and −0.018" in _mentor
+print(f"  {'ok  ' if ok else 'FAIL'}  mentor note reports corrected A5 mixed signs")
+if not ok: fail.append("mentor A5 signs")
+ok = "draft v0.9.8" in _readme and "9-page submission version (body under six)" in _readme \
+    and "Nine-page submission version; body under six pages" in _readme \
+    and "7-page cut" not in _readme and "cut to 7 pages" not in _readme
+print(f"  {'ok  ' if ok else 'FAIL'}  README status/version and short-paper length are current")
+if not ok: fail.append("README status")
+ok = "selected_4b[i] = pick_4b(choices)" in _a7 \
+    and "return max(choices, key=lambda pair: pair[0])[1]" in _a7 \
+    and "assert pick_4b([(2.0, c) for c in range(4)]) == 0" in _a7test \
+    and "# Amendment 7c — selector tie rule" in _prereg
+print(f"  {'ok  ' if ok else 'FAIL'}  A7 4B selection keeps the original first-candidate score-tie rule")
+if not ok: fail.append("A7 4B selector tie rule")
+_pooled = next(x for x in json.loads((D / "verify_and_robustify.json").read_text())["endpoint_robustness"]
+               if x["label"] == "pooled")
+_upper = _pooled["fixed_unit_weights_no_fitting"]["CI95"][1]
+ok = _upper > 0.05 and "An upper bound on what disagreement can be worth, not a demonstration that it is worthless." in tex \
+    and "A replicated lack of detectable gain" in short \
+    and "lack of detectable gain replicates" in _readme \
+    and "carries no information about its hidden failure" not in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  pooled upper bound {_upper:+.3f} above actionable +0.05 is described as non-detection")
+if not ok: fail.append("null interpretation exceeds pooled precision")
+_a7_real = subprocess.run(
+    [sys.executable, str(_root / "silentfail_bench/scripts/readout_amendment7.py")],
+    capture_output=True, text=True,
+)
+ok = _a7_real.returncode == 2 and "no partial result was written" in (_a7_real.stdout + _a7_real.stderr) \
+    and not (_root / "silentfail_bench/data/agent_axis/readout_amendment7.json").exists()
+print(f"  {'ok  ' if ok else 'FAIL'}  incomplete A7 production inputs fail closed (exit {_a7_real.returncode})")
+if not ok: fail.append("A7 partial-input gate")
 
 print("\n" + ("ALL CONSISTENT" if not fail else f"{len(fail)} MISMATCH(ES): " + "; ".join(fail)))
 sys.exit(1 if fail else 0)

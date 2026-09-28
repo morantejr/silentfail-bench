@@ -1,6 +1,6 @@
 {
   "analysis": "Lucky-pass contamination of g=1 and headline sensitivity to it. Exploratory.",
-  "reference": "AgentLens 2025, arXiv:2511.03696 - ~10.7% of resolved SWE-bench trajectories pass for the wrong reason.",
+  "reference": "AgentLens (Sahoo et al. 2026, arXiv:2605.12925) - resolved SWE-bench trajectories that pass for the wrong reason.",
   "why_it_matters": "positive class is failure, so a lucky pass is a mislabelled negative; it would inflate apparent separability of both c and u.",
   "verified": {
     "benchmark": "verified",

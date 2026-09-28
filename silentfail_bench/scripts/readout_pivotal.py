@@ -57,6 +57,46 @@ rep = {"analysis": "Margin-stratified ('pivotal vote') check, exploratory, no ne
        "reference": "Shu 2026, arXiv:2608.06940 - verification concentrates on single-vote-margin cases.",
        "verified": run(ROOT/"data/swebench_pilot50/pilot_free_scored.jsonl", "verified"),
        "multilingual": run(ROOT/"data/replication_multilingual/replication_scored.jsonl", "multilingual")}
+
+def multiplicity(path, rng, n=4000):
+    """Within-repository label permutation of the best of three fixed strata."""
+    rows = [json.loads(l) for l in Path(path).read_text().splitlines() if l.strip()]
+    pop = [r for r in rows if not r["excluded"] and r["visible_pass"]]
+    y = np.array([r["g"] == 0 for r in pop], int)
+    u = np.array([r["u"] for r in pop], float)
+    grp = np.array([r["repo"] for r in pop])
+    margins = []
+    for r in pop:
+        cs = sorted((x for x in r["candidate_scores"] if np.isfinite(x)), reverse=True)
+        margins.append(cs[0] - cs[1] if len(cs) >= 2 else np.nan)
+    m = np.array(margins)
+    q1, q2 = np.percentile(m[np.isfinite(m)], [33.3, 66.7])
+    strata = [m <= q1, (m > q1) & (m <= q2), m > q2]
+    observed = max(auroc_fast(y[s], u[s]) for s in strata)
+    idx = [np.flatnonzero(grp == g) for g in np.unique(grp)]
+    null = []
+    for _ in range(n):
+        yp = y.copy()
+        for ii in idx:
+            yp[ii] = rng.permutation(yp[ii])
+        null.append(max(auroc_fast(yp[s], u[s]) for s in strata
+                        if 0 < yp[s].sum() < s.sum()))
+    return {"observed_best": round(observed, 3),
+            "null_median": round(float(np.median(null)), 3),
+            "null_95th": round(float(np.percentile(null, 95)), 3),
+            "p": round(float((1 + np.sum(np.asarray(null) >= observed)) / (n + 1)), 3)}
+
+# One seeded stream across both benchmarks reproduces the archived permutation
+# values; resetting the seed per benchmark changes the second result.
+_rng = np.random.default_rng(0)
+rep["multiplicity_check"] = {
+    "method": "Permute failure labels within repository, recompute the MAXIMUM AUROC(u) across the three margin strata, 4000 draws.",
+    "verified": multiplicity(ROOT/"data/swebench_pilot50/pilot_free_scored.jsonl", _rng),
+    "multilingual": multiplicity(ROOT/"data/replication_multilingual/replication_scored.jsonl", _rng),
+    "winning_stratum": {"verified": "comfortable (widest third)", "multilingual": "middle"},
+    "reading": "The best of three small strata reaches ~0.72-0.73 under the null, so neither observed best is remarkable. The winning stratum is also at opposite ends on the two benchmarks. Disagreement does not concentrate on close-call selections; the pivotal-vote pattern reported for code-review panels does not reproduce for selection margin here."
+}
+rep["conclusion"] = "Exploratory and negative. Selection margin itself barely predicts failure (0.504 / 0.594), and stratifying by it does not reveal a region where disagreement works. Reported so that the obvious reviewer question - 'did you look at the close calls?' - has an answer."
 for b in ("verified", "multilingual"):
     x = rep[b]; print(f"\n{b}: n={x['n']}  selection margin median {x['margin']['median']} IQR {x['margin']['iqr']}")
     print(f"  a narrow margin predicts failure: AUROC {x['AUROC_small_margin_predicts_failure']} {x['AUROC_small_margin_CI']}")

@@ -864,6 +864,110 @@ repositories only, repository-clustered inference, and the cost caps are all as
 in Amendment 7. This amendment changes decision rules and reporting, not the
 instrument or the estimand.
 
+# Amendment 7b — executable-readout and capability-denominator correction — 2026-09-27, before any agent-axis gold exists
+
+**Standing.** Still no gold has been run on the agent-axis trajectories and no
+outcome has been computed from them. This amendment was prompted by a second
+PI audit of the October runbook and prewritten readout. It fixes implementation
+gaps found without inspecting an outcome.
+
+## The defect in the prepared workflow
+
+The first runbook would have graded only the trajectory selected by the 4B
+critic. That cannot answer A7-P1, whose denominator is all 456 attempts, and it
+cannot compute `gpt-5`'s pool AUROC or its paired committed-versus-random gate.
+The prewritten readout's dry-run path reproduced old numbers, but its production
+path stopped after trying to load `rows.jsonl` (the pipeline writes
+`replication_scored.jsonl`) and computed no Amendment 7 quantity. Calling that
+workflow “fully prepared” was false.
+
+## Gold and random arm, fixed before outcome
+
+All four candidate-indexed arms will be graded. Empty patches do not consume a
+gold run and count as failures; every non-empty attempt receives harness gold.
+Four run IDs are necessary because the harness report is keyed by instance ID
+and cannot represent four candidates with the same ID in one report.
+
+The random arm is fixed locally before gold by
+`sha256("a7-random-v1:" + instance_id)`, first eight bytes interpreted
+big-endian, modulo four. `scripts/prepare_amendment7.py` writes those picks and
+the four candidate-indexed gold inputs, and refuses any bundle other than the
+registered 114 instances × four candidates.
+
+`gpt-5` J1 scores are collected for every candidate, including empty attempts.
+The selector-pool AUROC uses the candidates actually graded by the harness
+(non-empty patches); the unconditional committed-versus-random comparison uses
+all 114 paired instances, with empties and step-limit exits counted as failures
+in either arm.
+
+## A7-P1 when the old-agent comparator is only partially graded
+
+The old `gpt-5-mini` pool has gold for only 213 of 456 candidate slots, so its
+unconditional failure rate is an identification band, not a point. The
+pre-outcome decision rule is conservative:
+
+- **pass A7-P1** iff the new agent's upper failure-rate bound is at least 0.10
+  below the old agent's lower bound;
+- **fail A7-P1** iff the new agent's lower bound is no less than 0.10 below the old
+  agent's upper bound;
+- otherwise **indeterminate**, and every agent-axis endpoint is descriptive.
+
+With complete new-agent gold its band collapses to a point. This rule does not
+alter A7-P1's ten-point bar; it specifies how the promised comparison is made
+when the registered comparator was not fully graded.
+
+## “Paired difference in each,” made executable
+
+Amendment 7 promised a paired difference against the `gpt-5-mini` run but did
+not register a test or threshold for those differences. The executable reading
+is descriptive: for each selector arm, report new-minus-old differences in
+analysed failure rate, raw selector AUROC, raw disagreement AUROC, and each of
+the three endpoint estimates. “Paired” means the same fixed 114-instance frame;
+the registered candidate-specific `visible_pass` filter can produce different
+analysed subsets across agents, so these are not row-paired outcomes and earn
+no confirmatory verdict.
+
+## Budget correction
+
+The earlier ~$3 Modal-gold estimate covered one selected arm, not the all-attempt
+denominator A7-P1 requires. Using the runbook's own estimate, four
+candidate-indexed gold runs cost about **$12**, and the remaining generation
+about **$8.40**. The Modal cap is therefore raised, before outcome, from $12 to
+**$22**. This remains below the $30 free credit that resets on 1 October; no paid
+overage is authorized. The OpenAI cap remains $15. If the free credit is not
+available, the run pauses rather than spending money.
+
+## Executable readout
+
+`scripts/readout_amendment7.py` now validates the exact 114×4 bundle, complete
+candidate gold, complete five-model panel/selector scores, all 456 `gpt-5`
+scores, and the frozen random picks. It computes both 4B and `gpt-5` arms, the
+capability branch, both selector-gate conditions, all three endpoint estimators,
+the 20-failure floor and the A7-P3′/P3′′/inconclusive branch, then writes
+`data/agent_axis/readout_amendment7.json`. Partial inputs exit non-zero and
+write no result.
+
+# Amendment 7c — selector tie rule — 2026-09-27, before agent-axis gold exists
+
+The 4B selector's existing implementation in `run_replication_modal.py`
+selects the first candidate when scores tie. The prepared Amendment 7 readout
+instead selected the last. Four of the 114 earlier Multilingual candidate sets
+have four-way score ties, so this difference is observable in existing data.
+The Amendment 7 readout now uses the original first-candidate tie rule. No
+agent-axis outcome has been inspected; this fixes the selector definition
+before the new agent's gold exists.
+
+# Post-result interpretation note — 2026-09-27
+
+The existing pilot and replication have 47 analysed failures in 46 repositories.
+Their pooled fixed-weight 95% interval reaches +0.12 AUROC, above the +0.05
+effect this project called actionable. The two samples therefore replicate a
+lack of detectable gain; they do not establish equivalence to zero or rule out
+an actionable +0.05 gain. The paper and README now reserve “null replicates”
+for the name of the registered R-P1 prediction and state the evidence in those
+terms. This is an interpretation correction after results, not a new analysis
+rule or an amendment to a preregistered verdict.
+
 # Amendment 5a — correction of a population defect in Amendment 5 — 2026-09-27
 
 **This is a bug fix, not a rule change.** No threshold, population definition,
@@ -983,3 +1087,74 @@ claim-change appendix as v0.9.6.
 
 None of these changes a registered prediction or a corrected Amendment 5
 verdict.
+
+# Amendment 9 — static-analysis baseline and manual adjudication of the disjoint passes — 2026-09-27, declared after the confirmatory results and reported as exploratory
+
+**Standing.** Both analyses below were run after the confirmatory results, carry
+no pre-registered thresholds and no multiplicity correction, and cost nothing.
+They exist because two reviewer objections deserved better answers than the
+paper had: that `lines added` is a rhetorical baseline rather than a deployable
+one, and that the lucky-pass bound rested entirely on a file-overlap heuristic.
+
+## E7 — do classical static-analysis signals rank silent failures?
+
+**Question.** If cheap non-LLM structural signals separate this population, the
+finding is not "models are bad at this" but "the structure is there and the
+models are not finding it". If they do not, the claim becomes broader and more
+useful: the signal may not be cheaply available to anything.
+
+**Method.** Features computed from the committed diff alone, which is what an
+inference-time guardrail would have. Twelve lexical features across all eight
+languages (decision points and density, maximum nesting, hunks, files touched,
+net lines, error handling, signature changes, comment ratio, absence of control
+flow). On Verified, which is 100% Python, six further features from parsing each
+added hunk with the standard-library `ast` module, including whether the added
+code parses standing alone. Single-feature AUROCs with repository-clustered
+bootstrap; a combined model evaluated leave-one-repository-out so it is
+comparable to the paper's endpoint; and the endpoint itself, asked of static
+analysis exactly as it is asked of disagreement.
+
+**Result.** No. Strongest single feature is net lines added, 0.705 [0.51, 0.94]
+on Verified — the only structural feature anywhere whose interval excludes
+chance — falling to 0.536 on Multilingual. The combined model reaches 0.644
+[0.49, 0.78] on Multilingual, the highest any signal reaches there, and 0.436
+[0.19, 0.60] on Verified, worse than chance. Direction reverses across
+benchmarks.
+
+**A caught artefact, recorded because it is the third instance of the class.**
+The leave-one-repository-out logistic first reported static analysis adding
++0.169 [−0.01, +0.34] to the selector on Multilingual. Its baseline was 0.459
+against a raw 0.560 — the depressed-baseline signature already documented for
+the endpoint and for Amendment 5. Under this project's primary unfitted
+estimator the same comparison gives −0.086 [−0.26, +0.08]. Had we reported the
+logistic alone we would have published a positive finding for static analysis
+that does not survive its own robustness check.
+
+**Cost.** $0. Script `scripts/readout_static_analysis.py`, output
+`data/readout_static_analysis.json`.
+
+## Manual adjudication of the four disjoint passes
+
+**Question.** The lucky-pass bound of 6.2% rests on a file-overlap heuristic: a
+passing patch that touches none of the files the reference patch touches. A
+heuristic cannot tell an alternative fix from a lucky one. Reading them can.
+
+**Method.** All four flagged rows read by hand against the issue text and the
+reference patch. No sampling: four is the whole flagged set.
+
+**Result.** Three are unambiguous alternative fixes, and in each the agent's own
+inline comments name the same root cause the reference patch addresses
+(`gohugoio/hugo`: `url.Parse` treating `#` as a fragment; `immutable-js`: a
+bitwise coercion folding `NaN` to zero; `micropython`: duplicate keyword keys,
+same `TypeError`, different call site). The fourth, `vuejs/core`, is a five-line
+change to subscriber notification order where the reference patch alters
+batching and pause semantics; we cannot rule out that it passes without
+addressing what the reference fixed, and we do not clear it. Contamination
+supported by inspection is therefore **1 of 64, or 1.6%**, against the 6.2% the
+automatic flag gives. The paper reports both and says which is which.
+
+**Cost.** $0.
+
+**Reading.** Neither analysis changes the registered endpoint or any registered
+verdict. E7 broadens what the null is about; the adjudication tightens the
+label-noise bound by a factor of four.

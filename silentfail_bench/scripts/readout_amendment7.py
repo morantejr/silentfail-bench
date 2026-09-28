@@ -15,9 +15,10 @@ not 7. The differences that matter:
   * a null claim requires the upper bound BELOW +0.05. "The CI includes zero" is
     absence of evidence and is reported as INCONCLUSIVE, not as the null holding.
 
-Run with --dry-run before October: it exercises every code path against the
-gpt-5-mini replication data, so the script is proven before the data it is for
-exists. A script first run on the day it matters is a script that fails that day.
+Run with --dry-run before October: it regression-tests the endpoint estimators
+against gpt-5-mini replication values. The production joins and gates are
+separate because their complete candidate gold does not exist yet; they fail
+closed on any absent or partial source and were exercised with a local fixture.
 
   .venv-swebench/bin/python scripts/readout_amendment7.py --dry-run
   .venv-swebench/bin/python scripts/readout_amendment7.py          # October
@@ -73,9 +74,14 @@ def capability(bundle, gold, label):
     """A7-P1, unconditional. An empty patch is a failure. Non-empty but ungraded
     attempts are unknown, so the rate is a BAND, not a point. Stated, not hidden."""
     tot = len(bundle)
-    empty = sum(1 for c in bundle.values() if c.get("excluded") or not (c.get("final_solution") or "").strip())
-    graded_fail = sum(1 for k, g in gold.items() if g == 0 and k in bundle)
-    graded = sum(1 for k in gold if k in bundle)
+    empty_keys = {k for k, c in bundle.items()
+                  if c.get("excluded") or not (c.get("final_solution") or "").strip()}
+    empty = len(empty_keys)
+    # Production gold explicitly records empty attempts as failures. Do not
+    # count those attempts a second time in the graded-non-empty component.
+    graded_keys = {k for k in gold if k in bundle and k not in empty_keys}
+    graded_fail = sum(1 for k in graded_keys if gold[k] == 0)
+    graded = len(graded_keys)
     unknown = tot - empty - graded
     lo = (empty + graded_fail) / tot if tot else float("nan")
     hi = (empty + graded_fail + unknown) / tot if tot else float("nan")
@@ -135,17 +141,297 @@ def verdict(ep):
                       f"from an effect of the size declared actionable"}
 
 
-def load(out_dir, scores_dir, judge_cache, gold_report, extras, picks_f, bench):
-    rows_f = out_dir / "rows.jsonl"
-    if not rows_f.exists():
-        return None, f"no rows at {rows_f}; run the pipeline in RESUME_AMENDMENT7.md first"
-    return [json.loads(l) for l in rows_f.read_text().splitlines() if l.strip()], None
+def jsonl(path):
+    return [json.loads(l) for l in Path(path).read_text().splitlines() if l.strip()]
+
+
+def require(path, label):
+    path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(f"{label} missing: {path}")
+    return path
+
+
+def load_candidate_gold(root, bundle):
+    """Join four candidate-indexed gold runs; empty patches are failures by rule."""
+    gold = {}
+    for key, row in bundle.items():
+        if not (row.get("final_solution") or "").strip():
+            gold[key] = 0
+    for candidate in range(4):
+        p = require(Path(root) / f"a7_agent_axis_cand{candidate}" / "gold_extra.jsonl",
+                    f"candidate-{candidate} gold")
+        for d in jsonl(p):
+            key = (d["instance_id"], int(d["candidate"]))
+            if key[1] != candidate:
+                raise ValueError(f"{p}: candidate mapping says {key[1]}, expected {candidate}")
+            if key in gold and gold[key] != int(d["g"]):
+                raise ValueError(f"conflicting gold for {key}")
+            gold[key] = int(d["g"])
+    missing = sorted(set(bundle) - set(gold))
+    if missing:
+        raise ValueError(f"gold incomplete: {len(missing)} candidate slots missing; first={missing[:5]}")
+    return gold
+
+
+def load_panel(scores_dir):
+    out = {}
+    for model in PANEL:
+        p = require(Path(scores_dir) / f"scores_gpu_{model}.json", f"panel score {model}")
+        out[model] = json.loads(p.read_text())["scores"]
+    return out
+
+
+def selected_endpoint(bundle, selected, detection, gold, panel, label):
+    """Endpoint on the selected, agent-declared-complete population."""
+    pop = []
+    for instance_id, candidate in selected.items():
+        key = (instance_id, candidate); row = bundle[key]; skey = f"{instance_id}#{candidate}"
+        vals = [panel[m].get(skey, {}).get("score", np.nan) for m in PANEL]
+        if (row.get("visible_pass") and (row.get("final_solution") or "").strip()
+                and key in gold and key in detection and np.isfinite(detection[key])
+                and all(np.isfinite(vals))):
+            pop.append(key)
+    if not pop:
+        raise ValueError(f"{label}: no endpoint rows after registered filters")
+    train = [key for key in pop if bundle[key]["split"] == "train"]
+    fits = fit_rank_norms({
+        m: [panel[m][f"{i}#{c}"]["score"] for i, c in train] for m in PANEL
+    })
+    u = np.array([
+        apply_panel_u({m: panel[m][f"{i}#{c}"]["score"] for m in PANEL}, fits)[1]
+        for i, c in pop
+    ])
+    y = np.array([1 - gold[key] for key in pop])
+    c = np.array([detection[key] for key in pop], float)
+    grp = np.array([bundle[key]["repo"] for key in pop])
+    out = endpoint(y, c, u, grp)
+    out.update({
+        "label": label,
+        "repositories": int(len(set(grp))),
+        "population_rule": "selected + visible_pass + non-empty + gold + all panel scores",
+    })
+    return out
+
+
+def old_agent_capability():
+    """A7-P1 comparator; partial old candidate gold honestly remains a band."""
+    rows = {r["instance_id"]: r for r in jsonl(ROOT / "data/replication_multilingual/replication_scored.jsonl")}
+    bundle = {(r["instance_id"], int(r["candidate"])): r
+              for r in jsonl(ROOT / "data/replication_multilingual/rescoring_bundle.jsonl")}
+    gold = {}
+    for i, row in rows.items():
+        if not row["excluded"]:
+            gold[(i, int(row["selected_candidate_index"]))] = int(row["g"])
+    for p in (ROOT / "data/selector_axis/gold_extra_multilingual.jsonl",):
+        if p.exists():
+            for d in jsonl(p):
+                if d.get("g") in (0, 1):
+                    gold[(d["instance_id"], int(d["candidate"]))] = int(d["g"])
+    picks = {d["instance_id"]: int(d["candidate"])
+             for d in jsonl(ROOT / "data/random_arm/multilingual_picks.jsonl")}
+    rr = json.loads((ROOT / "data/gold_modal/random_arm_multilingual/report.json").read_text())
+    for i in rr["resolved_ids"]:
+        if i in picks:
+            gold[(i, picks[i])] = 1
+    for i in rr["unresolved_ids"]:
+        if i in picks:
+            gold[(i, picks[i])] = 0
+    return capability(bundle, gold, "gpt-5-mini comparator")
+
+
+def compare_to_old(arm_4b, arm_judge):
+    """Registered descriptive differences on the same 114-instance frame."""
+    robust = json.loads((ROOT / "data/verify_and_robustify.json").read_text())
+    old_4b = next(r for r in robust["endpoint_robustness"] if r["label"] == "multilingual")
+    a5 = json.loads((ROOT / "data/selector_axis/readout_amendment5_corrected.json").read_text())
+    old_judge = a5["corrected"]["multilingual"]
+
+    old = {
+        "S_4b": {
+            "failure_rate": old_4b["positives"] / old_4b["n"],
+            "raw_AUROC_detect": old_4b["raw_AUROC_negc"],
+            "raw_AUROC_u": old_4b["raw_AUROC_u"],
+            "logistic_LORO_delta": old_4b["logistic_LORO"]["delta"],
+            "logistic_5fold_delta": old_4b["logistic_5fold_clustered"]["delta"],
+            "fixed_unit_weights_PRIMARY_delta": old_4b["fixed_unit_weights_no_fitting"]["delta"],
+        },
+        "S_judge": {
+            "failure_rate": old_judge["failures"] / old_judge["n"],
+            "raw_AUROC_detect": old_judge["committed_AUROC_detect"],
+            "raw_AUROC_u": old_judge["AUROC_u"],
+            "logistic_LORO_delta": old_judge["estimators"]["logistic_LORO"]["delta"],
+            "logistic_5fold_delta": old_judge["estimators"]["logistic_5fold"]["delta"],
+            "fixed_unit_weights_PRIMARY_delta": old_judge["estimators"]["fixed_unit_weights"]["delta"],
+        },
+    }
+    new = {}
+    for name, arm in (("S_4b", arm_4b), ("S_judge", arm_judge)):
+        new[name] = {
+            "failure_rate": arm["failures"] / arm["n"],
+            "raw_AUROC_detect": arm["raw_AUROC_detect"],
+            "raw_AUROC_u": arm["raw_AUROC_u"],
+            "logistic_LORO_delta": arm["estimators"]["logistic_LORO"]["delta"],
+            "logistic_5fold_delta": arm["estimators"]["logistic_5fold"]["delta"],
+            "fixed_unit_weights_PRIMARY_delta": arm["estimators"]["fixed_unit_weights_PRIMARY"]["delta"],
+        }
+    out = {
+        "note": "Descriptive new-minus-gpt-5-mini differences on the same fixed 114-instance frame. "
+                "Registered visible-pass filters create different analysed subsets; no comparison threshold was registered.",
+        "arms": {},
+    }
+    for name in ("S_4b", "S_judge"):
+        out["arms"][name] = {
+            key: {
+                "gpt6_luna": round(float(new[name][key]), 3),
+                "gpt5_mini": round(float(old[name][key]), 3),
+                "difference": round(float(new[name][key] - old[name][key]), 3),
+            }
+            for key in new[name]
+        }
+    return out
+
+
+def pick_4b(choices):
+    """Match run_replication_modal.select: first candidate wins a score tie."""
+    return max(choices, key=lambda pair: pair[0])[1]
+
+
+def production_readout(args):
+    expected = [l.strip() for l in require(args.instances, "registered instance file").read_text().splitlines()
+                if l.strip() and not l.startswith("#")]
+    if len(expected) != 114 or len(set(expected)) != 114:
+        raise ValueError(f"registered instance file must contain 114 unique IDs; got {len(expected)}/{len(set(expected))}")
+    rows = jsonl(require(args.bundle, "agent-axis bundle"))
+    bundle = {(r["instance_id"], int(r["candidate"])): r for r in rows}
+    expected_keys = {(i, c) for i in expected for c in range(4)}
+    if set(bundle) != expected_keys:
+        raise ValueError(f"bundle is not the registered 114 x 4 set: "
+                         f"{len(expected_keys - set(bundle))} missing, {len(set(bundle) - expected_keys)} extra")
+    gold = load_candidate_gold(args.gold_root, bundle)
+    panel = load_panel(args.scores_dir)
+    missing_panel = [
+        (model, key) for model in PANEL for key in expected_keys
+        if not np.isfinite(panel[model].get(f"{key[0]}#{key[1]}", {}).get("score", np.nan))
+    ]
+    if missing_panel:
+        raise ValueError(f"panel scoring incomplete: {len(missing_panel)} model/candidate scores missing; "
+                         f"first={missing_panel[:5]}")
+
+    selector_model = "skywork_skywork_reward_v2_qwen3_4b"
+    selector_scores = json.loads(require(
+        Path(args.scores_dir) / f"scores_gpu_{selector_model}.json", "4B selector scores"
+    ).read_text())["scores"]
+    missing_selector = [
+        key for key in expected_keys
+        if not np.isfinite(selector_scores.get(f"{key[0]}#{key[1]}", {}).get("score", np.nan))
+    ]
+    if missing_selector:
+        raise ValueError(f"4B selector scoring incomplete: {len(missing_selector)} candidate scores missing; "
+                         f"first={missing_selector[:5]}")
+    selected_4b, detect_4b = {}, {}
+    for i in expected:
+        choices = []
+        for c in range(4):
+            score = selector_scores.get(f"{i}#{c}", {}).get("score", float("-inf"))
+            detect_4b[(i, c)] = -float(score)
+            choices.append((float(score) if bundle[(i, c)].get("text") else float("-inf"), c))
+        selected_4b[i] = pick_4b(choices)
+
+    judge = {}
+    for d in jsonl(require(args.judge_cache, "gpt-5 all-candidate cache")):
+        if d.get("judge") == "gpt-5" and d.get("cond") == "J1" and d.get("p_resolved") is not None:
+            judge[(d["instance_id"], int(d["candidate"]))] = float(d["p_resolved"])
+    missing_judge = sorted(expected_keys - set(judge))
+    if missing_judge:
+        raise ValueError(f"gpt-5 cache incomplete: {len(missing_judge)} candidate scores missing; first={missing_judge[:5]}")
+    selected_judge = {
+        i: max(range(4), key=lambda c: judge[(i, c)]) for i in expected
+    }
+    detect_judge = {key: 100.0 - value for key, value in judge.items()}
+
+    # A7a selector gate, first half: only candidates actually graded by the
+    # harness. Empty patches are defined failures for capability but are not
+    # "graded candidates" in section 2.
+    pool_keys = [key for key in expected_keys if (bundle[key].get("final_solution") or "").strip()]
+    pool_y = np.array([1 - gold[key] for key in pool_keys])
+    pool_s = np.array([detect_judge[key] for key in pool_keys])
+    pool_auroc = round(auroc_fast(pool_y, pool_s), 3)
+
+    from prepare_amendment7 import random_candidate
+    picks = {d["instance_id"]: int(d["candidate"])
+             for d in jsonl(require(args.random_picks, "frozen random picks"))}
+    expected_picks = {i: random_candidate(i) for i in expected}
+    if picks != expected_picks:
+        raise ValueError("random_picks.jsonl does not match the frozen a7-random-v1 rule")
+    committed_fail = np.array([1 - gold[(i, selected_judge[i])] for i in expected], float)
+    random_fail = np.array([1 - gold[(i, picks[i])] for i in expected], float)
+    gate = {
+        "pool_n_graded": len(pool_keys),
+        "pool_failures": int(pool_y.sum()),
+        "pool_AUROC_detect": pool_auroc,
+        "pool_AUROC_gt_0p65": bool(pool_auroc > SELECTOR_GATE),
+        "paired_instances": len(expected),
+        "committed_failure_rate_unconditional": round(float(committed_fail.mean()), 3),
+        "random_failure_rate_unconditional": round(float(random_fail.mean()), 3),
+        "committed_below_random": bool(committed_fail.mean() < random_fail.mean()),
+    }
+    gate["passes"] = gate["pool_AUROC_gt_0p65"] and gate["committed_below_random"]
+
+    new_cap = capability(bundle, gold, "gpt-6-luna")
+    old_cap = old_agent_capability()
+    new_lo, new_hi = new_cap["unconditional_failure_rate_band"]
+    old_lo, old_hi = old_cap["unconditional_failure_rate_band"]
+    if new_hi <= old_lo - CAPABILITY_GAP:
+        cap_branch = "PASS"
+    elif new_lo >= old_hi - CAPABILITY_GAP:
+        cap_branch = "FAIL"
+    else:
+        cap_branch = "INDETERMINATE"
+    cap_cmp = {
+        "new_agent": new_cap,
+        "old_agent": old_cap,
+        "required_gap": CAPABILITY_GAP,
+        "branch": cap_branch,
+        "rule": "PASS iff new upper <= old lower - 0.10; FAIL iff new lower >= old upper - 0.10; otherwise indeterminate",
+    }
+
+    arm_4b = selected_endpoint(bundle, selected_4b, detect_4b, gold, panel, "S_4b")
+    arm_judge = selected_endpoint(bundle, selected_judge, detect_judge, gold, panel, "S_judge_gpt5")
+    if cap_branch != "PASS":
+        final = {"branch": "DESCRIPTIVE ONLY", "reason": f"A7-P1 capability branch is {cap_branch}"}
+    elif not gate["passes"]:
+        final = {"branch": "DESCRIPTIVE ONLY", "reason": "A7a strong-selector gate failed"}
+    else:
+        final = verdict(arm_judge)
+
+    report = {
+        "analysis": "Amendment 7/7a agent-axis readout",
+        "registered_instances": len(expected),
+        "candidate_slots": len(expected_keys),
+        "capability_A7_P1": cap_cmp,
+        "selector_gate_A7a_2": gate,
+        "arms": {"S_4b": arm_4b, "S_judge": arm_judge},
+        "comparison_to_gpt5_mini": compare_to_old(arm_4b, arm_judge),
+        "confirmatory_verdict": final,
+    }
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text(json.dumps(report, indent=1) + "\n")
+    print(json.dumps(report, indent=1))
+    print(f"\nwrote {args.out}")
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true",
                     help="exercise every path against the gpt-5-mini replication data")
+    ap.add_argument("--bundle", type=Path, default=ROOT / "data/agent_axis/rescoring_bundle.jsonl")
+    ap.add_argument("--instances", type=Path, default=ROOT / "configs/agent_axis_instances_multilingual.txt")
+    ap.add_argument("--scores-dir", type=Path, default=ROOT / "data/agent_axis/modal/prefix4k")
+    ap.add_argument("--judge-cache", type=Path, default=ROOT / "data/agent_axis/judge_gpt5.jsonl")
+    ap.add_argument("--gold-root", type=Path, default=ROOT / "data/gold_modal")
+    ap.add_argument("--random-picks", type=Path, default=ROOT / "data/agent_axis/gold_inputs/random_picks.jsonl")
+    ap.add_argument("--out", type=Path, default=ROOT / "data/agent_axis/readout_amendment7.json")
     a = ap.parse_args()
 
     if a.dry_run:
@@ -219,14 +505,14 @@ def main():
         if bad:
             print("\nDRY RUN FAILED: the machinery does not reproduce published numbers."); sys.exit(1)
         print("\nDry run complete: capability band, gate, three estimators, floor and margin exercised,")
-        print("and every estimator reproduces the published replication value. Ready for October.")
+        print("and every estimator reproduces the published replication value.")
         return
 
-    out = ROOT / "data/agent_axis"
-    rows, err = load(out, None, None, None, None, None, "multilingual")
-    if err:
-        print(f"Amendment 7 has no results yet.\n  {err}")
-        print("  Run scripts/preflight_amendment7.py, then the stages in RESUME_AMENDMENT7.md.")
+    try:
+        production_readout(a)
+    except (FileNotFoundError, ValueError, KeyError) as exc:
+        print(f"Amendment 7 readout cannot run yet:\n  {exc}", file=sys.stderr)
+        print("  Complete every stage in RESUME_AMENDMENT7.md; no partial result was written.", file=sys.stderr)
         sys.exit(2)
 
 

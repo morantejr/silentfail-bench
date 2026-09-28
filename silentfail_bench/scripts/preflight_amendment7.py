@@ -50,8 +50,10 @@ if pj.exists():
     n = len(json.loads(pj.read_text()))
     check(n == 100, "preds.json lists 100 instances, so the agent skips them", f"{n} entries")
     ids = set(json.loads(pj.read_text()).keys())
-    inst = (ROOT / "configs/replication_instances_multilingual.txt").read_text().split()
-    check(ids <= set(inst), "every done instance is in the registered instance list")
+    inst = (ROOT / "configs/agent_axis_instances_multilingual.txt").read_text().split()
+    check(len(inst) == 114 and len(set(inst)) == 114,
+          "agent-axis instance file is exactly the registered 114 unique instances")
+    check(ids <= set(inst), "every done instance is in the pinned agent-axis instance list")
     print(f"        remaining in cand0: {len(set(inst) - ids)} of {len(inst)}; then cand1-3 run fresh")
 else:
     check(False, "preds.json present")
@@ -59,9 +61,15 @@ else:
 print("\nnothing still billing")
 modal = ROOT / ".venv-swebench/bin/modal"
 if modal.exists():
-    r = subprocess.run([str(modal), "app", "list"], capture_output=True, text=True, timeout=120)
-    rows = [l for l in r.stdout.splitlines() if l.strip().startswith("│")]
-    check(not rows, "no Modal apps running", f"{len(rows)} row(s)")
+    r = subprocess.run([str(modal), "app", "list", "--json"], capture_output=True, text=True, timeout=120)
+    if r.returncode != 0:
+        check(False, "Modal app inventory succeeded", r.stderr.strip()[:160])
+    else:
+        apps = json.loads(r.stdout)
+        active = [a for a in apps if a.get("state") not in ("stopped", "disabled")
+                  and (int(a.get("tasks") or 0) > 0 or a.get("state") != "deployed")]
+        check(not active, "no Modal apps with active tasks",
+              f"{len(active)} active; {len(apps)} total including recently stopped/deployed")
 else:
     check(False, "modal CLI present in the venv")
 
@@ -75,6 +83,15 @@ else:
 cfg = ROOT / "configs/mini_swe_gpt6luna.yaml"
 check(cfg.exists() and "litellm_response" in cfg.read_text(),
       "agent config uses litellm_response (litellm forces tool calls gpt-6-luna rejects)")
+prep = ROOT / "scripts/prepare_amendment7.py"
+readout = ROOT / "scripts/readout_amendment7.py"
+readout_test = ROOT / "scripts/test_readout_amendment7.py"
+check(prep.exists() and "a7-random-v1" in prep.read_text(),
+      "local gold-input/random-arm preparation is pinned")
+check(readout.exists() and "readout_amendment7.json" in readout.read_text(),
+      "production readout writes a committed-schema JSON result")
+check(readout_test.exists() and "partial-gold bite" in readout_test.read_text(),
+      "no-network production-path fixture is present")
 
 print()
 if fail:

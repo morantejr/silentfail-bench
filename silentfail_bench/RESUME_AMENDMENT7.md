@@ -34,23 +34,40 @@ $V scripts/run_replication_modal.py --stage generate \
     --mini-config configs/mini_swe_gpt6luna.yaml \
     --k 4 --workers 8 --step-limit 40 --cost-cap 12
 
-# 2. bundle — candidates -> rescoring_bundle.jsonl
+# 2. bundle — must be exactly 114 x 4 candidate slots
 $V scripts/run_replication_modal.py --stage bundle --instances-file $I --out $O
 
 # 3. panel scoring on Modal, 4k prefix (modal/rescore.py --mode prefix)
 #    needs only the four registered auditors plus the 4B selector
+.venv-swebench/bin/modal volume put silentfail-bundles \
+    $O/rescoring_bundle.jsonl /agent_axis/rescoring_bundle.jsonl
+.venv-swebench/bin/python -m modal run modal/rescore.py \
+    --run agent_axis --out prefix4k --max-tokens 4000 --mode prefix \
+    --only "ray2333_grm_gemma2_2b_rewardmodel_ft ray2333_grm_llama3_2_3b_rewardmodel_ft skywork_skywork_reward_v2_llama_3_2_1b skywork_skywork_reward_v2_qwen3_1_7b skywork_skywork_reward_v2_qwen3_4b"
+.venv-swebench/bin/modal volume get silentfail-out /agent_axis $O/modal
 
-# 4. select — argmax of the selection critic's prefix-4k scores -> predictions.jsonl
-$V scripts/run_replication_modal.py --stage select --instances-file $I --out $O \
-    --scores-dir $O/modal/prefix4k
+# 4. gpt-5 scores EVERY candidate (mandatory strong-selector arm; J1 only)
+$V scripts/llm_judges.py run --bundle $O/rescoring_bundle.jsonl \
+    --cache $O/judge_gpt5.jsonl --all-candidates \
+    --judges gpt-5 --conds J1 --workers 8
 
-# 5. gold
-$V modal/gold_modal.py --dataset swe-bench/SWE-Bench_Multilingual \
-    --preds $O/predictions.jsonl --run-id a7_agent_axis --oracle 3
+# 5. prepare four candidate-indexed gold runs and the frozen random arm.
+#    This is local-only and refuses a bundle other than the registered 114 x 4.
+$V scripts/prepare_amendment7.py
 
-# 6. rows
-$V scripts/run_replication_modal.py --stage rows --instances-file $I --out $O \
-    --scores-dir $O/modal/prefix4k --gold-report data/gold_modal/a7_agent_axis/report.json
+# 6. gold every non-empty attempt. Four run IDs are required because the
+#    harness keys reports by instance_id and cannot distinguish duplicate IDs.
+#    Empty patches are omitted from Modal and count as failures in the readout.
+for C in 0 1 2 3; do
+  $V modal/gold_modal.py --dataset swe-bench/SWE-Bench_Multilingual \
+      --preds $O/gold_inputs/cand${C}_predictions.jsonl \
+      --candidates $O/gold_inputs/cand${C}_mapping.jsonl \
+      --run-id a7_agent_axis_cand${C} $([ "$C" = 0 ] && echo --oracle 3)
+done
+
+# 7. analysis. Refuses partial candidate gold, incomplete judge/panel scores,
+#    a changed random arm, or a bundle other than the registered 456 slots.
+$V scripts/readout_amendment7.py
 ```
 
 ## The readout
@@ -58,19 +75,25 @@ $V scripts/run_replication_modal.py --stage rows --instances-file $I --out $O \
 `scripts/readout_amendment7.py` implements Amendment 7a's rules, not Amendment
 7's. It was written and **dry-run in September**, before the data it is for
 exists, because a script first run on the day it matters is a script that fails
-that day. The dry run exercises every path against the gpt-5-mini replication
-data and asserts that all four estimators reproduce the values the paper already
-publishes:
+that day. The dry run regression-tests the three endpoint estimators against
+the gpt-5-mini replication values the paper already publishes. The production
+candidate/gold/judge joins are separate (those complete sources do not exist
+yet); they were exercised with a local 114×4 fixture and fail closed on partial
+inputs:
 
 ```bash
 .venv-swebench/bin/python scripts/readout_amendment7.py --dry-run
+.venv-swebench/bin/python scripts/test_readout_amendment7.py
 ```
 
-It exits non-zero if the machinery stops reproducing them. Run it before October
-in case anything upstream has drifted. The rules it enforces:
+The first exits non-zero if the estimators stop reproducing published values.
+The second builds deterministic synthetic candidate gold in a temporary
+directory, exercises the full production path, then deletes one gold record
+and proves partial input is rejected without writing a result. Run both before
+October in case anything upstream has drifted. The rules enforced:
 
 - `gpt-5` selection is **mandatory**, not conditional on the 4B arm.
-- Gate: the selector's pool `AUROC(-c)` on the **new** pool must exceed 0.65,
+- Gate: the selector's pool `AUROC(-c)` on the **new** graded pool must exceed 0.65,
   and its committed arm must fail less often than the random arm.
 - Failure rate is **unconditional**: empty patches and step-limit exits count as
   failures, in both arms.
@@ -98,12 +121,15 @@ Two things the dry run already established, worth knowing before October:
 | Item | Estimate |
 |---|---|
 | Modal sandboxes, 356 remaining trajectories at $0.0236 | ~$8.40 |
-| Modal gold | ~$3 |
+| Modal gold, 4 candidate-indexed runs (up to 456 attempts) | ~$12 |
 | OpenAI generation and judge | ~$11 |
 
 Modal's free credit resets to $30 on 1 October, so the Modal side is covered.
-The OpenAI side comes from the ~$46 remaining. Amendment 7 declared caps of $15
-OpenAI and $12 Modal; the estimates above sit inside both.
+The OpenAI side comes from the ~$46 remaining. Amendment 7b raises the Modal
+cap from $12 to $22 before gold exists: the earlier $3 gold estimate covered
+only one selected arm and could not establish A7-P1's per-attempt capability
+criterion. The revised estimate is ~$8.40 generation + ~$12 gold = ~$20.40,
+inside the $30 free credit. Do not incur paid overage.
 
 ## Things that have already gone wrong here
 
