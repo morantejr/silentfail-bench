@@ -17,6 +17,7 @@ data/*/*
 !data/*/candidates.jsonl
 !data/*/gold_errors.json
 !data/*.json
-!data/*/CHECKPOINT_HASHES.json   # pre-outcome, tamper-evident records must be committed
+# pre-outcome, tamper-evident records must be committed:
+!data/*/CHECKPOINT_HASHES.json
 !data/*/rescoring_bundle.jsonl
 silentfail_l4_package*
