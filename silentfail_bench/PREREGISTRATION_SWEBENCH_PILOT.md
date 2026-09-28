@@ -1158,3 +1158,78 @@ automatic flag gives. The paper reports both and says which is which.
 **Reading.** Neither analysis changes the registered endpoint or any registered
 verdict. E7 broadens what the null is about; the adjudication tightens the
 label-noise bound by a factor of four.
+
+# Amendment 10 — the agent axis moves to open-weight models — 2026-09-28, declared before any trajectory exists for either model
+
+**Origin.** The mentor who raised the capability objection was asked which models
+to use and answered: capable open-weight models, naming **GLM-5.3** and
+**DeepSeek V4.1 Flash**. This amendment adopts that, and supersedes Amendment 7's
+choice of `gpt-6-luna` as the agent.
+
+**Why this is better than a capability upgrade alone.** An API model can be
+silently updated or retired, so a result obtained with one is not reproducible in
+the strict sense: a reader cannot re-run it against the same weights. Open weights
+are frozen and downloadable. For a paper whose central contribution is a
+measurement protocol, and which documents seven instrument failures to make the
+instrument auditable, an agent anyone can re-instantiate is worth more than a
+marginally cheaper API. We state this as a reason in its own right and not as a
+rationalisation of the mentor's preference.
+
+**Capability, from published figures, not measured by us.** DeepSeek's V4 Flash
+model card reports SWE-bench Verified at 73.7 non-thinking, 78.6 at high effort;
+V4.1 Flash reports 74.2 on DeepSWE v1.1. GLM-5.3 reports open-source
+state-of-the-art on Terminal-Bench 3.0 with large gains on SWE-style benchmarks.
+Our own agent, `gpt-5-mini`, resolves about 56% of Verified. Either model is a
+genuine capability step, which is the axis the objection named. **These are
+vendor-reported numbers and we do not treat them as verified; the pilot below is
+what we will act on.**
+
+## A capability pilot is required first, and it is not optional
+
+Amendment 6 exists because an untested agent in this scaffold produced 0 of 41
+trajectories and an error that looked like a model limitation but was our own
+configuration forcing function tools the model refused. That cost a day and is
+recorded in DEFECTS.md. A new agent gets the same gate before any of the 456-
+trajectory run is spent.
+
+**Configuration, chosen with that failure in mind.**
+`configs/mini_swe_deepseek.yaml` and `configs/mini_swe_glm.yaml` use
+`model_class: openrouter_textbased`, which parses the action out of the model's
+own text with a regex rather than sending function tools. Verified to resolve to
+`OpenRouterTextbasedModel`. The API key is set by the operator through
+`mini-extra config set OPENROUTER_API_KEY`, which writes outside this repository;
+no key is stored here.
+
+**Predictions, on the same 41 Verified instances as Amendment 6, k=1, 40-step
+limit, harness gold.** Identical bars to Amendment 6 so the two are comparable.
+
+- **P10-1 (it functions):** at least 80% of instances end with a submitted,
+  non-empty patch.
+- **P10-2 (it is more capable):** per-attempt failure rate at least 10 points
+  below `gpt-5-mini`'s on the same instances, computed **unconditionally** with
+  empty patches and step-limit exits counted as failures, per Amendment 7a §3.
+- **P10-3 (it is affordable):** measured cost per trajectory at or below $0.040.
+
+**Readings.** Both models pass → prefer the cheaper per trajectory, and record
+the other as an available replication. One passes → use it. Neither passes →
+report the attempt, keep `gpt-6-luna` as the Amendment 7 agent, and say plainly
+that the open-weight agents could not be driven by this scaffold, which is a
+finding about the scaffold and not about the models.
+
+**Cost.** List prices: DeepSeek V4.1 Flash on OpenRouter is $0.0295 per million
+input and $0.60 per million output, against `gpt-6-luna` at $0.10 and $0.50, so
+input is roughly 3.4x cheaper and output roughly 1.2x dearer. `gpt-6-luna`
+measured $0.005 per trajectory. We do not estimate from that ratio because
+reasoning models emit more output tokens; the pilot measures it. Cap: **$5 per
+model for the pilot**, which stops the run if either is unexpectedly expensive.
+GLM-5.3 pricing is not asserted here because we have not verified it.
+
+**What this changes downstream.** Amendment 7's agent, its
+`--mini-config`, and its capability comparator all change to the selected model.
+Everything else in Amendments 7 and 7a stands: mandatory `gpt-5` selection arm,
+the 0.65 pool gate, unconditional failure rates, the unfitted primary estimator,
+the floor of 20 failures, and the +0.05 margin for any null claim. The 100
+`gpt-6-luna` trajectories already generated are **not** part of this arm; they
+remain hashed and unanalysed, and if the agent changes they become a discarded
+capability pilot rather than a partial run, which is stated now so that
+discarding them later is not a silent decision.

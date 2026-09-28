@@ -1,0 +1,30 @@
+# mini-swe-agent overlay: GLM-5.3 (open weights, Z.ai), agent environment in a Modal sandbox.
+# Amendment 10 capability pilot. Mentor-recommended open-weight agent.
+#
+# model_class is openrouter_textbased, NOT openrouter. The plain class sends
+# function tools; gpt-6-luna rejected them and every trajectory died after three
+# API calls with a misleading RepeatedFormatError (DEFECTS.md, instrument failure
+# on the Amendment 6 pilot). The textbased class parses the action out of the
+# model's own text with a regex, so a model that will not do tool calls still
+# drives the scaffold.
+#
+# The API key is NOT stored here and must never be. Set it yourself:
+#   mini-extra config set OPENROUTER_API_KEY <your key>
+# which writes to mini-swe-agent's own .env outside this repository.
+agent:
+  step_limit: 40
+  cost_limit: 0.25
+  mode: yolo
+environment:
+  environment_class: swerex_modal
+  cwd: /testbed
+  timeout: 120
+  startup_timeout: 600
+  runtime_timeout: 3600
+  deployment_timeout: 3600
+model:
+  model_class: openrouter_textbased
+  model_name: openrouter/zai-org/glm-5.3
+  model_kwargs:
+    drop_params: true
+    temperature: 0.0
