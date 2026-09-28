@@ -1,0 +1,269 @@
+{
+  "analysis": "Amendment 5 committed-set readout with the population defect fixed; supersedes the endpoint block in prereg_readout_amendment5.json.",
+  "defect": "the published readout filtered the population by the 4B-committed candidate's visible_pass, not the gpt-5-committed candidate's.",
+  "note": "c is a detection score (100 - p_resolved); the baseline is c itself, not -c.",
+  "as_published": {
+    "verified": {
+      "benchmark": "verified",
+      "population_rule": "row-level visible_pass (as published)",
+      "n": 32,
+      "failures": 9,
+      "repositories": 9,
+      "pool_AUROC_detect": 0.712,
+      "committed_AUROC_detect": 0.792,
+      "AUROC_u": 0.536,
+      "AUROC_u_CI": [
+        0.143,
+        0.725
+      ],
+      "S_P2_gap": -0.08,
+      "S_P2_passes": false,
+      "S_P3_cond1_u_above_0.60": false,
+      "estimators": {
+        "logistic_LORO": {
+          "baseline_AUROC": 0.669,
+          "delta": -0.041,
+          "CI95": [
+            -0.25,
+            0.0
+          ],
+          "baseline_degenerate": true
+        },
+        "logistic_5fold": {
+          "baseline_AUROC": 0.7,
+          "delta": -0.029,
+          "CI95": [
+            -0.145,
+            0.1
+          ],
+          "baseline_degenerate": false
+        },
+        "fixed_unit_weights": {
+          "baseline_AUROC": 0.775,
+          "delta": -0.099,
+          "CI95": [
+            -0.617,
+            0.042
+          ],
+          "baseline_degenerate": false
+        }
+      },
+      "S_P3_cond2_delta_above_0.05_CI_excludes_0": false,
+      "S_P3_passes": false,
+      "upper_bound_vs_margin": {
+        "upper": 0.042,
+        "margin": 0.05,
+        "null_established": true
+      },
+      "S_P1b": {
+        "pairs": 31,
+        "committed_rate": 0.258,
+        "random_rate": 0.323,
+        "difference": -0.065,
+        "CI95": [
+          -0.2,
+          0.0
+        ],
+        "reverse_discordant": 0,
+        "passes": true
+      }
+    },
+    "multilingual": {
+      "benchmark": "multilingual",
+      "population_rule": "row-level visible_pass (as published)",
+      "n": 85,
+      "failures": 32,
+      "repositories": 39,
+      "pool_AUROC_detect": 0.706,
+      "committed_AUROC_detect": 0.591,
+      "AUROC_u": 0.614,
+      "AUROC_u_CI": [
+        0.491,
+        0.733
+      ],
+      "S_P2_gap": 0.115,
+      "S_P2_passes": true,
+      "S_P3_cond1_u_above_0.60": true,
+      "estimators": {
+        "logistic_LORO": {
+          "baseline_AUROC": 0.15,
+          "delta": 0.375,
+          "CI95": [
+            0.214,
+            0.522
+          ],
+          "baseline_degenerate": true
+        },
+        "logistic_5fold": {
+          "baseline_AUROC": 0.377,
+          "delta": 0.195,
+          "CI95": [
+            0.035,
+            0.354
+          ],
+          "baseline_degenerate": true
+        },
+        "fixed_unit_weights": {
+          "baseline_AUROC": 0.588,
+          "delta": 0.029,
+          "CI95": [
+            -0.073,
+            0.143
+          ],
+          "baseline_degenerate": false
+        }
+      },
+      "S_P3_cond2_delta_above_0.05_CI_excludes_0": false,
+      "S_P3_passes": false,
+      "upper_bound_vs_margin": {
+        "upper": 0.143,
+        "margin": 0.05,
+        "null_established": false
+      },
+      "S_P1b": {
+        "pairs": 79,
+        "committed_rate": 0.354,
+        "random_rate": 0.456,
+        "difference": -0.101,
+        "CI95": [
+          -0.165,
+          -0.042
+        ],
+        "reverse_discordant": 0,
+        "passes": true
+      }
+    }
+  },
+  "corrected": {
+    "verified": {
+      "benchmark": "verified",
+      "population_rule": "per-candidate visible_pass (corrected)",
+      "n": 32,
+      "failures": 9,
+      "repositories": 9,
+      "pool_AUROC_detect": 0.712,
+      "committed_AUROC_detect": 0.792,
+      "AUROC_u": 0.536,
+      "AUROC_u_CI": [
+        0.143,
+        0.725
+      ],
+      "S_P2_gap": -0.08,
+      "S_P2_passes": false,
+      "S_P3_cond1_u_above_0.60": false,
+      "estimators": {
+        "logistic_LORO": {
+          "baseline_AUROC": 0.669,
+          "delta": -0.041,
+          "CI95": [
+            -0.25,
+            0.0
+          ],
+          "baseline_degenerate": true
+        },
+        "logistic_5fold": {
+          "baseline_AUROC": 0.7,
+          "delta": -0.029,
+          "CI95": [
+            -0.145,
+            0.1
+          ],
+          "baseline_degenerate": false
+        },
+        "fixed_unit_weights": {
+          "baseline_AUROC": 0.775,
+          "delta": -0.099,
+          "CI95": [
+            -0.617,
+            0.042
+          ],
+          "baseline_degenerate": false
+        }
+      },
+      "S_P3_cond2_delta_above_0.05_CI_excludes_0": false,
+      "S_P3_passes": false,
+      "upper_bound_vs_margin": {
+        "upper": 0.042,
+        "margin": 0.05,
+        "null_established": true
+      },
+      "S_P1b": {
+        "pairs": 31,
+        "committed_rate": 0.258,
+        "random_rate": 0.323,
+        "difference": -0.065,
+        "CI95": [
+          -0.2,
+          0.0
+        ],
+        "reverse_discordant": 0,
+        "passes": true
+      }
+    },
+    "multilingual": {
+      "benchmark": "multilingual",
+      "population_rule": "per-candidate visible_pass (corrected)",
+      "n": 101,
+      "failures": 44,
+      "repositories": 40,
+      "pool_AUROC_detect": 0.706,
+      "committed_AUROC_detect": 0.671,
+      "AUROC_u": 0.591,
+      "AUROC_u_CI": [
+        0.473,
+        0.695
+      ],
+      "S_P2_gap": 0.035,
+      "S_P2_passes": false,
+      "S_P3_cond1_u_above_0.60": false,
+      "estimators": {
+        "logistic_LORO": {
+          "baseline_AUROC": 0.575,
+          "delta": 0.012,
+          "CI95": [
+            -0.084,
+            0.104
+          ],
+          "baseline_degenerate": false
+        },
+        "logistic_5fold": {
+          "baseline_AUROC": 0.576,
+          "delta": -0.024,
+          "CI95": [
+            -0.121,
+            0.058
+          ],
+          "baseline_degenerate": false
+        },
+        "fixed_unit_weights": {
+          "baseline_AUROC": 0.669,
+          "delta": -0.018,
+          "CI95": [
+            -0.11,
+            0.073
+          ],
+          "baseline_degenerate": false
+        }
+      },
+      "S_P3_cond2_delta_above_0.05_CI_excludes_0": false,
+      "S_P3_passes": false,
+      "upper_bound_vs_margin": {
+        "upper": 0.073,
+        "margin": 0.05,
+        "null_established": false
+      },
+      "S_P1b": {
+        "pairs": 95,
+        "committed_rate": 0.421,
+        "random_rate": 0.505,
+        "difference": -0.084,
+        "CI95": [
+          -0.138,
+          -0.033
+        ],
+        "reverse_discordant": 0,
+        "passes": true
+      }
+    }
+  }
+}

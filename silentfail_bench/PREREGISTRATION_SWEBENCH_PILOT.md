@@ -863,3 +863,94 @@ Population, benchmark, agent, panel, `u` definition, rank norms fit on training
 repositories only, repository-clustered inference, and the cost caps are all as
 in Amendment 7. This amendment changes decision rules and reporting, not the
 instrument or the estimand.
+
+# Amendment 5a — correction of a population defect in Amendment 5 — 2026-09-27
+
+**This is a bug fix, not a rule change.** No threshold, population definition,
+estimand or estimator declared in Amendment 5 is altered. What changes is that
+the code now implements the population Amendment 5 already specified. Three
+registered verdicts move as a result, and two of them move against earlier
+claims in the paper, so the correction is recorded here in full.
+
+## The defect
+
+Amendment 5 re-selects a new committed candidate with `gpt-5`, then filtered the
+analysis population with `rows[i]["visible_pass"]`. That flag belongs to the
+candidate the **4B critic** committed, which for three-quarters of instances is a
+different trajectory. The registered population is "committed,
+agent-declared-complete trajectories", so for this arm the flag must come from
+the **gpt-5-committed** candidate. The scoring bundle carries `visible_pass` and
+`excluded` per candidate, so the correct field was available throughout.
+
+- **Verified: no effect.** Both readings give the identical population (n=32, 9
+  failures) and identical statistics. Checked, not assumed.
+- **Multilingual: 16 instances were wrongly dropped.** Each has a
+  gpt-5-committed trajectory that is agent-declared-complete, has a non-empty
+  patch, and has executed gold. They were excluded only because the 4B critic's
+  pick had been empty. None were wrongly *included*; the published population is
+  a strict subset of the correct one.
+
+Amendment 2's re-selection rows were checked for the same defect and are
+**unaffected**: on Verified the two readings coincide exactly, and the published
+values reproduce (8B re-selection u 0.455, $-c$ 0.602, delta $-0.148$).
+
+## What the correction does to the registered verdicts
+
+| Quantity, Multilingual | As published | Corrected |
+|---|---|---|
+| n / failures / repositories | 85 / 32 / 39 | 101 / 44 / 40 |
+| pool `AUROC` (unchanged by the fix) | 0.706 | 0.706 |
+| committed-set `AUROC(-c)` | 0.591 | 0.671 |
+| `AUROC(u)` | 0.614 [0.49, 0.73] | 0.591 [0.47, 0.70] |
+| endpoint, LORO logistic | +0.375, baseline 0.150 | +0.012, baseline 0.575 |
+| endpoint, 5-fold clustered | +0.195, baseline 0.377 | −0.024 |
+| endpoint, unfitted (primary) | +0.029 [−0.07, +0.14] | −0.018 [−0.11, +0.07] |
+
+- **S-P1 still passes.** The pool AUROC is computed over graded candidates and is
+  untouched by the population filter (0.712 and 0.706). S-P1's second condition,
+  the paired committed-versus-random failure contrast, also still passes on the
+  corrected population: 0.258 against 0.323 on Verified (−0.065 [−0.20, 0.00],
+  31 pairs) and 0.421 against 0.505 on Multilingual (−0.084 [−0.138, −0.033], 95
+  pairs), with zero reverse-discordant pairs on either benchmark. Noted for
+  honesty: 7 of 31 and 36 of 95 pairs are structural zeros because both arms
+  chose the same candidate; restricted to pairs where the picks differ the
+  contrast is −0.083 [−0.27, 0.00] and −0.136 [−0.22, −0.06].
+- **S-P2 now FAILS on both benchmarks.** The registered bar is a pool-minus-
+  committed gap above 0.10. Verified was already reported as failing (−0.080,
+  and below the inference floor). On Multilingual the gap falls from 0.115 to
+  **0.035**. The claim that selection measurably consumes a strong selector's
+  own signal is therefore **not** supported by this amendment. It remains
+  supported for the primary 4B selector on Verified (0.81 to 0.61), which is a
+  different and weaker statement than the paper previously made.
+- **S-P3 fails on its first condition.** `AUROC(u)` is 0.591, below the
+  registered 0.60. The conjunction fails on its own terms, with no appeal to
+  estimator validity.
+
+## The consequence that matters most
+
+The published LORO estimate of +0.375 with a baseline of 0.150 — the result that
+looked like it would reverse the paper, and that Amendment 7a cited as the reason
+to demote the logistic estimator — **was an artifact of the population defect**.
+On the correct population that baseline is 0.575, close to the raw 0.671, and
+the three estimators agree in sign for the first time in this study: +0.012,
+−0.024, −0.018.
+
+We are not withdrawing the four-estimator standard. It is what exposed the
+anomaly that led to this bug being found, and the Verified cell still shows a
+depressed logistic baseline (0.669 against a raw 0.792). Amendment 7a's choice
+of the unfitted estimator as primary stands, on the general argument rather than
+on this instance.
+
+## Honest statement of what remains inconclusive
+
+On the corrected population the unfitted estimator gives −0.018 with an upper
+bound of **+0.073**. That is still above the +0.05 margin Amendment 7a declared,
+so the strong-selector cell is consistent with the null, tighter than before,
+and still short of establishing equivalence.
+
+**Script.** `scripts/readout_amendment5_corrected.py`, which also fixes a
+provenance gap: the `endpoint` block in
+`data/selector_axis/prereg_readout_amendment5.json`, including the "+0.029" the
+paper quoted and its "BASELINE DEGENERATE" annotations, was not produced by any
+committed script. It is now regenerated by one, for both populations, with the
+sign convention stated (`c` is a detection score; the baseline is `c`, not `-c`).

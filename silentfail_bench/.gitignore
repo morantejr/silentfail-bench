@@ -19,5 +19,7 @@ data/*/*
 !data/*.json
 # pre-outcome, tamper-evident records must be committed:
 !data/*/CHECKPOINT_HASHES.json
+# readouts the paper quotes must be committed:
+!data/*/readout_*.json
 !data/*/rescoring_bundle.jsonl
 silentfail_l4_package*

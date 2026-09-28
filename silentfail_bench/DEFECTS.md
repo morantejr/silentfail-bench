@@ -276,3 +276,62 @@ cand0 before starting cand1.
 or skip predicate that disagrees with where the data actually is, failing by
 doing nothing rather than by raising. The check that catches it is to assert a
 non-zero count from the consumer's own glob, not to trust that files exist.
+
+## The population defect that manufactured a paper-reversing result (found 2026-09-27, in a deliberate error hunt)
+
+**Symptom.** Amendment 5's registered leave-one-repository-out logistic reported
+`ΔAUROC = +0.375 [+0.214, +0.522]` on Multilingual — large, apparently
+significant, and enough to reverse the paper's conclusion — against a baseline
+`M_c` that had collapsed to **0.150** out of fold while the raw `AUROC(-c)` on
+the same rows was 0.591. We diagnosed it as a degenerate-baseline artifact of
+the logistic estimator, reported the unfitted estimator's `+0.029` instead, and
+cited the episode in Amendment 7a as the reason to demote logistic estimators.
+
+**Actual cause, and it was not the estimator.** The population was wrong.
+Amendment 5 re-selects a new committed candidate with `gpt-5`, then filtered the
+analysis population with `rows[i]["visible_pass"]` — the agent-declared-complete
+flag of the candidate the **4B critic** committed, which for three-quarters of
+instances is a different trajectory. The scoring bundle carries `visible_pass`
+and `excluded` per candidate, so the correct field was available. On Multilingual
+the wrong field silently dropped **16 instances** whose gpt-5-committed
+trajectory was complete, non-empty and graded, purely because the 4B critic's
+pick had been empty. On the corrected population the same estimator reports
+`+0.012` with a baseline of **0.575** against a raw 0.671. The anomaly was the
+defect; the estimator was fine.
+
+**Everything it moved.** Multilingual: 85 → 101 rows, 32 → 44 failures, 39 → 40
+repositories, committed `AUROC(-c)` 0.591 → 0.671, `AUROC(u)` 0.614 → 0.591,
+endpoint by three estimators +0.375/+0.195/+0.029 → +0.012/−0.024/−0.018. Two
+registered verdicts changed: **S-P2 moved from pass to fail** (gap 0.115 → 0.035
+against a bar of 0.10), and **S-P3 now fails on its first condition** because
+`AUROC(u)` fell below the registered 0.60, so the paper no longer has to overrule
+a criterion that was literally met.
+
+**Scope, checked rather than assumed.** Verified is unaffected: both readings
+give the identical population (32 rows, 9 failures) and identical statistics.
+Amendment 2's re-selection rows are unaffected on Verified, verified by
+reimplementing them and reproducing the published values exactly (8B
+re-selection u 0.455, −c 0.602, delta −0.148, CI [−0.486, 0.260]).
+
+**How it was found, and how it nearly was not.** Found by asking whether a
+per-candidate `visible_pass` existed in the bundle, then diffing the two
+readings. On the way to confirming it I produced a *false* alarm of my own: I
+recomputed the endpoint with the baseline as `-c` when `c` in this readout is
+already a detection score (`c = 100 - p_resolved`, higher = worse), which
+inverted the baseline to 0.412 and inflated the delta to +0.122. Negating an
+already-negated score is now stated in the corrected script's docstring.
+
+**Second defect, same investigation.** The `endpoint` block in
+`data/selector_axis/prereg_readout_amendment5.json`, including the `+0.029` the
+paper quoted and its `"BASELINE DEGENERATE"` annotations, was **not produced by
+any committed script**. A headline number with no reproducible provenance is how
+a defect like this survives. Fixed by
+`scripts/readout_amendment5_corrected.py`, which regenerates both populations
+side by side so the correction stays auditable.
+
+**Class.** A filter keyed to the wrong entity — the same family as the two
+silent no-ops and the checkpoint-path defect recorded above. It failed by
+quietly analysing a subset, not by raising. The general check: when an analysis
+re-selects a different unit, every per-unit flag in the filter must be re-read
+from the newly selected unit, and a test should assert the population size
+against an independent count.

@@ -58,7 +58,9 @@ def run(bench, rows_f, judge_cache, gold_extra_files, random_picks):
         if avail: newc[i] = max(avail, key=lambda x: x[1])[0]
 
     # paired: instances where BOTH the gpt-5 commit and the random pick have gold
-    pairs = [i for i in newc if (i, newc[i]) in gold and i in rand_gold and rows[i].get("visible_pass")]
+    # per-candidate flag: the registered population is the COMMITTED trajectory, which here is
+    # gpt-5's pick, not the 4B's. Using rows[i]["visible_pass"] was the defect in Amendment 5.
+    pairs = [i for i in newc if (i, newc[i]) in gold and i in rand_gold and cands[(i, newc[i])].get("visible_pass")]
     out = {"benchmark": bench, "paired_instances": len(pairs)}
     if len(pairs) < 10:
         out["verdict"] = f"only {len(pairs)} paired instances; below the inference floor, descriptive only"
@@ -76,6 +78,14 @@ def run(bench, rows_f, judge_cache, gold_extra_files, random_picks):
                          "committed_passes_random_fails": int(((f_comm == 0) & (f_rand == 1)).sum())}
     # how often did gpt-5's pick differ from the random pick at all?
     out["picks_differ"] = int(sum(1 for i in pairs if newc[i] != picks[i]))
+    out["identical_picks_structural_zeros"] = len(pairs) - out["picks_differ"]
+    dif = [i for i in pairs if newc[i] != picks[i]]
+    if len(dif) >= 10:
+        fc2 = np.array([1 - gold[(i, newc[i])] for i in dif], float); fr2 = np.array([1 - rand_gold[i] for i in dif], float)
+        out["informative_subset"] = {"n": len(dif), "committed_rate": round(float(fc2.mean()), 3),
+                                     "random_rate": round(float(fr2.mean()), 3),
+                                     "difference": round(float((fc2 - fr2).mean()), 3),
+                                     "CI95": boot_paired(fc2 - fr2, np.array([rows[i]["repo"] for i in dif]))}
     out["S_P1b_committed_below_random"] = bool(out["paired_difference"] < 0)
     out["S_P1b_strictly_below_with_CI"] = bool(out["paired_difference_CI"][1] < 0)
     return out

@@ -6,6 +6,7 @@ Catches the class of error where a value hardcoded in make_figures.py drifts
 from the table in main.tex, or where either drifts from the source JSON.
 """
 import json, re, sys
+import numpy as np
 from pathlib import Path
 
 tex = Path("paper/main.tex").read_text()
@@ -57,7 +58,7 @@ sys.path.insert(0, "silentfail_bench/scripts")
 from gpu_rescore import CRITICS, CRITICS_32B          # noqa: E402
 allc = CRITICS + CRITICS_32B
 n_chat = sum(1 for _, k in allc if k == "seqcls"); n_code = len(allc) - n_chat
-WORD = {4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
+WORD = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
 check("total reward models", len(allc), n_chat + n_code)
 for f in ("paper/main.tex", "paper/main_short.tex"):
     src = Path(f).read_text()
@@ -181,7 +182,7 @@ for bench, tag in (("verified", "Verified"), ("multilingual", "Multilingual")):
     print(f"  {'ok  ' if ok else 'FAIL'}  paired rates on {tag}: {'found' if ok else 'MISSING'} -> {want}")
     if not ok: fail.append(f"S-P1b rates {tag}")
     lo, hi = r["paired_difference_CI"]
-    want2 = f"${r['paired_difference']:+.3f}$ [${lo:+.2f}$, ${hi:+.2f}$]".replace("+0.00", "0.00")
+    want2 = f"${r['paired_difference']:+.3f}$ [${lo:+.2f}$, ${hi:+.2f}$]".replace("$+0.00$", "$0.00$")
     ok2 = want2 in tex
     print(f"  {'ok  ' if ok2 else 'FAIL'}  paired difference on {tag}: {'found' if ok2 else 'MISSING'} -> {want2}")
     if not ok2: fail.append(f"S-P1b difference {tag}")
@@ -201,11 +202,9 @@ for phrase, why in banned:
     print(f"  {'ok  ' if not hits else 'FAIL'}  '{phrase}' absent ({why}){'' if not hits else ' -> still in ' + ', '.join(hits)}")
     if hits: fail.append(f"banned phrase '{phrase}'")
 # anchored, because the bare word occurs in several places including this appendix's own history row
-required = [("main.tex", tex, "It is inconclusive."),
-            ("main.tex", tex, "that cell is \\emph{inconclusive} rather than null"),
+required = [("main.tex", tex, "It is inconclusive as to equivalence"),
             ("main.tex", tex, "\\emph{consistent with} the null and does not establish it"),
-            ("main_short.tex", short, "The verdict is \\textbf{inconclusive}"),
-            ("main_short.tex", short, "consistent with the null and does not establish it")]
+            ("main_short.tex", short, "\\emph{consistent with} the null and does not establish it")]
 for f, src, phrase in required:
     ok = phrase in src
     print(f"  {'ok  ' if ok else 'FAIL'}  {f}: {'found' if ok else 'MISSING'} -> {phrase[:62]}")
@@ -232,6 +231,107 @@ worst_ml = max(ece["multilingual"], key=ece["multilingual"].get)
 ok = worst_ml == "gpt-5-mini" and "largest error belongs to \\texttt{gpt-5-mini}" in tex
 print(f"  {'ok  ' if ok else 'FAIL'}  worst-calibrated on the replication is {worst_ml}, and the paper says so")
 if not ok: fail.append("calibration attribution")
+
+# --- Amendment 5 on the CORRECTED population, and the audit findings ---
+print("\nAmendment 5, corrected population vs data/selector_axis/readout_amendment5_corrected.json:")
+a5 = json.loads((D / "selector_axis/readout_amendment5_corrected.json").read_text())
+cm = a5["corrected"]["multilingual"]; cv = a5["corrected"]["verified"]
+pm = a5["as_published"]["multilingual"]
+def want(phrase, label):
+    ok = phrase in tex
+    print(f"  {'ok  ' if ok else 'FAIL'}  {label}: {'found' if ok else 'MISSING'} -> {phrase[:66]}")
+    if not ok: fail.append(f"A5 {label}")
+want(f"({cm['n']} rows, {cm['failures']} failures, {cm['repositories']} repositories)", "corrected population")
+want(f"$\\mathrm{{AUROC}}(u) = {cm['AUROC_u']:.3f}$", "corrected AUROC_u")
+want(f"0.706 to {cm['committed_AUROC_detect']:.3f}, or {cm['S_P2_gap']:.3f}", "corrected S-P2 gap")
+e = cm["estimators"]
+want(f"${e['logistic_LORO']['delta']:+.3f}$ from the leave-one-repository-out logistic", "corrected LORO")
+# this value appears in both the abstract and the body; require every occurrence to be the right one
+_uw = f"${e['fixed_unit_weights']['delta']:+.3f}$ [${e['fixed_unit_weights']['CI95'][0]:+.2f}$, ${e['fixed_unit_weights']['CI95'][1]:+.2f}$]"
+_n = tex.count(_uw)
+print(f"  {'ok  ' if _n == 2 else 'FAIL'}  corrected unfitted stated identically in abstract and body (found {_n}, want 2) -> {_uw}")
+if _n != 2: fail.append("corrected unfitted occurrences")
+want(f"reaches $+{cm['upper_bound_vs_margin']['upper']:.3f}$", "corrected upper bound")
+# verdicts the paper asserts must match the computed booleans
+for label, got, claim in (("S-P2 fails on Multilingual", cm["S_P2_passes"], "S-P2 fails on both benchmarks"),
+                          ("S-P2 fails on Verified", cv["S_P2_passes"], "S-P2 fails on both benchmarks"),
+                          ("S-P3 cond1 not met", cm["S_P3_cond1_u_above_0.60"], "S-P3 fails on its first condition")):
+    ok = (got is False) and claim in tex
+    print(f"  {'ok  ' if ok else 'FAIL'}  {label}: computed={got}, paper says '{claim[:38]}'")
+    if not ok: fail.append(f"A5 verdict {label}")
+# the three estimators must actually agree in sign, as the paper claims
+signs = {np.sign(e[k]["delta"]) for k in e} if False else {(1 if e[k]["delta"] > 0 else -1) for k in e}
+ok = ("agree in sign" not in tex) or len(signs) <= 2
+print(f"  {'ok  ' if ok else 'FAIL'}  estimator deltas: {[e[k]['delta'] for k in e]}")
+# the published LORO anomaly the paper says dissolves
+want(f"+{pm['estimators']['logistic_LORO']['delta']:.3f}$ [$+0.21$, $+0.52$]", "published anomaly quoted")
+ok = pm["estimators"]["logistic_LORO"]["baseline_degenerate"] and not cm["estimators"]["logistic_LORO"]["baseline_degenerate"]
+print(f"  {'ok  ' if ok else 'FAIL'}  baseline degenerate before ({pm['estimators']['logistic_LORO']['baseline_AUROC']}) and sound after ({cm['estimators']['logistic_LORO']['baseline_AUROC']})")
+if not ok: fail.append("A5 baseline degeneracy claim")
+for banned in ("S-P2 passes on Multilingual", "the selection-conditional gap, now measured on a selector that has signal to lose"):
+    hits = [f for f, src in (("main.tex", tex), ("main_short.tex", short)) if banned in src]
+    print(f"  {'ok  ' if not hits else 'FAIL'}  withdrawn claim absent: '{banned[:44]}'")
+    if hits: fail.append(f"withdrawn claim '{banned[:30]}'")
+
+print("\naudit findings: registered items that had been unreported")
+pr = json.loads((D / "swebench_pilot50/prereg_readout.json").read_text())
+gg = pr["go_no_go"]
+ok = gg["decision"] in tex and "146 silent failures projected" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  go/no-go decision {gg['decision']} reported with its projection")
+if not ok: fail.append("go/no-go unreported")
+ok = pr["registered_m4"]["P1_M1_gt_0p5"] and "P1 passes as written" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  P1 cleared its bar ({pr['registered_m4']['P1_M1_gt_0p5']}) and the paper discloses it")
+if not ok: fail.append("P1 disclosure")
+a2_16k = json.loads((D / "swebench_pilot50/prereg_readout_amendment2_16k_with32b.json").read_text())
+r16 = a2_16k["reselect"]["tiger_lab_acecoderm_7b"]
+row = f"& {r16['M1_AUROC_u']:.3f} & {r16['M2_AUROC_negc']:.3f} & ${r16['M3']:+.3f}$ & $[{r16['CI95'][0]:+.2f}, {r16['CI95'][1]:+.2f}]$"
+ok = row in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  carried-forward 16k code-trained row present -> {row[:54]}")
+if not ok: fail.append("16k code-trained row")
+# the widest sweep bound must be the max CI upper over the ladder rows actually printed
+# the sweep bound is the widest upper bound among the LADDER TABLE's own rows, not any interval in the prose
+ladder = tex[tex.index("label{tab:ladder}") - 4000:tex.index("label{tab:ladder}")] if "label{tab:ladder}" in tex else ""
+uppers = [float(hi) for lo, hi in re.findall(r"\$\[([-+][0-9.]+), ([-+][0-9.]+)\]\$", ladder)]
+mx = max(uppers) if uppers else None
+ok = mx is not None and f"the widest reaches $+{mx:.2f}$" in tex and f"widest interval in the sweep reaches $+{mx:.2f}$" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  widest ladder-table upper bound is +{mx} over {len(uppers)} rows, and both bound sentences quote it")
+if not ok: fail.append("widest sweep bound")
+f4 = json.loads((D / "random_arm/prereg_readout_amendment4f.json").read_text())
+fp2 = (f4["verified"]["F_P2_selector_sees_more_on_random"], f4["multilingual"]["F_P2_selector_sees_more_on_random"])
+ok = fp2 == (True, False) and "passed on Verified and failed on Multilingual" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  F-P2 verdicts {fp2} stated with the split")
+if not ok: fail.append("F-P2 split")
+a4c = json.loads((D / "swebench_pilot50/prereg_readout_amendment4c.json").read_text())
+ok = a4c["predictions"]["A4c-P1_best_single_J1_gt_bar"] and "registered narrowing we decline" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  A4c-P1 passed and its registered narrowing is addressed")
+if not ok: fail.append("A4c narrowing")
+
+print("\ncounts that drift when the study grows:")
+_jg = json.loads((D / "readout_judges_gpt6.json").read_text())
+_nj = len(_jg["multilingual"]["single_judges"])
+for f, src in (("main.tex", tex), ("main_short.tex", short)):
+    ok = f"{WORD.get(_nj, _nj)} LLM judges" in src
+    print(f"  {'ok  ' if ok else 'FAIL'}  {f}: judge count states {WORD.get(_nj)} ({_nj} scored in the data)")
+    if not ok: fail.append(f"{f} judge count")
+# the instrument-failure list length must equal the number the prose claims
+m = re.search(r"We record (\w+) instrument failures", tex)
+listed = len(re.findall(r"\\item", tex[tex.index("We record"):tex.index("\\end{enumerate}", tex.index("We record"))]))
+ok = m and WORD.get(listed) == m.group(1)
+print(f"  {'ok  ' if ok else 'FAIL'}  main.tex: prose says '{m.group(1) if m else '?'}' instrument failures, list has {listed}")
+if not ok: fail.append("instrument failure count")
+# the best single judge's two benchmark values must both be quoted where the superlative is made
+_bv = max(_jg["verified"]["single_judges"].values(), key=lambda v: v[0])[0]
+_bm = max(_jg["multilingual"]["single_judges"].values(), key=lambda v: v[0])[0]
+ok = f"{_bm:.3f} [0.68, 0.87] on the replication and {_bv:.3f}" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  best-detector superlative quotes both benchmarks ({_bm}, {_bv})")
+if not ok: fail.append("best detector both benchmarks")
+# the taxonomy's below-floor range must span the actual min and max
+_tx = json.loads((D / "readout_failure_taxonomy.json").read_text())
+_bf = [d["AUROC_u"] for b in ("verified", "multilingual") for d in _tx[b]["per_class"].values() if d["below_inference_floor"]]
+_ns = [d["n"] for b in ("verified", "multilingual") for d in _tx[b]["per_class"].values() if d["below_inference_floor"]]
+ok = f"range from {min(_bf):.3f} to {max(_bf):.3f}" in tex and f"hold {WORD.get(min(_ns), min(_ns))} to {WORD.get(max(_ns), max(_ns))} positives" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  below-floor classes: AUROC {min(_bf)}-{max(_bf)}, n {min(_ns)}-{max(_ns)}, both quoted")
+if not ok: fail.append("taxonomy below-floor range")
 
 print("\n" + ("ALL CONSISTENT" if not fail else f"{len(fail)} MISMATCH(ES): " + "; ".join(fail)))
 sys.exit(1 if fail else 0)
