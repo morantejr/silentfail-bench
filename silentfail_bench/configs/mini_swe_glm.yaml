@@ -30,5 +30,11 @@ model:
   model_class: openrouter_textbased
   model_name: z-ai/glm-5.3
   model_kwargs:
+    # Without max_tokens, OpenRouter pre-authorises the model's FULL context
+    # (131k for deepseek-v4.1-flash) against the account balance and returns
+    # HTTP 402 before running anything. The scaffold then dies on KeyError:
+    # 'choices' because the error payload has none. This is a reasoning model,
+    # so the cap must leave room for reasoning tokens as well as the command.
+    max_tokens: 4000
     drop_params: true
     temperature: 0.0
