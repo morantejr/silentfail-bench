@@ -17,6 +17,10 @@ data/*/*
 !data/*/candidates.jsonl
 !data/*/gold_errors.json
 !data/*.json
+# Nested under data/<bench>/gpu_scores/ — data/*/* swallows these unless
+# the directory and the score files are both re-included.
+!data/*/gpu_scores/
+!data/*/gpu_scores/scores*.json
 # pre-outcome, tamper-evident records must be committed:
 !data/*/CHECKPOINT_HASHES.json
 # readouts the paper quotes must be committed:
