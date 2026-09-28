@@ -23,8 +23,12 @@ environment:
   runtime_timeout: 3600
   deployment_timeout: 3600
 model:
+  # OpenRouter does not return a cost field for these models, and mini-swe-agent
+  # hard-errors on that. Cost is instead computed from token counts times the
+  # published per-million rates, which is auditable rather than vendor-reported.
+  cost_tracking: ignore_errors
   model_class: openrouter_textbased
-  model_name: openrouter/zai-org/glm-5.3
+  model_name: z-ai/glm-5.3
   model_kwargs:
     drop_params: true
     temperature: 0.0

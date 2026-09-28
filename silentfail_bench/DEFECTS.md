@@ -484,3 +484,50 @@ preserves the fact that the correction was made after results. R-P1 keeps its
 registered name and verdict in the results table.
 
 **Class.** Null-hypothesis non-rejection described as a replicated null.
+
+## Amendment 10 scaffold integration with OpenRouter: five failures in sequence (2026-09-28, pilot not yet run)
+
+Recorded because the failure mode changed at every layer, and because three of
+the five looked like "this model cannot drive the scaffold" when none of them
+were about the model. Direct API calls to `deepseek/deepseek-v4.1-flash` succeed
+throughout: HTTP 200, content returned, usage and cost present.
+
+1. **`OpenRouterAuthenticationError`, 2/2.** The stored key was structurally
+   valid (`sk-or-v1-` prefix, 73 chars, quotes stripped correctly by the loader,
+   verified with a throwaway variable) but rejected with 401. The key had been
+   pasted into a chat transcript earlier, which is what provider secret-scanning
+   revokes. A replacement key authenticates. Cost of discovery: $0.00, because
+   the smoke was two instances rather than 41.
+2. **`OpenRouterAPIError`: "openrouter/deepseek/deepseek-v4.1-flash is not a
+   valid model ID".** `litellm` needs the `openrouter/` routing prefix;
+   mini-swe-agent's `OpenRouterModel` calls the API directly and must not have
+   it. The config was written from a litellm test and carried the prefix over.
+3. **`RepeatedFormatError`, 2/2 — the same signature as the gpt-6-luna failure
+   above.** `model_class: openrouter_textbased` was paired with base config
+   `swebench.yaml`, which supplies *tool-calling* prompts. The model was told to
+   call a bash tool while the parser looked for backtick blocks. The project's
+   own CLI help states the pairing: "swebench.yaml = native tool calls
+   (frontier); swebench_backticks.yaml = text-based". Diagnosed by reading the
+   trajectory and seeing tool-call guidance in the error template, exactly the
+   procedure that diagnosed the gpt-6-luna case.
+4. **`RuntimeError`: no cost information.** With the correct base config the
+   agent ran: five assistant turns, commands executing against the sandbox,
+   output returned. mini-swe-agent then hard-errored because the OpenRouter
+   response it saw carried no cost. `cost_tracking: ignore_errors` is the
+   supported setting and is now in both configs.
+5. **`KeyError: 'choices'`, unresolved.** The scaffold's own request returns a
+   payload without `choices`, while an identical direct request returns 200 with
+   `choices`, content, and `usage.cost` of $3.72e-05 for 55 tokens. Not yet
+   diagnosed. A plausible lead, not verified: this is a reasoning model that
+   spends output tokens on `reasoning` before `content`, and a low `max_tokens`
+   truncates it — a litellm call with `max_tokens=8` returned empty content while
+   the same call at 2000 returned "ok" plus 75 characters of reasoning.
+
+**Status.** The capability pilot has NOT run. P10-1, P10-2 and P10-3 are all
+unmeasured. No gold has been computed and no Amendment 10 quantity exists.
+Total spend across all five attempts: $0.00 of OpenRouter as reported by the
+scaffold, and four two-instance Modal sandbox pairs.
+
+**The rule this reinforces.** Smoke two instances before 41. Three of these five
+would have cost a full pilot run each if they had been discovered at scale, and
+the two that resemble model incapacity were both configuration.
