@@ -1253,3 +1253,86 @@ the floor of 20 failures, and the +0.05 margin for any null claim. The 100
 remain hashed and unanalysed, and if the agent changes they become a discarded
 capability pilot rather than a partial run, which is stated now so that
 discarding them later is not a silent decision.
+
+# Amendment 10a — stop rule, budget ledger and cost enforcement for the open-model arm — 2026-09-29, before any Amendment 10 gold exists
+
+Raised by external review of the October runbook. Three of its findings are
+accepted and fixed here, before any gold is run and therefore before any outcome
+is visible. A fourth is recorded as already fixed.
+
+## 1. The stop rule was ambiguous, and the ambiguity is resolved against the fallback
+
+Amendment 10's reading said: "Neither passes → report the attempt, keep
+`gpt-6-luna` as the Amendment 7 agent." The October handoff says instead: if the
+pilot fails any gate, stop and do not launch the axis. **These are different
+instructions and the conflict is resolved here, in favour of stopping.**
+
+`gpt-6-luna` is withdrawn as a fallback for the axis, for a stated reason rather
+than for convenience. It is an API model, so running the axis on it does not
+answer the objection that prompted Amendment 10, which was specifically about
+*capable open-weight* agents. Amendment 10 also already declared that the 100
+existing `gpt-6-luna` trajectories become a discarded capability pilot if the
+agent changes. Reinstating them after a DeepSeek failure would be choosing the
+arm after seeing which arm survived.
+
+**The branch, fixed now:**
+
+- **DeepSeek passes all three gates** → freeze it, recheck the ledger in §2, run
+  the axis.
+- **DeepSeek fails any gate** → **stop**. Report the pilot as a negative
+  capability result, state that the agent axis remains untested, and leave the
+  paper's existing limitation as it stands. Do **not** substitute GLM-5.3, which
+  has already failed at 13/41 and is roughly six times over budget. Do **not**
+  revert to `gpt-6-luna`. Any later attempt on a third agent requires a new
+  amendment written before that agent is run.
+
+## 2. Budget ledger, reconciled
+
+Amendment 7b's $22 Modal cap was derived for the axis alone and does **not**
+include Amendment 10's capability pilot or its gold. The full ledger against the
+$30 free credit that resets on 1 October:
+
+| Item | Modal | Basis |
+|---|---|---|
+| A10 pilot generation, 41 Verified trajectories | ~$0.53 | 41 × $0.013 measured Verified sandbox rate |
+| A10 pilot gold, 41 instances | ~$2.26 | 41 × $0.055 from the Amendment 4f gold run |
+| Axis generation, 456 Multilingual trajectories | ~$8.40 | Amendment 7b |
+| Axis gold, four candidate-indexed runs | ~$12.00 | Amendment 7b |
+| **Total** | **~$23.19** | |
+
+**The Modal cap is therefore raised, before outcome, from $22 to $26**, which
+leaves $4 of headroom inside the $30 credit and still authorises **no paid
+overage**. If the credit is unavailable or the ledger is exceeded mid-run, the
+run pauses rather than spending money. The OpenAI/OpenRouter cap for the agent
+remains $15, against a measured DeepSeek rate of $0.008 per trajectory, which
+puts the axis at roughly $3.65.
+
+## 3. The cost cap is made independently enforceable
+
+The DeepSeek config carries `cost_tracking: ignore_errors`, because OpenRouter
+does not always return a cost field and mini-swe-agent hard-errors when it is
+absent. That setting disables the scaffold's own `cost_limit`, so **the declared
+cap was unenforceable as written**. Review was right to flag it.
+
+Enforcement is now external and measured, not vendor-reported: the pilot runner
+reads the OpenRouter credits endpoint immediately before and after the run and
+computes spend by difference. The run aborts before launch if the projected cost
+exceeds the cap, and the measured delta is written into the readout so P10-3 is
+checked against an independent number rather than a self-report.
+
+## 4. Recorded as already fixed
+
+Review flagged "the null replicates" as an overclaim after the selector axis.
+That was corrected in draft v0.9.10 before this review: R-P1 is narrated as the
+"registered null-replication rule" with its upper bound of 0.71 stated and
+equivalence explicitly disclaimed, and `check_consistency.py` bans the old
+phrasing outside the history appendix. No further change.
+
+## 5. Executable, not improvised
+
+Review also noted the runbook had no runnable pilot command, which invites
+improvisation and accidental overwrite of the existing directories.
+`scripts/run_amendment10_pilot.sh` now pins the instance file, refuses to write
+into an existing output directory, runs generation and gold, and computes the
+three gates. The pre-October preflight validates the Amendment 10 config, the
+pilot set and this ledger.

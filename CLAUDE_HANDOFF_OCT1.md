@@ -33,7 +33,7 @@ Current pilot evidence (not yet an Amendment 10 capability verdict):
   Never edit or silently combine them with an open-model arm. If DeepSeek is
   selected, use a **fresh output directory**.
 
-**Do not spend Modal** until 1 October unless the user explicitly approves paid overage. Prereg caps Modal at **\$22** inside the \$30 free credit (Amendment 7b).
+**Do not spend Modal** until 1 October unless the user explicitly approves paid overage. Prereg caps Modal at **\$26** inside the \$30 free credit (Amendment 10a §2 reconciles the ledger: the old \$22 covered the axis only, not the Amendment 10 pilot and its gold) (Amendment 7b).
 
 ---
 
@@ -114,11 +114,13 @@ Today’s date: [FILL IN]. Modal $30 free credit resets 2026-10-01. Do NOT start
 
 First action every session:
   /Users/jmorante/Downloads/xtail_spec/silentfail_bench/scripts/preflight_pre_oct1.sh
+Then, on/after 1 Oct, the pilot is one command, not improvised:
+  silentfail_bench/scripts/run_amendment10_pilot.sh
 If it fails, fix the code/docs before spending money.
 
 Context: Paper is draft v0.9.10; primary H1 is not supported on Verified + Multilingual, and Amendment 5's strong-selector axis is done. Mentor feedback requests capable open-weight agents, specifically DeepSeek V4.1 Flash and GLM-5.3. Amendment 10 adopts them and supersedes gpt-6-luna. Existing evidence: DeepSeek submitted 31/41 under an old 4k cap (now corrected to 16k); GLM submitted 13/41 and is not viable in the current scaffold. The 100 gpt-6-luna trajectories are checkpointed historical data and must not be mixed with the open-model arm.
 
-Before Oct 1: only no-spend verification and documentation. After Oct 1: first rerun the corrected DeepSeek 41-instance capability pilot in a fresh output directory and run official gold. Apply all Amendment 10 gates: ≥80% submitted; unconditional failure rate ≥10 points better than matched gpt-5-mini; ≤$0.040/trajectory. If it fails any gate, stop and report—do not launch the 456-trajectory axis. If it passes, freeze DeepSeek and then adapt the downstream Amendment 7 stages using a fresh open-model output directory, after rechecking the budget.
+Before Oct 1: only no-spend verification and documentation. After Oct 1: first rerun the corrected DeepSeek 41-instance capability pilot in a fresh output directory and run official gold. Apply all Amendment 10 gates: ≥80% submitted; unconditional failure rate ≥10 points better than matched gpt-5-mini; ≤$0.040/trajectory. If it fails any gate, stop and report — do not launch the 456-trajectory axis, do not substitute GLM-5.3, and do not revert to gpt-6-luna. That branch is fixed in Amendment 10a §1, which resolves the conflict between this handoff and Amendment 10's original fallback reading. If it passes, freeze DeepSeek and then adapt the downstream Amendment 7 stages using a fresh open-model output directory, after rechecking the budget.
 
 When you change code or numbers, say what you ran to verify. Do not amend git commits unless I ask.
 ```
