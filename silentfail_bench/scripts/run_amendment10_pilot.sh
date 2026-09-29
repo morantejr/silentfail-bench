@@ -57,12 +57,36 @@ echo "   measured OpenRouter spend: \$$COST  (\$$PER per trajectory)"
 $V -c "import sys; sys.exit(0 if $COST <= $CAP_USD else 1)" || {
   echo "ABORT: spend \$$COST exceeded the \$$CAP_USD cap. Gold NOT run."; exit 3; }
 
-# --- 2. gold ------------------------------------------------------------
+# --- 2. convert predictions -------------------------------------------
+# mini-swe-agent writes preds.json as a DICT keyed by instance_id; gold_modal.py
+# reads --preds as JSONL, one object per line. Passing the dict, or a
+# predictions.jsonl that generation never wrote, fails at gold after the agent
+# spend is already sunk. Convert explicitly and assert the result.
+echo "== convert preds.json -> predictions.jsonl =="
+$V - "$OUT" <<'CONV'
+import json, sys
+from pathlib import Path
+out = Path(sys.argv[1])
+src = out / "preds.json"
+if not src.exists():
+    print(f"ABORT: {src} not written by generation"); sys.exit(2)
+d = json.loads(src.read_text())
+rows = list(d.values()) if isinstance(d, dict) else d
+bad = [r for r in rows if not {"instance_id", "model_patch"} <= set(r)]
+if bad:
+    print(f"ABORT: {len(bad)} prediction rows lack instance_id/model_patch"); sys.exit(2)
+dst = out / "predictions.jsonl"
+dst.write_text("".join(json.dumps(r) + "\n" for r in rows))
+print(f"   wrote {dst} with {len(rows)} rows")
+CONV
+[ -s "$OUT/predictions.jsonl" ] || { echo "ABORT: predictions.jsonl empty or missing"; exit 2; }
+
+# --- 3. gold ------------------------------------------------------------
 echo "== gold =="
 $V modal/gold_modal.py --dataset princeton-nlp/SWE-bench_Verified \
   --preds "$OUT/predictions.jsonl" --run-id "$RUN_ID" --oracle 3
 
-# --- 3. gates -----------------------------------------------------------
+# --- 4. gates -----------------------------------------------------------
 echo "== Amendment 10 gates =="
 $V scripts/readout_amendment10.py --out "$OUT" --run-id "$RUN_ID" \
   --measured-cost "$COST" --instances "$INSTANCES"

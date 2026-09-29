@@ -621,3 +621,35 @@ the three format deaths, which are ours, but it is not contaminated by the
 markup. I reported it as contaminated to the operator before measuring, which
 was the same species of error this file exists to record: asserting a cause
 before testing it.
+
+## The October runner would have failed at gold, after the agent spend was sunk (found in review 2026-09-29, before any run)
+
+**Two mismatches, either fatal.** `scripts/run_amendment10_pilot.sh` passed
+`--preds data/pilot_deepseek_a10/predictions.jsonl` to `modal/gold_modal.py`.
+mini-swe-agent does not write that file; it writes `preds.json`. And the two
+formats differ: `preds.json` is a **dict keyed by instance id**, while
+`gold_modal.py` line 75 reads `--preds` as **JSONL**, one object per line.
+
+**Why it would have cost money rather than failing fast.** Generation runs
+first. The 41 trajectories and their OpenRouter spend would have completed, and
+only then would gold abort on a missing file. The sunk cost is the whole point
+of the pilot.
+
+**Fix.** An explicit conversion step between generation and gold, which reads
+`preds.json`, asserts every row carries `instance_id` and `model_patch`, writes
+one JSON object per line, and aborts if the result is empty. Verified against
+the existing DeepSeek output: 41 rows, round-trips, and carries the two fields
+`gold_modal.py` requires.
+
+**Class, and why the preflight missed it.** The preflight checked that the
+runner *existed* and that its guards were present. It did not check that the
+file one stage writes is the file the next stage reads. Two checks added for
+that, both bite-tested by deleting them and confirming a non-zero exit. This is
+the same family as the Amendment 7 checkpoint-path defect: a path or format that
+disagrees across a stage boundary, failing only when the boundary is crossed.
+
+**Also fixed in the same pass.** The handoff's status table still read "null
+**replicates** after selector axis" after the paper had been corrected, so the
+overclaim survived in the document a fresh agent reads first. Now states the
+bounded failure-to-reject with the $+0.12$ bound against the $+0.05$ margin, and
+the preflight bans the old phrasing.

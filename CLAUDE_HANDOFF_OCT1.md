@@ -14,7 +14,7 @@ Use this file when continuing work **before and on** the Modal \$30 credit reset
 | `scripts/readout_amendment7.py --dry-run` | Reproduces published replication estimators |
 | `scripts/test_readout_amendment7.py` | Production-path fixture **PASS** |
 | Paper | `paper/main.pdf`, `paper/main_short.pdf` — draft **v0.9.10** |
-| Scientific headline | H1 **not supported**; disagreement \(u\) does not beat selector \(c\) on held-out failure detection; null **replicates** after selector axis (Amendment 5) |
+| Scientific headline | H1 **not supported**; disagreement \(u\) does not beat selector \(c\) on held-out failure detection; results remain **consistent with** the null after the selector axis, which is a bounded failure-to-reject and not equivalence: the pooled upper bound of $+0.12$ still exceeds the $+0.05$ the pre-registration calls actionable (Amendment 5) |
 
 **Only open experiment:** the agent axis. **Amendment 10 supersedes Amendment
 7's `gpt-6-luna` choice** and adopts the mentor's requested open-weight agents:
