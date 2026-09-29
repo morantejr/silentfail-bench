@@ -1,5 +1,21 @@
 # Resuming Amendment 7 on 1 October 2026
 
+> **STOP — superseded by Amendment 10.** Do not execute Stage 1 below with
+> `mini_swe_gpt6luna.yaml`. Amendment 10 adopts mentor-recommended open-weight
+> agents (DeepSeek V4.1 Flash and GLM-5.3) and requires a 41-instance capability
+> pilot before choosing the agent for the 456-trajectory axis. The 100
+> `gpt-6-luna` trajectories remain checkpointed and unanalysed; they are not
+> mixed into an open-model arm. This document retains the downstream bundle,
+> scoring, gold, and readout commands, which apply only after Amendment 10
+> selects an agent and a fresh output directory.
+>
+> Current pilot evidence: DeepSeek submitted 31/41 patches (75.6%, below the
+> 80% gate), with three format deaths under the old 4k output cap; its config is
+> now fixed at 16k. GLM submitted 13/41 (31.7%) and is not currently viable in
+> this scaffold. On/after 1 October, rerun the corrected DeepSeek capability
+> pilot and execute official gold before deciding whether it passes Amendment
+> 10. Do not infer capability from submission rate alone.
+
 Everything below is one sitting. Run the preflight first; it exits non-zero if
 anything would waste money or silently discard the 100 paused trajectories.
 
@@ -86,11 +102,18 @@ inputs:
 .venv-swebench/bin/python scripts/test_readout_amendment7.py
 ```
 
-The first exits non-zero if the estimators stop reproducing published values.
-The second builds deterministic synthetic candidate gold in a temporary
-directory, exercises the full production path, then deletes one gold record
-and proves partial input is rejected without writing a result. Run both before
-October in case anything upstream has drifted. The rules enforced:
+Or run the full no-spend gate (from repo root):
+
+```bash
+./silentfail_bench/scripts/preflight_pre_oct1.sh
+```
+
+The dry run exits non-zero if the estimators stop reproducing published values.
+The production fixture builds deterministic synthetic candidate gold in a
+temporary directory, exercises the full production path, then deletes one gold
+record and proves partial input is rejected without writing a result. Run both
+before spending Modal credit in case anything upstream has drifted. The rules
+enforced:
 
 - `gpt-5` selection is **mandatory**, not conditional on the 4B arm.
 - Gate: the selector's pool `AUROC(-c)` on the **new** graded pool must exceed 0.65,

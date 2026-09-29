@@ -30,13 +30,20 @@ about are exactly where its blind spots collect. **A null result is publishable*
 > declared actionable. Newer judges sharpen the dissociation: `gpt-6-sol` is the
 > best single detector in the study at 0.776–0.826 while the disagreement of that
 > newer pair is the worst at 0.41. **The agent axis is the one open question**
-> and resumes 1 October; see
-> [`silentfail_bench/RESUME_AMENDMENT7.md`](silentfail_bench/RESUME_AMENDMENT7.md).
+> Amendment 10 moves that axis to mentor-requested open-weight agents. DeepSeek
+> V4.1 Flash gets a corrected 41-instance capability rerun after the 1 October
+> credit reset; GLM-5.3 is currently non-viable in this scaffold (13/41
+> submissions). See
+> [`CLAUDE_HANDOFF_OCT1.md`](CLAUDE_HANDOFF_OCT1.md) and Amendment 10 in the
+> preregistration. The old Amendment 7 runbook is retained only for downstream
+> stages after an open agent passes its capability gates.
 > Ten numbered defects (including seven critic/instrument failures) are recorded in
 > [`silentfail_bench/DEFECTS.md`](silentfail_bench/DEFECTS.md), including one that
 > manufactured a result large enough to reverse the paper. Paper:
 > [`paper/main.pdf`](paper/main.pdf), 9-page submission version (body under six)
 > [`paper/main_short.pdf`](paper/main_short.pdf). See [`UPDATES.md`](UPDATES.md).
+Before spending Modal credit (resets **1 Oct**): [`CLAUDE_HANDOFF_OCT1.md`](CLAUDE_HANDOFF_OCT1.md)
+and `silentfail_bench/scripts/preflight_pre_oct1.sh`.
 
 ## Layout
 

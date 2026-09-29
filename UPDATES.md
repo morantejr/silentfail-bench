@@ -323,17 +323,56 @@ agent and selector, Amendment 5 was run for $13: gpt-5 scored all 620
 candidates, re-selected, and the 59 newly committed patches were graded.
 
 **Learned.** The selector now has real signal — pool AUROC **0.712 / 0.706**,
-re-committing 28 of 39 and 80 of 106 trajectories. **S-P1 passes both**;
-**S-P2 passes on Multilingual** (0.706 → 0.591). **S-P3 does not hold**:
-disagreement gives +0.029 [−0.082, +0.137]. A leave-one-repo-out logistic
-reported +0.375 and would have reversed the paper; its baseline scores 0.150
-out of fold and the gain tracks that deficit — caught by the four-estimator
+re-committing 28 of 39 and 80 of 106 trajectories. **S-P1 passes both**
+registered conditions (pool signal and paired committed-vs-random rates).
+After the population defect fix, **S-P2 fails on both** benchmarks (gap
+0.035 on Multilingual, not above the 0.10 bar). **S-P3 fails** its first
+condition; endpoint deltas are small and mixed (+0.012, −0.024, −0.018). A
+leave-one-repo-out logistic reported +0.375 and would have reversed the
+paper; its baseline scores 0.150 out of fold — caught by the four-estimator
 standard.
 
-**Changed.** The paper's largest limitation is closed: the null holds in the
-selection-conditional regime the proposal named. New §4.5. Still open and
-costed: a stronger **agent** (~250 instances, ~$270).
+**Changed.** The paper closes the "weak selector" objection: results are
+**consistent with** the null in the selection-conditional regime, not
+equivalence. New §4.5. Agent axis (Amendment 7) declared next.
 
 ---
 
-## Next entry (pending): mentor decision on the agent axis
+## Amendment 7 · agent axis — PAUSED 2026-09-27
+
+**Done.** 100/456 trajectories in `cand0` (`gpt-6-luna`, 114-instance pinned
+set). Checkpoint hashed in `data/agent_axis/CHECKPOINT_HASHES.json`.
+Preflight, dry-run readout, and production-path fixture pass; paper at
+**v0.9.10**; `paper/check_consistency.py` → ALL CONSISTENT.
+
+**Learned.** Modal Multilingual sandboxes cost **\$0.0236/trajectory** (not
+Verified's \$0.013); pausing before the 1 Oct credit reset was correct.
+Amendment 7a's dry run on replication data is **INCONCLUSIVE** (upper bound
++0.175 vs +0.05 margin) — expected before agent-axis gold exists.
+
+**Changed.** Resume playbook: `RESUME_AMENDMENT7.md`. Budget: Amendment **7b**
+(\~\$20.40 Modal inside \$30 credit). **Do not regenerate** the paused 100.
+
+---
+
+## Amendment 10 · open-weight agent axis — pilot pending correction
+
+**Done.** Mentor feedback named DeepSeek V4.1 Flash and GLM-5.3. Amendment 10
+adopts both and supersedes Amendment 7's `gpt-6-luna` agent choice. Both were
+exercised on the same 41-instance Verified capability set.
+
+**Learned.** DeepSeek submitted 31/41 patches (75.6%), narrowly below the 80%
+function gate; three format exits occurred under a 4k output cap that could be
+consumed by reasoning. The config now uses 16k and pins a clean provider.
+GLM submitted only 13/41 (31.7%), with 22 step-limit and six format exits, and
+is not viable in the current scaffold. Submission rates are not capability
+results; P10-2 still requires official executed gold.
+
+**Changed.** On/after the 1 Oct Modal reset, rerun only the corrected DeepSeek
+41-instance pilot in a fresh directory, run official gold, and apply P10-1
+through P10-3. Launch the 456-trajectory axis only if all gates pass. Preserve
+the 100 hashed `gpt-6-luna` trajectories as unanalysed historical data.
+
+---
+
+## Next entry (pending): corrected DeepSeek capability pilot after 1 Oct

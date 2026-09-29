@@ -647,9 +647,13 @@ and a confirmatory run is warranted before any positive claim is made.
 **Inference floor.** Unchanged: fewer than 10 silent failures in the committed
 set → descriptive only.
 
-**Cost, declared.** ~$2 generation and ~$9 judge on OpenAI credit; ~$7 of
-Modal, of which ~$3 is free-tier and the remainder is a small overage before
-the 1 October reset. Cap: $15 OpenAI, $12 Modal.
+**Cost, declared (original Amendment 7 estimate).** ~$2 generation and ~$9
+judge on OpenAI credit; ~$7 of Modal, of which ~$3 is free-tier and the
+remainder is a small overage before the 1 October reset. Cap: $15 OpenAI,
+$12 Modal. **Superseded for the October resume by Amendment 7b:** four
+candidate-indexed gold runs raise Modal to ~\$8.40 generation + ~\$12 gold
+≈ **\$20.40**, cap **\$22** inside the \$30 credit that resets 1 October; no
+paid Modal overage.
 
 **Amendment 7 — PAUSED (2026-09-27), not analysed.** Generation stopped
 partway through the first of four candidate passes: 100 of 456 trajectories
