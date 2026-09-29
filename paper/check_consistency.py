@@ -390,6 +390,32 @@ ok = "Nothing that rose above the ruler on Verified rose above chance" not in te
 print(f"  {'ok  ' if ok else 'FAIL'}  banned overclaimed replication superlative")
 if not ok: fail.append("replication superlative")
 
+print("\naudit: statistical validity (R-P1 narration, draft version, instrument record):")
+_sci = tex.split(r"\section{How the claim changed under scrutiny}")[0]
+ok = "(the null replicates)" not in _sci and "(the null replicates)" not in short
+print(f"  {'ok  ' if ok else 'FAIL'}  banned R-P1 headline '(the null replicates)' outside history appendix")
+if not ok: fail.append("R-P1 null-replicates headline")
+ok = "registered null-replication rule" in _sci and "upper bound 0.71" in _sci and "not equivalence to chance" in _sci
+print(f"  {'ok  ' if ok else 'FAIL'}  long paper R-P1 states met-as-written + upper bound 0.71 + not equivalence")
+if not ok: fail.append("R-P1 long narration")
+ok = "Registered rule met" in short and "upper bound 0.71" in short and "Amendment~7a" in short
+print(f"  {'ok  ' if ok else 'FAIL'}  short paper R-P1 matches failure-to-reject reading")
+if not ok: fail.append("R-P1 short narration")
+ok = re.search(r"\\textbf\{R-P1\}[^\n]*\\emph\{Passed\.\}", short) is None
+print(f"  {'ok  ' if ok else 'FAIL'}  short paper does not mark R-P1 as Passed")
+if not ok: fail.append("R-P1 short Passed")
+_hist = tex[tex.index("label{sec:history}") : tex.index("\\end{tabularx}", tex.index("label{sec:history}"))]
+_ver_nums = [int(x) for x in re.findall(r"v0\.9\.(\d+)", _hist)]
+_title_m = re.search(r"Working draft v0\.9\.(\d+)", tex)
+_max_ver = max(_ver_nums) if _ver_nums else None
+ok = _title_m and _max_ver is not None and int(_title_m.group(1)) == _max_ver
+print(f"  {'ok  ' if ok else 'FAIL'}  title draft v0.9.{_title_m.group(1) if _title_m else '?'} matches changelog max v0.9.{_max_ver}")
+if not ok: fail.append("draft version drift")
+ok = "registered audit" in tex and "registered audit" in short \
+    and "rather than by inspection of the numbers" not in tex and "rather than by inspecting the numbers" not in short
+print(f"  {'ok  ' if ok else 'FAIL'}  instrument-failure prose admits registered audits (item 7)")
+if not ok: fail.append("instrument audit prose")
+
 print("\naudit: code-path traps (E3 fold alignment, Fig8 Verified JSON, A5 script gate):")
 mf = Path(__file__).resolve().parent.joinpath("make_figures.py").read_text()
 ok = 'ver = {"panel $u$ (prefix 4k)": (0.508' not in mf and '_pr["registered_m4"]["M1_AUROC_u"]' in mf
@@ -475,7 +501,7 @@ ok = "agree in sign for the first time" not in _mentor \
     and "+0.012, −0.024 and −0.018" in _mentor
 print(f"  {'ok  ' if ok else 'FAIL'}  mentor note reports corrected A5 mixed signs")
 if not ok: fail.append("mentor A5 signs")
-ok = "draft v0.9.8" in _readme and "9-page submission version (body under six)" in _readme \
+ok = "draft v0.9.10" in _readme and "9-page submission version (body under six)" in _readme \
     and "Nine-page submission version; body under six pages" in _readme \
     and "7-page cut" not in _readme and "cut to 7 pages" not in _readme
 print(f"  {'ok  ' if ok else 'FAIL'}  README status/version and short-paper length are current")

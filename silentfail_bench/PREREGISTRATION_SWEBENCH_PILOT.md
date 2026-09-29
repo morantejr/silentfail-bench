@@ -1088,6 +1088,22 @@ claim-change appendix as v0.9.6.
 None of these changes a registered prediction or a corrected Amendment 5
 verdict.
 
+# Statistical-validity audit — 2026-09-29, post hoc (no thresholds)
+
+Hostile read of estimator choice, equivalence language, and replication
+narration. Recorded in DEFECTS.md #14 and claim-change appendix v0.9.10.
+
+1. **R-P1.** The registered conjunction is still met on Multilingual
+   (`AUROC(u)=0.565`, CI [0.43, 0.71]). The paper no longer headlines that as
+   “the null replicates” or *\emph{Passed}*; it states failure to reject with
+   upper bound 0.71, aligning replication prose with Amendment 7a's
+   absence-of-evidence rule. Written after the wording fix was drafted.
+2. **Instrument record.** Item (7) was caught by a registered-prediction audit,
+   not an oracle or regression test; the instrument-failure prose now says so.
+3. **Version.** Title block synced to changelog v0.9.10.
+
+No registered threshold changed; no quoted number changed.
+
 # Amendment 9 — static-analysis baseline and manual adjudication of the disjoint passes — 2026-09-27, declared after the confirmatory results and reported as exploratory
 
 **Standing.** Both analyses below were run after the confirmatory results, carry

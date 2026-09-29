@@ -480,10 +480,23 @@ Found 2026-09-27. The pooled fixed-weight 95% interval has an upper bound of
 actionable. The results replicate a lack of detectable gain, but cannot
 establish an effect smaller than the actionable margin. The main and short
 papers and README now state this distinction; the dated interpretation note
-preserves the fact that the correction was made after results. R-P1 keeps its
-registered name and verdict in the results table.
+preserves the fact that the correction was made after results.
 
 **Class.** Null-hypothesis non-rejection described as a replicated null.
+
+### #14 — R-P1 section text treated a CI that includes chance as “the null replicates” *(interpretation)*
+
+Found 2026-09-29 in the statistical-validity audit. The registered R-P1 rule
+requires `AUROC(u) < 0.60` and a repo-clustered 95% CI that includes 0.50;
+Multilingual gives 0.565 [0.43, **0.71**]. The replication section had
+labelled that “(the null replicates)” with *\emph{Passed}*, the same
+absence-of-evidence reading Amendment 7a disavows for underpowered intervals.
+The conjunction remains **met as written**; the prose now reports failure to
+reject with upper bound 0.71, not equivalence to chance. Title block version
+was also behind the changelog (v0.9.3 vs v0.9.9).
+
+**Class.** Equivalence fallacy at section level while limitations already
+stated the correct reading.
 
 ## Amendment 10 scaffold integration with OpenRouter: five failures in sequence (2026-09-28, pilot not yet run)
 
