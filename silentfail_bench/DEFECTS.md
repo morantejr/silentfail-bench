@@ -498,6 +498,66 @@ was also behind the changelog (v0.9.3 vs v0.9.9).
 **Class.** Equivalence fallacy at section level while limitations already
 stated the correct reading.
 
+### #15 — The paper's most repeated number was pinned only by a threshold *(tooling)*
+
+Found 2026-09-30 by `paper/bite_test.py`. The loosest pooled upper bound, +0.12,
+appears sixteen times in `main.tex` and five times in `main_short.tex`: abstract,
+plain-terms paragraph, contributions, the endpoint section, the `tab:endpoint`
+caption, limitations, conclusion, and the summary table. The only assertion that
+read it was `_upper > 0.05`, a one-sided threshold serving a different claim. Any
+value above 0.05 passed, so the source could have drifted to +0.17 while every
+printed mention stayed at +0.12 and the checker stayed green.
+
+The same shape held for five individually quoted LLM-judge AUROCs, `u_max` on the
+replication, and three Amendment 5 values: each was read only inside a `max`, an
+`argmax` or a threshold. Nineteen assertions now anchor these to sentences built
+from the source JSON, and the readout's per-class counts and inference-floor flags
+are checked for internal consistency against the floor the readout itself declares.
+
+**Class.** A value read by the checker but never compared to what the paper prints.
+
+### #16 — A fix applied to the artifact instead of its producer *(reproducibility)*
+
+Found 2026-09-30 by `silentfail_bench/scripts/check_readouts_regenerate.py`.
+Defect #8 item 3 recorded that `data/readout_tier15.json` held a superseded
+widest-sweep upper bound of +0.45, and it was corrected to +0.63. The correction
+was made in the committed JSON only: `readout_tier15.py` still held the whole
+`D_simultaneous_bound` block as literals, including `"upper": 0.452`. Re-running
+the script therefore reverted the artifact to the retracted value, and the
+repository could not regenerate one of its own readouts. The checker's hardcoded
+`abs(_w - 0.63) < 1e-9` meant this surfaced as a failure rather than silently, but
+the producer stayed wrong for three days.
+
+The block is now derived: the per-protocol uppers from the two primary readouts,
+and the widest sweep interval from the named 16k code-trained re-selection row
+(0.629, which the paper quotes as +0.63), with a `source` field recording where it
+came from. The checker compares renderings against those sources instead of a
+constant. A new check runs all six argument-free readout scripts and requires each
+committed JSON to match what its script produces; it restores the tree either way,
+and it is wired into `preflight_pre_oct1.sh`.
+
+**Class.** Correcting a generated file without correcting the generator.
+
+## Correction: my bite test reported four failures that did not exist (2026-09-30)
+
+The 2026-09-29 bite test of the lucky-pass and taxonomy assertions reported
+"12 caught, 4 NOT caught", naming the pooled suspect rate, the drop-scenario LORO
+delta, and two `AUROC(u)` values as unprotected. That harness was an uncommitted
+shell loop, and its perturbations were smaller than the precision the paper prints.
+The readouts store values already rounded to three decimals and the paper prints
+three decimals, so a perturbation below 0.0005 changes no printed digit; no honest
+check could have caught it. All four assertions bite under perturbations that change
+the printed value, which is the property that matters.
+
+The real defect was the harness, not the checker: a test that guards against
+corrupted input had no committed form, no stated perturbation rule, and a result I
+could not reproduce a day later. `paper/bite_test.py` replaces it. It records what
+the checker reads by instrumenting the JSON loader, perturbs each scalar by at
+least 0.05 so every rendering the paper uses changes, injects the perturbation
+into the loader rather than writing to disk, and requires either a non-zero exit or
+a recorded reason in `paper/bite_test_exemptions.json`. Writing it surfaced #15 and,
+indirectly, #16.
+
 ## Amendment 10 scaffold integration with OpenRouter: five failures in sequence (2026-09-28, pilot not yet run)
 
 Recorded because the failure mode changed at every layer, and because three of

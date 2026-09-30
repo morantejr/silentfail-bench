@@ -6,6 +6,7 @@ Catches the class of error where a value hardcoded in make_figures.py drifts
 from the table in main.tex, or where either drifts from the source JSON.
 """
 import json, re, sys
+from decimal import Decimal, ROUND_HALF_UP
 import numpy as np
 from pathlib import Path
 
@@ -370,10 +371,20 @@ ok = "inconclusive rather than null" not in short
 print(f"  {'ok  ' if ok else 'FAIL'}  short limitations no longer use the pre-correction A5 'inconclusive' gloss")
 if not ok: fail.append("short stale A5 gloss")
 _tier = json.loads((D / "readout_tier15.json").read_text())
-_w = _tier["D_simultaneous_bound"]["widest_upper_in_sweep"]["upper"]
-ok = abs(_w - 0.63) < 1e-9 and "+0.63" in tex
-print(f"  {'ok  ' if ok else 'FAIL'}  tier15 widest_upper_in_sweep is {_w}, paper quotes +0.63")
+_D = _tier["D_simultaneous_bound"]
+_w = _D["widest_upper_in_sweep"]["upper"]
+# Compare the rendering, not a constant: the readout holds the source value and the
+# paper quotes it to two decimals. Hardcoding 0.63 here let the script and the
+# committed artifact disagree, because only the artifact was corrected.
+ok = _w == a2_16k["reselect"]["tiger_lab_acecoderm_7b"]["CI95"][1] and f"${_w:+.2f}$" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  tier15 widest_upper_in_sweep {_w} comes from its named source and the paper quotes {_w:+.2f}")
 if not ok: fail.append("tier15 widest upper")
+# The per-protocol bound is also derived now; check both ends against their readouts.
+ok = _D["primary_protocol_M3_upper"]["verified"] == pr["registered_m4"]["M3_CI95_repo_clustered"][1] \
+    and _D["primary_protocol_M3_upper"]["multilingual"] == rep["primary_prefix_u"]["M3_CI95"][1] \
+    and f"own upper interval is ${max(_D['primary_protocol_M3_upper'].values()):+.2f}$" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  tier15 per-protocol uppers {_D['primary_protocol_M3_upper']} match the primary readouts and the paper")
+if not ok: fail.append("tier15 per-protocol upper")
 # mixed-sign corrected A5 deltas must not be narrated as agreeing in sign
 # (do not match the legitimate phrase "disagree in sign")
 ok = re.search(r"(?<!dis)agree in sign", tex) is None and re.search(r"(?<!dis)agree in sign", short) is None
@@ -501,7 +512,9 @@ ok = "agree in sign for the first time" not in _mentor \
     and "+0.012, −0.024 and −0.018" in _mentor
 print(f"  {'ok  ' if ok else 'FAIL'}  mentor note reports corrected A5 mixed signs")
 if not ok: fail.append("mentor A5 signs")
-ok = "draft v0.9.10" in _readme and "9-page submission version (body under six)" in _readme \
+# Derive the version from the paper's own title block, which is already checked
+# against the changelog. Hardcoding it here meant three places to hand-sync.
+ok = f"draft v0.9.{_title_m.group(1)}" in _readme and "9-page submission version (body under six)" in _readme \
     and "Nine-page submission version; body under six pages" in _readme \
     and "7-page cut" not in _readme and "cut to 7 pages" not in _readme
 print(f"  {'ok  ' if ok else 'FAIL'}  README status/version and short-paper length are current")
@@ -521,6 +534,107 @@ ok = _upper > 0.05 and "An upper bound on what disagreement can be worth, not a 
     and "carries no information about its hidden failure" not in tex
 print(f"  {'ok  ' if ok else 'FAIL'}  pooled upper bound {_upper:+.3f} above actionable +0.05 is described as non-detection")
 if not ok: fail.append("null interpretation exceeds pooled precision")
+# --- values the paper quotes that no assertion pinned, found by paper/bite_test.py ---
+# Each of these was read by this checker but only in a threshold, a max, or an
+# argmax, so the source value could drift to anything and every check stayed
+# green while the paper kept quoting the old number.
+print("\nquoted values a bite test showed were unpinned:")
+
+def need(s_, label):
+    ok_ = s_ in tex
+    print(f"  {'ok  ' if ok_ else 'FAIL'}  {label}: {'found' if ok_ else 'MISSING'} -> {s_[:66]}")
+    if not ok_: fail.append(label)
+
+def r2(x):
+    """Two decimals, rounding halves away from zero: the convention the paper uses.
+
+    Python's format() rounds the binary double, so the Verified unfitted upper
+    bound 0.245 renders as +0.24 while both the table and the prose print +0.25.
+    Comparing against format() would have reported the paper as wrong.
+    """
+    return f"{Decimal(str(x)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):+.2f}"
+
+# The loosest pooled upper bound is the most repeated number in the paper. The
+# only check on it was `_upper > 0.05`, which passes for any drifted value.
+_full = ("logistic_LORO", "logistic_5fold_clustered", "fixed_unit_weights_no_fitting")
+_pu = {k: _pooled[k]["CI95"][1] for k in _full}
+_loose = max(_pu, key=_pu.get)
+ok = _loose == "fixed_unit_weights_no_fitting"
+print(f"  {'ok  ' if ok else 'FAIL'}  loosest of the three full-coverage pooled uppers is the unfitted estimator {_pu}")
+if not ok: fail.append("loosest pooled estimator identity")
+_ub, _lb = r2(_pu[_loose]), r2(_pooled[_loose]["CI95"][0])
+need(f"the loosest pooled upper bound is ${_ub}$", "loosest bound: abstract, body, caption")
+need(f"loosest pooled upper bound of ${_ub}$", "loosest bound: plain terms and contributions")
+need(f"${_ub}$ pooled across the three full-coverage estimators", "loosest bound: limitations")
+need(f"below ${_ub}$ on the pooled population", "loosest bound: conclusion")
+need(f"pooled bound ${_ub}$ AUROC", "loosest bound: summary table")
+need(f"[${_lb}$, ${_ub}$] pooled", "pooled unfitted interval in prose")
+need(f"$\\mathbf{{[{_lb}, {_ub}]}}$", "pooled row of tab:endpoint")
+
+# Every full-coverage row of tab:endpoint, built from JSON. Only the pooled
+# unfitted row and one pooled delta were pinned before, so the other rows'
+# intervals could drift silently.
+_EST = (("logistic_LORO", "leave-one-repo-out"),
+        ("logistic_5fold_clustered", "5 clustered folds"),
+        ("fixed_unit_weights_no_fitting", "fixed unit weights"))
+_rows_ok = 0
+for _rec in rob["endpoint_robustness"]:
+    for _k, _nm in _EST:
+        _d = _rec[_k]
+        if _rec["label"] == "pooled" and _k == "fixed_unit_weights_no_fitting":
+            continue          # the bold pooled row, pinned above with \mathbf
+        # the unfitted estimator names its two arms differently
+        _b = _d["AUROC_Mc"] if "AUROC_Mc" in _d else _d["AUROC_negc"]
+        _c2 = _d["AUROC_Mcu"] if "AUROC_Mcu" in _d else _d["AUROC_negc_plus_u"]
+        _row = (f"& {_b:.3f} & {_c2:.3f} & ${_d['delta']:+.3f}$ "
+                f"& $[{r2(_d['CI95'][0])}, {r2(_d['CI95'][1])}]$")
+        if _row in tex:
+            _rows_ok += 1
+        else:
+            print(f"  FAIL  tab:endpoint row missing for {_rec['label']}/{_nm} -> {_row}")
+            fail.append(f"endpoint row {_rec['label']}/{_k}")
+print(f"  {'ok  ' if _rows_ok == 8 else 'FAIL'}  {_rows_ok} of 8 non-bold full-coverage tab:endpoint rows match their JSON")
+# The LORO pooled bound is also quoted in the limitations paragraph.
+need(f"${r2(_pooled['logistic_LORO']['CI95'][1])}$ pooled for the leave-one-repository-out logistic",
+     "LORO pooled bound in limitations")
+
+# The inference floor the taxonomy derives its flags from is itself a registered
+# quantity the paper states in words.
+# Individual judge AUROCs. Only the best judge's identity and value were pinned;
+# the paper quotes five of them by name.
+for _b, _j, _ctx in (("multilingual", "gpt-5", ""), ("multilingual", "gpt-5-mini", ""),
+                     ("multilingual", "gpt-5-nano", ""),
+                     ("verified", "gpt-5", "reached "), ("verified", "gpt-5-mini", "")):
+    _v = jg[_b]["single_judges"][_j][0]
+    need(f"\\texttt{{{_j}}} {_ctx}{_v:.3f}", f"{_b} judge {_j} = {_v:.3f}")
+_g5 = jg["multilingual"]["single_judges"]["gpt-5"]
+need(f"above chance at {_g5[0]:.3f} [{_g5[1][0]:.2f}, {_g5[1][1]:.2f}]", "gpt-5 replication value with its interval")
+
+# u_max on the replication, quoted twice, previously unpinned.
+need(f"$u_{{\\max}}$ {rep['windowed_u_max']['AUROC']:.3f}", "windowed u_max on the replication")
+
+# Amendment 5 corrected: the second estimator and both baselines are quoted.
+need(f"${cm['estimators']['logistic_5fold']['delta']:+.3f}$ from five clustered folds", "corrected 5-fold estimator")
+need(f"with a baseline of {cm['estimators']['logistic_LORO']['baseline_AUROC']:.3f} against a raw",
+     "corrected LORO baseline")
+need(f"collapsed to {pm['estimators']['logistic_LORO']['baseline_AUROC']:.3f}", "as-published degenerate baseline")
+
+# Internal consistency of the taxonomy readout. The per-class count is stored
+# twice; only the copy the table reads was checked. The floor flag is a function
+# of the count and the readout's own declared floor, so derive it rather than
+# trusting it.
+_fl = tax["inference_floor"]
+need(f"inference floor of {WORD.get(_fl, _fl)} positives", "pre-registered inference floor")
+for _b in ("verified", "multilingual"):
+    for _k, _d in tax[_b]["per_class"].items():
+        ok = tax[_b]["classes"].get(_k, 0) == _d["n"] and _d["below_inference_floor"] == (_d["n"] < _fl)
+        if not ok:
+            print(f"  FAIL  {_b} taxonomy class '{_k}': classes={tax[_b]['classes'].get(_k)} "
+                  f"per_class.n={_d['n']} floor_flag={_d['below_inference_floor']} (floor {_fl})")
+            fail.append(f"taxonomy internal consistency {_b}/{_k}")
+print(f"  ok    taxonomy per-class counts agree across both encodings and every floor flag "
+      f"follows from n < {_fl}" if not [f for f in fail if f.startswith('taxonomy internal')] else "")
+
 _a7_real = subprocess.run(
     [sys.executable, str(_root / "silentfail_bench/scripts/readout_amendment7.py")],
     capture_output=True, text=True,

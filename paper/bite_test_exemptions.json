@@ -1,0 +1,34 @@
+{
+ "silentfail_bench/data/swebench_pilot50/prereg_readout_amendment2_16k_with32b.json": {
+  "/audit_only/ray2333_grm_gemma2_2b_rewardmodel_ft/AUROC_negc_full": "participates in the pinned maximum that anchors Figure 8's 16k reward-model value (0.712); this model's own AUROC is not quoted in either paper, so only the maximum needs an assertion. A perturbation large enough to become the new maximum is caught.",
+  "/audit_only/ray2333_grm_llama3_2_3b_rewardmodel_ft/AUROC_negc_full": "participates in the pinned maximum that anchors Figure 8's 16k reward-model value (0.712); this model's own AUROC is not quoted in either paper, so only the maximum needs an assertion. A perturbation large enough to become the new maximum is caught.",
+  "/audit_only/skywork_skywork_reward_v2_llama_3_1_8b/AUROC_negc_full": "participates in the pinned maximum that anchors Figure 8's 16k reward-model value (0.712); this model's own AUROC is not quoted in either paper, so only the maximum needs an assertion. A perturbation large enough to become the new maximum is caught.",
+  "/audit_only/skywork_skywork_reward_v2_qwen3_1_7b/AUROC_negc_full": "participates in the pinned maximum that anchors Figure 8's 16k reward-model value (0.712); this model's own AUROC is not quoted in either paper, so only the maximum needs an assertion. A perturbation large enough to become the new maximum is caught.",
+  "/audit_only/skywork_skywork_reward_v2_qwen3_4b/AUROC_negc_full": "participates in the pinned maximum that anchors Figure 8's 16k reward-model value (0.712); this model's own AUROC is not quoted in either paper, so only the maximum needs an assertion. A perturbation large enough to become the new maximum is caught.",
+  "/audit_only/tiger_lab_acecoderm_32b/AUROC_negc_full": "participates in the pinned maximum that anchors Figure 8's 16k reward-model value (0.712); this model's own AUROC is not quoted in either paper, so only the maximum needs an assertion. A perturbation large enough to become the new maximum is caught.",
+  "/audit_only/tiger_lab_acecoderm_7b/AUROC_negc_full": "participates in the pinned maximum that anchors Figure 8's 16k reward-model value (0.712); this model's own AUROC is not quoted in either paper, so only the maximum needs an assertion. A perturbation large enough to become the new maximum is caught."
+ },
+ "silentfail_bench/data/readout_pi_batch2.json": {
+  "/verified/CAL_judge_calibration/judges/gpt-5/ECE": "the papers quote no ECE value and the word appears once, in a claim about which judge is worst calibrated; only that argmax is asserted. A perturbation large enough to move the argmax is caught.",
+  "/verified/CAL_judge_calibration/judges/gpt-5-mini/ECE": "the papers quote no ECE value and the word appears once, in a claim about which judge is worst calibrated; only that argmax is asserted. A perturbation large enough to move the argmax is caught.",
+  "/verified/CAL_judge_calibration/judges/gpt-5-nano/ECE": "the papers quote no ECE value and the word appears once, in a claim about which judge is worst calibrated; only that argmax is asserted. A perturbation large enough to move the argmax is caught.",
+  "/verified/CAL_judge_calibration/judges/gpt-6-luna/ECE": "the papers quote no ECE value and the word appears once, in a claim about which judge is worst calibrated; only that argmax is asserted. A perturbation large enough to move the argmax is caught.",
+  "/verified/CAL_judge_calibration/judges/gpt-6-sol/ECE": "the papers quote no ECE value and the word appears once, in a claim about which judge is worst calibrated; only that argmax is asserted. A perturbation large enough to move the argmax is caught.",
+  "/multilingual/CAL_judge_calibration/judges/gpt-5/ECE": "the papers quote no ECE value and the word appears once, in a claim about which judge is worst calibrated; only that argmax is asserted. A perturbation large enough to move the argmax is caught.",
+  "/multilingual/CAL_judge_calibration/judges/gpt-5-mini/ECE": "the papers quote no ECE value and the word appears once, in a claim about which judge is worst calibrated; only that argmax is asserted. A perturbation large enough to move the argmax is caught.",
+  "/multilingual/CAL_judge_calibration/judges/gpt-5-nano/ECE": "the papers quote no ECE value and the word appears once, in a claim about which judge is worst calibrated; only that argmax is asserted. A perturbation large enough to move the argmax is caught.",
+  "/multilingual/CAL_judge_calibration/judges/gpt-6-luna/ECE": "the papers quote no ECE value and the word appears once, in a claim about which judge is worst calibrated; only that argmax is asserted. A perturbation large enough to move the argmax is caught.",
+  "/multilingual/CAL_judge_calibration/judges/gpt-6-sol/ECE": "the papers quote no ECE value and the word appears once, in a claim about which judge is worst calibrated; only that argmax is asserted. A perturbation large enough to move the argmax is caught."
+ },
+ "silentfail_bench/data/readout_failure_taxonomy.json": {
+  "/multilingual/per_class/broke something else, bug unfixed/AUROC_u": "quoted only through the below-floor min-max range, which is pinned; this class's own AUROC does not appear in either paper. Its count and floor flag are pinned separately.",
+  "/multilingual/per_class/fixed the bug, broke something else/AUROC_u": "quoted only through the below-floor min-max range, which is pinned; this class's own AUROC does not appear in either paper. Its count and floor flag are pinned separately.",
+  "/multilingual/per_class/partial fix/AUROC_u": "quoted only through the below-floor min-max range, which is pinned; this class's own AUROC does not appear in either paper. Its count and floor flag are pinned separately.",
+  "/verified/per_class/broke something else, bug unfixed/AUROC_u": "quoted only through the below-floor min-max range, which is pinned; this class's own AUROC does not appear in either paper. Its count and floor flag are pinned separately.",
+  "/verified/per_class/partial fix/AUROC_u": "quoted only through the below-floor min-max range, which is pinned; this class's own AUROC does not appear in either paper. Its count and floor flag are pinned separately."
+ },
+ "silentfail_bench/data/readout_judges_gpt6.json": {
+  "/multilingual/single_judges/gpt-6-luna/0": "not quoted in either paper; gpt-6-luna appears only as the agent's model and in the pinned best-judge comparison, where gpt-6-sol is the maximum.",
+  "/verified/single_judges/gpt-5-nano/0": "the Verified value for the weakest judge is not quoted; the paper quotes this judge only on the replication, which is pinned."
+ }
+}

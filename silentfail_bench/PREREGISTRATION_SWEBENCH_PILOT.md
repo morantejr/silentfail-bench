@@ -1409,3 +1409,84 @@ outcome is visible.
    decided by the harness's own error record, which is written before any
    quantity is computed and is independent of whether the patch would have
    resolved.
+
+---
+
+# Tooling note, 30 September 2026 — checker coverage measured, not assumed
+
+Written after the results and before the 1 October run. **No estimand, no
+registered prediction, no reported number and no verdict changes here.** This
+note exists because the project's guard against reporting errors had never been
+measured, and when measured it was substantially weaker than assumed.
+
+## What was measured
+
+`paper/bite_test.py` runs `paper/check_consistency.py` with an instrumented JSON
+loader that records every scalar the checker reads and where it came from. It then
+re-runs the checker once per scalar with that one value perturbed, and requires a
+non-zero exit. The perturbation is injected into the loader rather than written to
+disk, so an interrupted sweep cannot leave a corrupted readout behind.
+
+Perturbation size is the substantive design choice. The readouts store values
+already rounded to three decimals and the papers print three decimals, so a
+perturbation below 0.0005 changes no printed digit and no honest check could catch
+it. Floats move by at least 0.05, which changes every rendering the papers use.
+
+**Result: 42 of 148 scalars the checker read were not pinned by any assertion.**
+
+## What that exposed
+
+The largest was the loosest pooled upper bound, **+0.12**, which appears sixteen
+times in `main.tex` and five in `main_short.tex` — abstract, plain-terms paragraph,
+contributions, endpoint section, `tab:endpoint` caption, limitations, conclusion and
+summary table. The only assertion reading it was `_upper > 0.05`, a one-sided
+threshold serving a different claim, so the source could have drifted to any value
+above 0.05 while every printed mention stayed at +0.12 and the checker stayed green.
+
+The same shape held for five LLM-judge AUROCs the paper quotes by name, `u_max` on
+the replication, three Amendment 5 values, and eight of the twelve `tab:endpoint`
+rows. Each was read only inside a `max`, an `argmax` or a threshold.
+
+Nineteen assertions now anchor these to sentences and table rows rebuilt from the
+source JSON. The remaining 24 unpinned scalars are recorded with reasons in
+`paper/bite_test_exemptions.json`; each participates in a maximum or argmax that
+*is* pinned, and none is quoted in either paper. The harness fails if an unpinned
+scalar has no recorded reason, and also if a recorded reason is no longer needed,
+because a stale exemption can hide a later regression.
+
+## Two errors of my own, recorded because they are the instructive part
+
+1. **The previous bite test reported four failures that did not exist.** On
+   29 September an uncommitted shell loop reported "12 caught, 4 NOT caught" for
+   the lucky-pass and taxonomy assertions. Its perturbations were below printing
+   precision. All four bite under perturbations that change the published value.
+   The defect was the harness: no committed form, no stated perturbation rule, and
+   a result I could not reproduce the next day.
+
+2. **The first full sweep was invalid because I edited the checker while it ran.**
+   The sweep re-executes the checker from disk each iteration, so edits changed what
+   was being measured, and a transient crash in the checker returns non-zero and
+   scores as "caught". That run reported "every pinned scalar bites" and it did not
+   count. The harness now fingerprints every file the checker reads and aborts if any
+   of them moved mid-run. The re-run on a frozen tree gives 167 caught, 24 exempt,
+   zero unexplained, of 195 scalars.
+
+I also nearly recorded the paper as wrong about the Verified unfitted upper bound.
+The source is 0.245; Python's `format` renders that `+0.24` because it rounds the
+binary double, while both the table and the prose print `+0.25`, rounding halves
+away from zero. The paper's convention is the conventional one and the checker now
+matches it. This is the fourth false alarm in this project's audit tooling, and the
+standing rule held: reproduce a published number with your own code before calling
+it wrong.
+
+## Reproducibility defect fixed in the same pass
+
+`readout_tier15.py` held its whole `D_simultaneous_bound` block as literals,
+including the widest sweep upper bound `0.452`. When the paper superseded that with
++0.63 from the carried-forward 16k code-trained re-selection, the committed JSON was
+corrected and the script was not, so re-running the script reverted the artifact to
+the retracted value. The block is now derived from the readouts it describes, and
+`scripts/check_readouts_regenerate.py` runs all six argument-free readout scripts and
+requires each committed JSON to match what its script produces. It restores the tree
+either way and is wired into `preflight_pre_oct1.sh`. Recorded as DEFECTS #15
+and #16, and as changelog row v0.9.11.

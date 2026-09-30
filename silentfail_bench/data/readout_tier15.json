@@ -232,9 +232,10 @@
   },
   "widest_upper_in_sweep": {
    "row": "the code-trained critic at 16k (33 rows)",
-   "upper": 0.63
+   "upper": 0.629,
+   "source": "prereg_readout_amendment2_16k_with32b.json#/reselect/tiger_lab_acecoderm_7b/CI95/1"
   },
-  "note": "SUPERSEDED FIELD HISTORY: an earlier draft quoted +0.45 from the 5-RM code-trained row's +0.452 upper bound. Table 1 / paper now correctly quote +0.63 from the carried-forward 16k code-trained re-selection row. Keep this object aligned with paper/main.tex."
+  "note": "The per-protocol upper bounds are the primary readouts' own M3 intervals. The widest sweep interval is this row's upper bound; that it is the widest of the Table 1 sweep is a property of the row set, and paper/check_consistency.py derives the maximum from tab:ladder and requires the paper to quote it."
  },
  "note": "A is the proposal's confirmatory endpoint computed with leave-one-repository-out in place of the 70/30 split that never reached 10 test positives; declared post-hoc substitution of the CV scheme, same estimand."
 }

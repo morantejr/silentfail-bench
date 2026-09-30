@@ -48,6 +48,10 @@ grep -q "do not revert to" silentfail_bench/scripts/readout_amendment10.py && ch
 a10_rc=0
 silentfail_bench/.venv-swebench/bin/python silentfail_bench/scripts/readout_amendment10.py --out silentfail_bench/data/pilot_deepseek_a10 --run-id a10_deepseek_pilot --measured-cost 0 --instances silentfail_bench/configs/pilot_instances_swebench41_complete.txt >/dev/null 2>&1 || a10_rc=$?
 [ "$a10_rc" -eq 2 ] && chk 1 "gate readout fails closed with no pilot data (exit 2)" || chk 0 "gate readout fails closed"
+regen_rc=0
+silentfail_bench/.venv-swebench/bin/python silentfail_bench/scripts/check_readouts_regenerate.py >/dev/null 2>&1 || regen_rc=$?
+[ "$regen_rc" -eq 0 ] && chk 1 "every committed readout matches what its own script produces" || chk 0 "a committed readout no longer regenerates (run scripts/check_readouts_regenerate.py)"
+
 if [ "$a10_fail" = "1" ]; then echo; echo "AMENDMENT 10 PREFLIGHT FAILED"; exit 1; fi
 
 echo "PRE-OCT1 OK — safe to wait for Modal credit; see CLAUDE_HANDOFF_OCT1.md"

@@ -13,7 +13,7 @@
 \newcommand{\todo}[1]{\textcolor{orange!80!black}{[TODO: #1]}}
 
 \title{\textbf{Auditing the Winner:\\[2pt] Critic Disagreement Adds No Detectable Failure Signal\\ Beyond the Selector on SWE-Agent Trajectories}\\[6pt]
-\normalsize\textnormal{Working draft v0.9.10 --- SilentFail-Bench; two benchmarks, 46 repositories analysed, pre-registered throughout}}
+\normalsize\textnormal{Working draft v0.9.11 --- SilentFail-Bench; two benchmarks, 46 repositories analysed, pre-registered throughout}}
 \author{Joseph Morante\\ \small Algoverse AI Research}
 \date{\small September 27, 2026}
 
@@ -372,7 +372,8 @@ v0.9.6 & 27 Sep & Code-path audit: E3 train-fold misalignment (Verified best-of-
 v0.9.7 & 27 Sep & A7 readiness audit: production readout was a no-op and selected-only gold could not compute the registered all-attempt capability rate or strong-selector gate. Amendment 7b freezes all-candidate gold, random arm, partial-comparator rule and corrected free-credit budget; workflow now fails closed. \\
 v0.9.8 & 27 Sep & Independent code audit: A7 4B score ties now use the original first-candidate rule (Amendment 7c, before gold); the exploratory pivotal permutation readout is regenerated from source rows. Null language narrowed to replicated non-detection: the pooled +0.12 upper bound does not rule out the actionable +0.05 gain. No registered verdict changed. \\
 v0.9.9 & 27 Sep & Two reviewer objections answered with evidence rather than argument. A classical static-analysis baseline (\S\ref{sec:static}): twelve lexical features over eight languages plus six \texttt{ast}-parsed features on Python reach 0.644 on Multilingual and 0.436 on Verified, reversing direction like every other promising number here; its endpoint read $+0.169$ from a depressed baseline and $-0.086$ under the primary estimator, the third instance of that artefact class. And all four disjoint passes read by hand: three are alternative fixes whose own comments name the reference patch's root cause, one cannot be cleared, so label contamination supported by inspection is 1.6\% against the heuristic's 6.2\%. The first contribution is restated as a bound rather than an absence. \\
-v0.9.10 & 29 Sep & Statistical-validity audit: R-P1 no longer narrated as ``the null replicates'' / \emph{Passed} from a CI that includes chance (upper 0.71); title version synced to changelog; instrument-failure prose admits registered audits (item 7). No registered verdict or number changed. \\\bottomrule
+v0.9.10 & 29 Sep & Statistical-validity audit: R-P1 no longer narrated as ``the null replicates'' / \emph{Passed} from a CI that includes chance (upper 0.71); title version synced to changelog; instrument-failure prose admits registered audits (item 7). No registered verdict or number changed. \\
+v0.9.11 & 30 Sep & A committed bite test perturbs every value the checker reads and requires it to fail. 42 of 148 were unpinned, including the loosest pooled bound $+0.12$; those the paper quotes now rebuild from source JSON (DEFECTS \#15, \#16). No number or verdict changed. \\\bottomrule
 \end{tabularx}
 
 \medskip

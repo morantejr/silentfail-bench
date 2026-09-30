@@ -13,6 +13,36 @@ ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT / "src")
 from silentfail.combine import _fit_standardizer, fit_logistic_irls  # noqa: E402
 from silentfail.stats import auroc_fast, cluster_bootstrap_delta  # noqa: E402
 
+def _simultaneous_bound():
+    """Derive D from the committed readouts instead of hardcoding it.
+
+    Every value in this block used to be a literal. When the paper superseded the
+    widest sweep bound (+0.45 from the 5-RM code-trained row) with +0.63 from the
+    carried-forward 16k code-trained re-selection, the committed JSON was corrected
+    by hand and this script was not, so re-running it reverted the field to the
+    retracted value and the consistency checker then failed. Reading the numbers
+    from their sources removes the second copy that can go stale.
+    """
+    pr = json.loads((ROOT / "data/swebench_pilot50/prereg_readout.json").read_text())
+    rp = json.loads((ROOT / "data/replication_multilingual/prereg_readout_replication.json").read_text())
+    a2 = json.loads((ROOT / "data/swebench_pilot50/prereg_readout_amendment2_16k_with32b.json").read_text())
+    widest_row = "tiger_lab_acecoderm_7b"
+    return {
+        "primary_protocol_M3_upper": {
+            "verified": pr["registered_m4"]["M3_CI95_repo_clustered"][1],
+            "multilingual": rp["primary_prefix_u"]["M3_CI95"][1],
+        },
+        "widest_upper_in_sweep": {
+            "row": "the code-trained critic at 16k (33 rows)",
+            "upper": a2["reselect"][widest_row]["CI95"][1],
+            "source": f"prereg_readout_amendment2_16k_with32b.json#/reselect/{widest_row}/CI95/1",
+        },
+        "note": "The per-protocol upper bounds are the primary readouts' own M3 intervals. "
+                "The widest sweep interval is this row's upper bound; that it is the widest of "
+                "the Table 1 sweep is a property of the row set, and paper/check_consistency.py "
+                "derives the maximum from tab:ladder and requires the paper to quote it.",
+    }
+
 def load(path, tag):
     rows = [json.loads(l) for l in Path(path).read_text().splitlines() if l.strip()]
     pop = [r for r in rows if not r["excluded"] and r["visible_pass"]]
@@ -72,7 +102,6 @@ jv = judges_map(ROOT / "data/swebench_pilot50/llm_judges/judgments.jsonl"); jm =
 rep = {"A_confirmatory_endpoint_LORO": [endpoint(V, "verified"), endpoint(M, "multilingual"), endpoint(V + M, "pooled")],
        "B_operating_points": {**budgets(V, "verified", jv), **budgets(M, "multilingual", jm)},
        "C_alternative_u_statistics": {**alt_u(V, "verified"), **alt_u(M, "multilingual")},
-       "D_simultaneous_bound": {"primary_protocol_M3_upper": {"verified": 0.219, "multilingual": 0.217}, "widest_upper_in_sweep": {"row": "code-trained critic selecting; 5-RM panel (Verified)", "upper": 0.452},
-                                "note": "the +0.22 bound is per-protocol; the widest interval in the Table 1 sweep reaches +0.45"},
+       "D_simultaneous_bound": _simultaneous_bound(),
        "note": "A is the proposal's confirmatory endpoint computed with leave-one-repository-out in place of the 70/30 split that never reached 10 test positives; declared post-hoc substitution of the CV scheme, same estimand."}
 out = ROOT / "data/readout_tier15.json"; out.write_text(json.dumps(rep, indent=1)); print(json.dumps(rep, indent=1))
