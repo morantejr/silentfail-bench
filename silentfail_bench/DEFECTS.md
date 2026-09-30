@@ -653,3 +653,27 @@ disagrees across a stage boundary, failing only when the boundary is crossed.
 overclaim survived in the document a fresh agent reads first. Now states the
 bounded failure-to-reject with the $+0.12$ bound against the $+0.05$ margin, and
 the preflight bans the old phrasing.
+
+## Storage pruned: three reward-model checkpoints removed from the Modal cache (2026-09-30)
+
+Not a defect; recorded so a later run is not surprised by a slow first pass.
+
+`silentfail-hf-cache` held eight checkpoints. Amendment 7 and Amendment 10 need
+five: the four-member registered audit panel (`GRM-gemma2-2B`,
+`GRM-Llama3.2-3B`, `Skywork-Reward-V2-Llama-3.2-1B`,
+`Skywork-Reward-V2-Qwen3-1.7B`) plus `Skywork-Reward-V2-Qwen3-4B` as the `S_4b`
+reference selector. The strong selector for the axis is `gpt-5`, an API model
+with nothing stored.
+
+Deleted: `AceCodeRM-32B`, `Skywork-Reward-V2-Llama-3.1-8B`, `AceCodeRM-7B`.
+Roughly 94 GB, and the only item on the account that accrues while nothing runs.
+All three were used for Amendment 2's ladder rows, which are complete and whose
+scores are committed under `data/swebench_pilot50/`; **no committed number
+depends on the weights still being cached.** If a later amendment needs them
+they re-download from HuggingFace at no dollar cost, but the first scoring pass
+will be slow.
+
+Volumes themselves (`silentfail-hf-cache`, `silentfail-out`,
+`silentfail-bundles`) are retained. `silentfail-out` is mirrored locally and
+`silentfail-bundles` is empty, so neither costs anything meaningful, and the
+October pipeline writes into them.
