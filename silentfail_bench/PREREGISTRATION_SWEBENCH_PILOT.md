@@ -1336,3 +1336,76 @@ improvisation and accidental overwrite of the existing directories.
 into an existing output directory, runs generation and gold, and computes the
 three gates. The pre-October preflight validates the Amendment 10 config, the
 pilot set and this ledger.
+
+# Amendment 10b — five cross-stage defects in the October pipeline — 2026-09-30, before any Amendment 10 or agent-axis gold exists
+
+Found by an independent trace of the pipeline, commissioned after a reviewer
+caught the `preds.json` / `predictions.jsonl` mismatch. All five are the same
+family as that one and as the earlier checkpoint-path defect: **an artefact that
+disagrees across a boundary between two stages, failing only when the boundary
+is crossed, and after the preceding stage has already been paid for.** None
+changes an estimand. One changes an analysis rule and is declared here before any
+outcome is visible.
+
+## Fixed as plumbing, no analysis consequence
+
+1. **The pilot pointed gold at a dataset repo without the harness columns.**
+   `run_amendment10_pilot.sh` passed `--dataset princeton-nlp/SWE-bench_Verified`.
+   Verified on disk: that repo has 500 rows but lacks `image`, `eval_script`,
+   `log_parser` and `eval_type`, so `make_test_spec` raises `KeyError: 'image'`
+   on the first instance. `SWE-bench/SWE-bench_Verified` has them, is
+   `gold_modal.py`'s own default, and is what all seven real gold runs on disk
+   used. The flag was the only thing introducing the wrong repo. It would have
+   died immediately after the full agent spend, in the same position as the
+   `preds.json` bug.
+
+2. **The axis `--only` list passed slugs where repo ids are matched.**
+   `RESUME_AMENDMENT7.md` listed `ray2333_grm_gemma2_2b_rewardmodel_ft`, but
+   `gpu_rescore.py` compares against `Ray2333/GRM-gemma2-2B-rewardmodel-ft`. The
+   slug form is only ever the output *filename*. Every critic would have been
+   skipped, the volume fetch would have returned an empty directory, and the
+   readout would have failed on a missing panel. Every other `--only` call site
+   in the repository passes repo ids; the runbook was the sole exception.
+
+3. **The axis generator hardcoded the tool-call base config.**
+   `run_replication_modal.py` passed `-c swebench.yaml` unconditionally.
+   `configs/mini_swe_deepseek.yaml` uses a `*_textbased` model class whose parser
+   requires the ```` ```mswea_bash_command ```` fence, which `swebench.yaml` never
+   emits and `swebench_backticks.yaml` does. Running the axis on DeepSeek would
+   have produced `RepeatedFormatError` on all 456 trajectories: the exact failure
+   already recorded twice in DEFECTS.md. A `--base-config` argument is added; the
+   default is unchanged.
+
+4. **Failed judge calls were cached as done.** `llm_judges.py` built its resume
+   set without checking `p_resolved`, so a call that exhausted its retries was
+   treated as complete and re-running the identical command never retried it,
+   while the readout requires a non-null score for every slot. Not hypothetical:
+   the committed replication cache holds 504 rows of which **14 are null, all
+   rate-limit failures**, and re-running would have retried none of them. Only
+   successes now count as done, which converts those 14 from unrecoverable into
+   retryable.
+
+## Declared analysis rule, because it changes what is analysed
+
+5. **Gold-harness errors are excluded, not fatal.** `gold_modal.py` writes no
+   `gold_extra.jsonl` row when an attempt errors, guarded by `if "error" not in
+   r`. `readout_amendment7.py` required a row for every candidate slot and
+   raised otherwise. Every real gold run on disk has errors, at **2% to 9% of
+   attempts**, so across four candidate-indexed runs over roughly 340 non-empty
+   attempts at least one is effectively certain. The readout would have aborted
+   after all four gold runs were paid for, recoverable only by hand-writing gold.
+
+   **The rule, fixed before any agent-axis gold exists:** a slot the harness
+   records in `error_ids` is **excluded** from the analysed population and
+   counted. This matches the project's existing treatment elsewhere, where
+   `run_replication_modal.py` already models `gold_error` as an exclusion
+   reason; the rule existed in one stage and not the other. A slot missing
+   *without* a recorded harness error still aborts, because that is a pipeline
+   fault rather than a harness outcome. If harness errors exceed **10%** of
+   slots the readout stops rather than analysing a depleted population, and the
+   excluded count is reported alongside every quantity.
+
+   This can only shrink the analysed set, never select on outcome: exclusion is
+   decided by the harness's own error record, which is written before any
+   quantity is computed and is independent of whether the patch would have
+   resolved.

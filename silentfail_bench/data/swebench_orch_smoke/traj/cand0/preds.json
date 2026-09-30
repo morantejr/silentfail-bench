@@ -1,0 +1,7 @@
+{
+  "pallets__flask-5014": {
+    "model_name_or_path": "gpt-5-mini",
+    "instance_id": "pallets__flask-5014",
+    "model_patch": "diff --git a/src/flask/blueprints.py b/src/flask/blueprints.py\nindex eb50585d..ac010d5b 100644\n--- a/src/flask/blueprints.py\n+++ b/src/flask/blueprints.py\n@@ -193,6 +193,12 @@ class Blueprint(Scaffold):\n         if \".\" in name:\n             raise ValueError(\"'name' may not contain a dot '.' character.\")\n \n+        # Disallow empty or whitespace-only blueprint names. Empty names cause\n+        # problems when the blueprint name is used as a prefix for endpoints\n+        # and when registering the blueprint on an application (#4944).\n+        if not name or str(name).strip() == \"\":\n+            raise ValueError(\"'name' must be a non-empty string.\")\n+\n         self.name = name\n         self.url_prefix = url_prefix\n         self.subdomain = subdomain\n@@ -296,6 +302,9 @@ class Blueprint(Scaffold):\n         \"\"\"\n         name_prefix = options.get(\"name_prefix\", \"\")\n         self_name = options.get(\"name\", self.name)\n+        # If a name was provided via options, make sure it is not empty.\n+        if not self_name or str(self_name).strip() == \"\":\n+            raise ValueError(\"'name' must be a non-empty string.\")\n         name = f\"{name_prefix}.{self_name}\".lstrip(\".\")\n \n         if name in app.blueprints:\n"
+  }
+}

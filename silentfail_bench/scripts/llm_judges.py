@@ -66,7 +66,12 @@ def run(a) -> None:
     committed = cands if a.all_candidates else [c for c in cands if c["candidate"] == c["committed_index_primary"] and not c["excluded"]]
     if a.limit: committed = committed[: a.limit]
     a.cache.parent.mkdir(parents=True, exist_ok=True)
-    done = {(d["judge"], d["cond"], d["instance_id"], d.get("candidate")) for d in map(json.loads, a.cache.read_text().splitlines())} if a.cache.exists() else set()
+    # a row with p_resolved None is a FAILED call (3 attempts exhausted, e.g. RateLimitError).
+    # Counting it as done means re-running the identical command never retries it, and the
+    # downstream readout then aborts on an incomplete cache. Only successes count as done.
+    done = {(d["judge"], d["cond"], d["instance_id"], d.get("candidate"))
+            for d in map(json.loads, a.cache.read_text().splitlines())
+            if d.get("p_resolved") is not None} if a.cache.exists() else set()
     spent = 0.0; lock = threading.Lock()
     conds = tuple(a.conds) if a.conds else ("J1", "J2"); judges = a.judges if a.judges else JUDGES
     jobs = [(cond, judge, c) for cond in conds for judge in judges for c in committed if (judge, cond, c["instance_id"], c["candidate"]) not in done]

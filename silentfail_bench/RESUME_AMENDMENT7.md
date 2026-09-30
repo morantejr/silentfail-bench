@@ -27,10 +27,10 @@ cd /Users/jmorante/Downloads/xtail_spec/silentfail_bench
 ## Decide the instance set before you start
 
 Amendment 7 declared **456 trajectories**, which is 114 instances at four
-candidates. The replication instance file holds **128**, because 14 of those
-never produced a usable row. Using the larger file would generate 512
-trajectories and cost about **$1.30 more** than the amendment declared, for
-instances the replication could not analyse.
+candidates. The replication instance file holds **114** non-comment lines, the same
+set as the agent-axis file. An earlier version of this note claimed 128 and
+derived a $1.30 cost difference from it; **no 128-entry file exists** in this
+repository or its history, and that paragraph is withdrawn.
 
 `configs/agent_axis_instances_multilingual.txt` is the 114-instance set,
 generated from the rows the replication actually analysed. All 100 already
@@ -59,7 +59,11 @@ $V scripts/run_replication_modal.py --stage bundle --instances-file $I --out $O
     $O/rescoring_bundle.jsonl /agent_axis/rescoring_bundle.jsonl
 .venv-swebench/bin/python -m modal run modal/rescore.py \
     --run agent_axis --out prefix4k --max-tokens 4000 --mode prefix \
-    --only "ray2333_grm_gemma2_2b_rewardmodel_ft ray2333_grm_llama3_2_3b_rewardmodel_ft skywork_skywork_reward_v2_llama_3_2_1b skywork_skywork_reward_v2_qwen3_1_7b skywork_skywork_reward_v2_qwen3_4b"
+    --only "Ray2333/GRM-gemma2-2B-rewardmodel-ft Ray2333/GRM-Llama3.2-3B-rewardmodel-ft Skywork/Skywork-Reward-V2-Llama-3.2-1B Skywork/Skywork-Reward-V2-Qwen3-1.7B Skywork/Skywork-Reward-V2-Qwen3-4B"
+#    NOTE: --only matches HuggingFace repo ids, which is what gpu_rescore.py compares
+#    against (scripts/gpu_rescore.py: `if a.only and repo not in a.only`). The slug form
+#    is only ever the OUTPUT filename. Passing slugs skips every critic silently and the
+#    volume fetch returns an empty directory.
 .venv-swebench/bin/modal volume get silentfail-out /agent_axis $O/modal
 
 # 4. gpt-5 scores EVERY candidate (mandatory strong-selector arm; J1 only)

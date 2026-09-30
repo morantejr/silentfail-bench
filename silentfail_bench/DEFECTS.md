@@ -677,3 +677,27 @@ Volumes themselves (`silentfail-hf-cache`, `silentfail-out`,
 `silentfail-bundles`) are retained. `silentfail-out` is mirrored locally and
 `silentfail-bundles` is empty, so neither costs anything meaningful, and the
 October pipeline writes into them.
+
+## A paper number with no reproducible provenance: readout_judges_gpt6.json (found 2026-09-30)
+
+`data/readout_judges_gpt6.json` is tracked, is read by `paper/check_consistency.py`,
+and supplies three claims in the paper: that `gpt-6-sol` is the best single
+detector in the study at 0.776 on the replication and 0.826 on the pilot, the
+count of **five** LLM judges, and the calibration attribution to `gpt-5-mini`.
+
+**No committed script writes it.** Every other readout has a producing script;
+this one does not. Its plausible inputs, the two `judgments_gpt6.jsonl` files,
+were themselves untracked until this commit.
+
+This is the same defect already recorded above for Amendment 5's `endpoint`
+block, and the same sentence applies: a headline number with no reproducible
+provenance is how a defect survives. The numbers are not withdrawn, because they
+reproduce against the committed inputs and the checker verifies them, but
+**until a script regenerates them they rest on a file no one can rebuild.**
+
+Recorded rather than fixed, because writing a regenerating script means re-running
+judge calls that cost money, and no spend is authorised before 1 October. The
+honest options, in order: write the script and regenerate after the credit
+resets; or, if the paper is submitted first, state in the reproducibility
+appendix that this one readout is provided as data rather than as a rerunnable
+artefact.

@@ -29,12 +29,18 @@ PANEL = {"grm_gemma2_2b": "ray2333_grm_gemma2_2b_rewardmodel_ft", "grm_llama3_2_
          "skywork_llama3_2_1b": "skywork_skywork_reward_v2_llama_3_2_1b", "skywork_qwen3_1_7b": "skywork_skywork_reward_v2_qwen3_1_7b"}
 
 
-def gen(ids: list[str], k: int, out: Path, cfg: Path, workers: int, step_limit: int, cost_cap: float) -> None:
+def gen(ids: list[str], k: int, out: Path, cfg: Path, workers: int, step_limit: int, cost_cap: float,
+        base_config: str = "swebench.yaml") -> None:
+    """base_config MUST match the agent config's model class. swebench.yaml supplies
+    tool-call prompts; swebench_backticks.yaml supplies the ```mswea_bash_command fence
+    that the *_textbased model classes parse. Pairing a textbased class with swebench.yaml
+    produces RepeatedFormatError on every turn, which is the documented gpt-6-luna and
+    DeepSeek failure (DEFECTS.md)."""
     flt = "^(" + "|".join(re.escape(i) for i in ids) + ")$"
     for c in range(k):
         run_dir = out / "traj" / f"cand{c}"; run_dir.mkdir(parents=True, exist_ok=True); t0 = time.time()
         subprocess.run([str(MINI), "swebench", "--subset", "multilingual", "--split", "test", "--filter", flt, "-o", str(run_dir),
-                        "-w", str(workers), "-c", "swebench.yaml", "-c", str(cfg), "-c", f"model.model_kwargs.seed={1000 + c}",
+                        "-w", str(workers), "-c", base_config, "-c", str(cfg), "-c", f"model.model_kwargs.seed={1000 + c}",
                         "-c", f"agent.step_limit={step_limit}"], stdout=open(run_dir / "gen.log", "a"), stderr=subprocess.STDOUT,
                        env={k: v for k, v in os.environ.items() if k not in ("OPENAI_API_BASE", "OPENAI_BASE_URL")})   # never inherit a local model base URL
         cost = spent(out); print(f"[gen] cand {c}: {time.time()-t0:.0f}s, {len(list(run_dir.glob('*/*.traj.json')))} trajectories, cumulative est ${cost:.2f}", flush=True)
@@ -119,6 +125,8 @@ def main() -> None:
     ap.add_argument("--instances-file", type=Path, default=ROOT / "configs/replication_instances_multilingual.txt")
     ap.add_argument("--out", type=Path, default=ROOT / "data/replication_multilingual")
     ap.add_argument("--mini-config", type=Path, default=ROOT / "configs/mini_swe_openai_modal.yaml")
+    ap.add_argument("--base-config", default="swebench.yaml",
+                    help="swebench.yaml for tool-call model classes; swebench_backticks.yaml for *_textbased (e.g. DeepSeek)")
     ap.add_argument("--anchor", type=Path, default=ROOT / "configs/anchor_free_rm4_n16.yaml")
     ap.add_argument("--k", type=int, default=4); ap.add_argument("--workers", type=int, default=8); ap.add_argument("--step-limit", type=int, default=40)
     ap.add_argument("--cost-cap", type=float, default=15.0); ap.add_argument("--limit", type=int, default=0)
@@ -128,7 +136,7 @@ def main() -> None:
     ids = [l.strip() for l in a.instances_file.read_text().splitlines() if l.strip() and not l.startswith("#")]
     if a.limit: ids = ids[: a.limit]
     cfg = yaml.safe_load(a.anchor.read_text()); seed = int(cfg["split"]["split_seed"]); tf = float(cfg["split"]["train_frac"])
-    if a.stage == "generate": gen(ids, a.k, a.out, a.mini_config, a.workers, a.step_limit, a.cost_cap)
+    if a.stage == "generate": gen(ids, a.k, a.out, a.mini_config, a.workers, a.step_limit, a.cost_cap, base_config=a.base_config)
     elif a.stage == "bundle": bundle(ids, a.k, a.out, seed, tf)
     elif a.stage == "select": select(a.out, a.scores_dir or a.out / "modal/prefix4k")
     elif a.stage == "rows": make_rows(a.out, a.scores_dir or a.out / "modal/prefix4k", a.gold_report or ROOT / "data/gold_modal/replication_multilingual/report.json", seed)

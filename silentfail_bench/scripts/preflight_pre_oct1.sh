@@ -37,6 +37,10 @@ grep -q "allow_fallbacks: false" silentfail_bench/configs/mini_swe_deepseek.yaml
 grep -q "Amendment 10a" silentfail_bench/PREREGISTRATION_SWEBENCH_PILOT.md && chk 1 "Amendment 10a recorded (stop rule, ledger, cost enforcement)" || chk 0 "Amendment 10a recorded"
 grep -q "raised, before outcome, from .22 to .26" silentfail_bench/PREREGISTRATION_SWEBENCH_PILOT.md && chk 1 "Modal ledger reconciled and cap raised to \$26 before outcome" || chk 0 "Modal ledger reconciled"
 ! grep -q "null \*\*replicates\*\*" CLAUDE_HANDOFF_OCT1.md && chk 1 "handoff does not overclaim the null as replicated" || chk 0 "handoff overclaims the null as replicated"
+! grep -qE "^[^#]*--dataset[[:space:]]+princeton-nlp/" silentfail_bench/scripts/run_amendment10_pilot.sh && chk 1 "pilot gold does not use the princeton-nlp mirror (it lacks image/eval_script)" || chk 0 "pilot gold uses the princeton-nlp mirror, which KeyErrors in make_test_spec"
+inputs_rc=0
+silentfail_bench/.venv-swebench/bin/python silentfail_bench/scripts/check_inputs_tracked.py >/dev/null 2>&1 || inputs_rc=$?
+[ "$inputs_rc" -eq 0 ] && chk 1 "every data input a committed script reads is itself committed" || chk 0 "a committed script reads an untracked data input (run scripts/check_inputs_tracked.py)"
 grep -q "preds.json -> predictions.jsonl" silentfail_bench/scripts/run_amendment10_pilot.sh && chk 1 "runner converts preds.json to the JSONL gold actually reads" || chk 0 "runner converts preds.json for gold"
 grep -q "ABORT: predictions.jsonl empty or missing" silentfail_bench/scripts/run_amendment10_pilot.sh && chk 1 "runner asserts the converted file exists before spending on gold" || chk 0 "runner asserts the converted file exists"
 grep -q "credits endpoint" silentfail_bench/scripts/run_amendment10_pilot.sh && chk 1 "cost cap enforced externally, not by the scaffold" || chk 0 "cost cap enforced externally"

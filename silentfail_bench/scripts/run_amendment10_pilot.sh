@@ -32,17 +32,26 @@ if [ "$(date +%Y-%m-%d)" \< "2026-10-01" ]; then
 fi
 
 spend() { $V - <<'PY'
-import os, requests
+import os, sys, requests
 from dotenv import load_dotenv
 load_dotenv(os.path.expanduser("~/Library/Application Support/mini-swe-agent/.env"), override=True)
-c = requests.get("https://openrouter.ai/api/v1/credits",
+r = requests.get("https://openrouter.ai/api/v1/credits",
                  headers={"Authorization": "Bearer " + os.environ["OPENROUTER_API_KEY"]},
-                 timeout=30).json().get("data", {})
-print(f"{c.get('total_usage', 0):.6f}")
+                 timeout=30)
+d = r.json()
+# Assert the shape. A 200 with a changed payload would otherwise yield 0.000000 for
+# both readings, making the measured cost 0.00, passing the cap check, and reporting
+# P10-3 as a pass on the one gate that exists because the scaffold's own tracking is
+# inert. Fail loudly instead.
+if "data" not in d or "total_usage" not in d["data"]:
+    print(f"ABORT: unexpected /credits payload, keys={list(d)}", file=sys.stderr); sys.exit(4)
+print(f"{d['data']['total_usage']:.6f}")
 PY
 }
 
-BEFORE=$(spend); echo "   OpenRouter usage before: \$$BEFORE"
+BEFORE=$(spend) || { echo "ABORT: could not read OpenRouter usage; the cost gate would be blind."; exit 4; }
+echo "   OpenRouter usage before: \$$BEFORE"
+$V -c "import sys; sys.exit(0 if $BEFORE > 0 else 1)" || { echo "ABORT: usage reads exactly 0.000000, which is almost certainly a payload-shape change, not a fresh account. Check manually before spending."; exit 4; }
 
 # --- 1. generation ------------------------------------------------------
 FILTER="^($(paste -sd'|' "$INSTANCES"))$"
@@ -83,7 +92,10 @@ CONV
 
 # --- 3. gold ------------------------------------------------------------
 echo "== gold =="
-$V modal/gold_modal.py --dataset princeton-nlp/SWE-bench_Verified \
+# Dataset repo matters: princeton-nlp/SWE-bench_Verified lacks image, eval_script,
+# log_parser and eval_type, so make_test_spec raises KeyError on the FIRST instance,
+# after all agent spend is sunk. gold_modal.py already defaults to the right repo.
+$V modal/gold_modal.py --dataset SWE-bench/SWE-bench_Verified \
   --preds "$OUT/predictions.jsonl" --run-id "$RUN_ID" --oracle 3
 
 # --- 4. gates -----------------------------------------------------------

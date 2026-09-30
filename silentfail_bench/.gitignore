@@ -25,5 +25,21 @@ data/*/*
 !data/*/CHECKPOINT_HASHES.json
 # readouts the paper quotes must be committed:
 !data/*/readout_*.json
+# inputs a committed script reads must be committed too. This allow-list has now
+# been extended five times reactively; preflight_pre_oct1.sh checks the property
+# directly so the next omission is caught by a gate rather than by an audit.
+!data/*/judge_*.jsonl
+!data/*/gold_extra*.jsonl
+# git cannot re-include a file whose parent directory is excluded, so the
+# intermediate directories need negating before the files inside them.
+!data/*/llm_judges/
+!data/*/llm_judges/judgments*.jsonl
+!data/*/traj/
+!data/*/traj/cand*/
+# re-exclude the trajectories themselves; only the skip ledger is wanted,
+# because CHECKPOINT_HASHES.json attests it and preflight_amendment7.py reads it
+data/*/traj/cand*/*
+!data/*/traj/cand*/preds.json
+!data/*/README.md
 !data/*/rescoring_bundle.jsonl
 silentfail_l4_package*

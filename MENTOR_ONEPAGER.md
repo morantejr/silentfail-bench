@@ -58,7 +58,7 @@ and gated.
 1. **1 Oct:** rerun DeepSeek's 41-instance pilot with the corrected cap, then
    grade it. Apply all three gates.
 2. **If it passes:** freeze DeepSeek and run the full 114-instance, four-candidate
-   axis, about $3.65 of API and inside the $22 Modal cap.
+   axis, about $3.65 of API and inside the $26 Modal cap (Amendment 10a reconciled the ledger to $23.19 and raised the cap from $22 before outcome).
 3. **If it fails:** stop and report. Do not launch the full axis.
 
 ## The honest forecast, written before the run

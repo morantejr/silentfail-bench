@@ -168,9 +168,32 @@ def load_candidate_gold(root, bundle):
             if key in gold and gold[key] != int(d["g"]):
                 raise ValueError(f"conflicting gold for {key}")
             gold[key] = int(d["g"])
+    # A slot can be missing for a reason the harness records: the patch would not apply,
+    # or the run errored. gold_modal.py writes no gold_extra row for those (it guards on
+    # `if "error" not in r`), and EVERY real gold run on disk has some, at 2-9% of
+    # attempts. Aborting on them would throw away four paid gold runs. The project
+    # already models this as an exclusion elsewhere (run_replication_modal.py's
+    # `gold_error` reason), so it is excluded here too, counted, and declared in
+    # Amendment 10b before any agent-axis gold existed.
     missing = sorted(set(bundle) - set(gold))
+    errored = []
+    for candidate in range(4):
+        rep = Path(root) / f"a7_agent_axis_cand{candidate}" / "report.json"
+        if rep.exists():
+            for i in (json.loads(rep.read_text()).get("error_ids") or []):
+                errored.append((i, candidate))
+    errored_set = set(errored)
+    unexplained = [k for k in missing if k not in errored_set]
+    if unexplained:
+        raise ValueError(f"gold incomplete for {len(unexplained)} slots the harness did NOT record as errors; "
+                         f"first={unexplained[:5]}. This is a pipeline fault, not a harness error.")
     if missing:
-        raise ValueError(f"gold incomplete: {len(missing)} candidate slots missing; first={missing[:5]}")
+        rate = len(missing) / max(len(bundle), 1)
+        print(f"[gold] {len(missing)} of {len(bundle)} slots excluded as harness errors ({rate:.1%})")
+        if rate > 0.10:
+            raise ValueError(f"harness error rate {rate:.1%} exceeds 10%; stop and inspect rather than analysing a "
+                             f"population this depleted")
+    load_candidate_gold.excluded_slots = missing
     return gold
 
 
