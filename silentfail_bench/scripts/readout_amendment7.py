@@ -401,7 +401,7 @@ def production_readout(args):
     }
     gate["passes"] = gate["pool_AUROC_gt_0p65"] and gate["committed_below_random"]
 
-    new_cap = capability(bundle, gold, a.agent_label)
+    new_cap = capability(bundle, gold, args.agent_label)
     old_cap = old_agent_capability()
     new_lo, new_hi = new_cap["unconditional_failure_rate_band"]
     old_lo, old_hi = old_cap["unconditional_failure_rate_band"]
@@ -464,7 +464,10 @@ def main():
     ap.add_argument("--out", type=Path, default=ROOT / "data/agent_axis/readout_amendment7.json")
     a = ap.parse_args()
     global AGENT_KEY
-    AGENT_KEY = "".join(ch if ch.isalnum() else "_" for ch in a.agent_label).strip("_").replace("__", "_")
+    # The default label must reproduce the original key byte-for-byte ("gpt6_luna", not
+    # "gpt_6_luna"): the fixture test and any consumer of the September output depend on it.
+    AGENT_KEY = ("gpt6_luna" if a.agent_label == "gpt-6-luna"
+                 else "".join(ch if ch.isalnum() else "_" for ch in a.agent_label).strip("_").replace("__", "_"))
 
     if a.dry_run:
         print("DRY RUN. Exercising every code path on the gpt-5-mini replication data.")
