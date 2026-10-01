@@ -15,6 +15,14 @@ figs = Path("paper/make_figures.py").read_text()
 D = Path("silentfail_bench/data")
 fail = []
 
+def _pdf_pages(path):
+    """Read a PDF's pages and CLOSE the file. The bite harness runs this checker ~230 times
+    in one process; an unclosed reader per run exhausts the descriptor limit and the
+    checker crashes mid-sweep, which the harness cannot tell from a caught perturbation."""
+    import pypdf
+    with open(path, "rb") as fh:
+        return [pg.extract_text() or "" for pg in pypdf.PdfReader(fh).pages]
+
 def check(name, a, b, tol=0.0015):
     ok = a is not None and b is not None and abs(a - b) <= tol
     print(f"  {'ok  ' if ok else 'FAIL'}  {name}: {a} vs {b}")
@@ -697,7 +705,7 @@ print("\nshort-paper page budget, measured from the built PDF:")
 _pdf = Path("paper/main_short.pdf")
 try:
     import pypdf
-    _pages = [p.extract_text() or "" for p in pypdf.PdfReader(str(_pdf)).pages]
+    _pages = _pdf_pages(_pdf)
 except Exception as _e:                      # missing dep or missing/corrupt PDF
     print(f"  FAIL  cannot measure main_short.pdf ({type(_e).__name__}: {_e}). "
           f"Install pypdf or rebuild the PDF; an unverifiable page budget is not a passing one.")
@@ -734,9 +742,9 @@ if _ids: fail.append("agentverify not anonymous")
 _avpdf = Path(__file__).resolve().parent / "main_agentverify.pdf"
 try:
     import pypdf
-    _avp = pypdf.PdfReader(str(_avpdf)).pages
+    _avp = _pdf_pages(_avpdf)
     _n = len(_avp)
-    _anon = not any(t in " ".join((q.extract_text() or "") for q in _avp).lower()
+    _anon = not any(t in " ".join(_avp).lower()
                     for t in ("morante", "algoverse", "morantejr"))
     ok = _n <= 8 and _anon
     print(f"  {'ok  ' if ok else 'FAIL'}  built PDF is {_n} pages including references (limit 8), "
@@ -817,7 +825,7 @@ if not ok: fail.append("symposium author block")
 # and it must stay inside two pages
 try:
     import pypdf as _pp
-    _n = len(_pp.PdfReader(str(Path(__file__).resolve().parent / "main_symposium.pdf")).pages)
+    _n = len(_pdf_pages(Path(__file__).resolve().parent / "main_symposium.pdf"))
     ok = _n <= 2
     print(f"  {'ok  ' if ok else 'FAIL'}  built PDF is {_n} page(s); the CFP's abstract option allows 2")
     if not ok: fail.append("symposium page limit")

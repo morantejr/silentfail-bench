@@ -38,6 +38,13 @@ a10_done=0
 [ -f silentfail_bench/data/pilot_deepseek_a10/readout_amendment10.json ] && \
   silentfail_bench/.venv-swebench/bin/python -c "import json,sys; d=json.load(open('silentfail_bench/data/pilot_deepseek_a10/readout_amendment10.json')); sys.exit(0 if d['all_gates_pass'] is False and d['P10_3']['per_trajectory_usd'] > 0 else 1)" && a10_done=1
 [ "$a10_done" = "1" ] && chk 1 "Amendment 10 pilot has run; readout records STOP with a non-zero measured cost" || chk 0 "Amendment 10 readout missing, or it records a passing gate set or a zero cost"
+# Amendment 11 re-ran both arms at 100 steps. Its readout must exist, record every gate
+# passing under BOTH classifications of the comparator's crashed rows, and carry a
+# non-zero measured cost, or the papers' "runnable" claim has nothing behind it.
+a11_done=0
+[ -f silentfail_bench/data/readout_amendment11.json ] && \
+  silentfail_bench/.venv-swebench/bin/python -c "import json,sys; d=json.load(open('silentfail_bench/data/readout_amendment11.json')); sys.exit(0 if d['all_gates_pass'] is True and d['P11_2']['passes_A'] and d['P11_2']['passes_B'] and d['P11_3']['measured_total_usd'] > 0 else 1)" && a11_done=1
+[ "$a11_done" = "1" ] && chk 1 "Amendment 11 has run; readout records all gates passing under both classifications, non-zero cost" || chk 0 "Amendment 11 readout missing, or a gate fails, or the classifications disagree, or cost is zero"
 [ -x silentfail_bench/scripts/run_amendment10_pilot.sh ] && chk 1 "executable pilot runner present" || chk 0 "executable pilot runner present"
 [ -f silentfail_bench/scripts/readout_amendment10.py ] && chk 1 "Amendment 10 gate readout present" || chk 0 "Amendment 10 gate readout present"
 grep -q "Amendment 10a" silentfail_bench/PREREGISTRATION_SWEBENCH_PILOT.md && chk 1 "Amendment 10a recorded (stop rule, ledger, cost enforcement)" || chk 0 "Amendment 10a recorded"
@@ -65,4 +72,4 @@ silentfail_bench/.venv-swebench/bin/python silentfail_bench/scripts/check_readou
 
 if [ "$a10_fail" = "1" ]; then echo; echo "AMENDMENT 10 PREFLIGHT FAILED"; exit 1; fi
 
-echo "PREFLIGHT OK — Amendment 10 has run and failed its functioning gate; the agent axis stays closed (Amendment 10a §1)"
+echo "PREFLIGHT OK — Amendment 10 failed at 40 steps; Amendment 11 passes every gate at 100 steps (post hoc); the agent axis is RUNNABLE under its own amendment and has NOT been launched"

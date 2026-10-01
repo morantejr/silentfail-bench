@@ -656,6 +656,37 @@ verdict. Declared in the pre-registration with the verdict under each classifica
 **Class.** One bucket for two causes; an exclusion rule written for the instrument applied
 to the agent.
 
+### #20 — The bite harness scored a crash as a catch, then recommended deleting ten correct exemptions *(audit tooling)*
+
+Found 1 October, on the full sweep after Amendment 11. Ten ECE values in
+`readout_pi_batch2.json` that had been correctly `NOT CAUGHT` and exempt all day came back
+`caught (crash)`, and the stale-exemption logic duly reported all ten exemptions as "now
+pinned; remove this exemption." They were not pinned. The checker was crashing.
+
+**Cause.** `check_consistency.py` opened a `pypdf.PdfReader` per measured PDF and never
+closed it. Under the bite harness the checker runs once per scalar — 227 times — in one
+process, and a third unclosed reader per run (the symposium check, added that morning)
+pushed the open-descriptor count past macOS's default of 256 around run 108. The next ten
+runs died with "too many open files" until the garbage collector freed enough handles. The
+crash had nothing to do with the values being perturbed; it was a function of *where in the
+sweep* they fell. A single-run reproduction passed cleanly, which is what gave it away.
+
+**Why it is an instrument failure and not a nuisance.** The harness treated any non-zero
+exit as evidence that an assertion bit. A crash satisfied that, so a checker bug was
+reported as *stronger* coverage, and the follow-on recommendation — delete ten exemptions —
+would have left ten unpinned values with no recorded reason, which is precisely the state
+the exemption file exists to prevent. Had I followed the tool, the repository would have
+been less protected and the log would have said it was more.
+
+**Fixes.** PDFs are read through a helper that closes the file; descriptor count is flat
+across repeated in-process runs (4, 5, 5, 5). The harness now classifies a raised
+exception separately as `CRASH`, fails the sweep on it, and never lets a crash mark an
+exemption stale. The `--file readout_pi_batch2` re-sweep: 1 caught, 10 not caught and
+exempt, 0 crashed.
+
+**Class.** An audit tool whose failure mode looks like success; a resource leak that only
+manifests at scale, so single-case reproduction is blind to it.
+
 ## Correction: my bite test reported four failures that did not exist (2026-09-30)
 
 The 2026-09-29 bite test of the lucky-pass and taxonomy assertions reported

@@ -200,7 +200,7 @@ def main():
 
     exempt = json.loads(EXEMPT_FILE.read_text()) if EXEMPT_FILE.exists() else {}
     todo = [(f, p) for f, p in leaves if args.file in f]
-    caught, uncaught, skipped = [], [], []
+    caught, uncaught, skipped, crashed = [], [], [], []
     for i, (f, p) in enumerate(todo, 1):
         raw = json.loads((ROOT / f).read_text())
         cur = raw
@@ -223,9 +223,16 @@ def main():
             # assertion short-circuited. Report rather than silently pass.
             uncaught.append((f, p, "not reached on perturbed run"))
             verdict = "NOT REACHED"
+        elif crash:
+            # The checker raised rather than failing an assertion. That is a bug in the
+            # checker exposed by this perturbation, not evidence that the value is pinned,
+            # and it must never be allowed to mark an exemption stale. Ten correct ECE
+            # exemptions were reported stale this way on 1 Oct.
+            crashed.append((f, p))
+            verdict = "CRASH"
         elif rc != 0:
             caught.append((f, p))
-            verdict = "caught" + (" (crash)" if crash else "")
+            verdict = "caught"
         else:
             uncaught.append((f, p, "checker still exits 0"))
             verdict = "NOT CAUGHT"
@@ -239,8 +246,14 @@ def main():
         print("Re-run on a tree nobody is editing.")
         return 2
 
-    print(f"\n{len(caught)} caught, {len(uncaught)} not caught, {len(skipped)} non-numeric skipped,"
-          f" of {len(todo)} scalars")
+    print(f"\n{len(caught)} caught, {len(uncaught)} not caught, {len(crashed)} crashed, "
+          f"{len(skipped)} non-numeric skipped, of {len(todo)} scalars")
+    if crashed:
+        for f, p in crashed:
+            print(f"  CRASH      {f.split('/')[-1]}{p}: the checker raised instead of failing an assertion")
+        print(f"\n{len(crashed)} perturbation(s) crash the checker. A crash is a checker bug, not a pin: "
+              f"fix the checker so it fails the assertion cleanly, then re-run.")
+        return 1
     unexpected = [(f, p, why) for f, p, why in uncaught if p not in exempt.get(f, {})]
     for f, p, why in uncaught:
         tag = "exempt" if p in exempt.get(f, {}) else "UNEXPECTED"
