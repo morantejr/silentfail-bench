@@ -1792,3 +1792,37 @@ projection exceeds **$20** the full run does not start. OpenRouter is capped at 
 for this amendment, measured externally by differencing the credits endpoint (balance
 before: $40.89 of $50). Modal ≤ **$5** (one generation run, one gold run) against $27.10
 read from the dashboard. No paid overage. Three-hour stop on generation.
+
+## Amendment 12, deviation recorded mid-run: a third setting was binding, and it was not the budget
+
+With 33 of 41 trajectories written, 20 had exited `LimitsExceeded` at a median of 31 steps
+and a maximum of 51 — none near the 100-step ceiling. Their scaffold-reported costs are
+$0.252–$0.300, every one just past the `cost_limit: 0.25` per trajectory that both
+open-weight configs carry. That limit never bound DeepSeek at $0.015 a run; it binds GLM
+at $0.17–0.30 a run. "DeepSeek's qualifying settings" therefore contained a setting that
+was inert for DeepSeek and decisive for GLM, and this amendment did not name it.
+
+**Consequence, declared before the readout is computed.** P12-1 as registered — does GLM
+function at a 100-step budget — is **not answered by this run**. What the run measures is
+GLM under a $0.25 per-trajectory cost cap, and that is how it is reported: descriptively,
+with the number of runs the cap cut. The registered reading "P12-1 fails → the shortfall is
+not explained by budget or token cap" does **not** apply, because a third cap explains it.
+The run is allowed to finish so the record is complete; its remaining cost is about $2.
+
+**What answering the registered question would take.** A rerun with the cost limit raised
+far enough not to bind — on this evidence at least $1.00 per trajectory — at roughly $25–40
+of OpenRouter for 41 instances, which exceeds this amendment's $20 cap and most of the
+remaining balance, to settle a question on which no decision rides: P12-3 fails at every
+budget, so GLM is disqualified for the axis regardless. It is not run under this amendment.
+If it is ever run, it is a new amendment with its own cap.
+
+The 40-step record is re-read in the same light: GLM's mean cost there was $0.1739 with a
+maximum of $0.2663, so some of its 22 `LimitsExceeded` exits at 40 steps were also the cost
+cap rather than the step ceiling. The papers' sentence that GLM's mechanism is unmeasured
+remains the accurate one, now with the reason stated.
+
+**Checked for the results already reported.** The same `cost_limit: 0.25` sits in DeepSeek's
+config. Across Amendment 11's DeepSeek arm the most expensive trajectory cost $0.123 and
+across the gpt-5-mini comparator $0.086; zero runs on either arm reached the cap. The
+Amendment 11 verdicts are therefore not confounded by it. Amendment 10's DeepSeek arm: maximum
+$0.058, zero at the cap.
