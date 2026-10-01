@@ -1926,3 +1926,46 @@ launch. **No paid overage.** If any cap is exceeded the pipeline stops before th
 stage and the partial state is reported, not analysed. The `swe-rex` deployment is stopped at
 the end; `modal app list` is part of done. Wall clock: roughly twelve hours; a stage that has
 not finished within twice its estimate is stopped and reported.
+
+## Amendment 13, deviation recorded mid-run: the sandboxes never closed, and the run was paused at 100 of 456
+
+Recorded 1 October 2026, 15:10 EDT, after the generation stage was killed and before it was
+resumed. Generation started 13:02 EDT and was killed at 14:49 EDT with candidate 0 at 100 of
+114 trajectories (96 `Submitted`, 4 `RepeatedFormatError`) and candidates 1–3 not started.
+
+**What happened.** `modal container list` showed 100 live containers on the `swe-rex` app:
+one per finished trajectory. Two upstream defects stack (DEFECTS #21): mini-swe-agent 2.4.6's
+batch runner never calls `env.stop()`, and swerex's `ModalDeployment.stop()` terminates a
+sandbox only if it has *already exited*. Every sandbox therefore lived to the config's
+`deployment_timeout` (7200 s). At 100 idle containers Modal's workspace cap was reached, and
+the remaining 14 candidate-0 instances (tokio-rs__axum-691, -734, tokio-rs__tokio-6724,
+-6752, -7139, uutils__coreutils-6377, -6575, -6731, valkey-io__valkey-1499, -1842, -790,
+vuejs__core-11589, -11870, -11915) each died in `SandboxTimeoutError` while waiting for a
+sandbox, **with zero model calls**. The generator then logged candidate 0 as complete at 100
+and would have stalled the same way on candidate 1.
+
+**Fix, verified before the resume.** `envs/swerex_modal_closing.py` subclasses the swerex
+Modal environment and terminates the sandbox when the trajectory releases the environment
+(and at process exit); `envs/run_swebench_closing.py` is a drop-in for `mini-extra swebench`
+that points the registry name `swerex_modal` at that class, so the registered YAMLs are
+byte-identical and the runner's image selection still applies. Nothing the agent sees
+changes: same image, commands, limits and timeouts. The trajectory's
+`info.config.environment_type` records which class ran, so the first 100 and the rest are
+distinguishable. A one-instance smoke through the new path (apache__druid-14092: `Submitted`,
+19 steps, $0.0102 external) left **zero** containers 35 s after the process ended, with no
+app stop. One earlier smoke attempt, minutes after the mass teardown, failed at sandbox
+start with `SandboxTimeoutError`; the identical attempt passed on retry and a direct swerex
+probe on the same image started in 7 s, so that failure is recorded as transient.
+
+**Resume accounting.** The generator skips existing trajectories (`--redo-existing` is off),
+so the resume regenerates exactly the 14 instances above under candidate 0's seed and then
+candidates 1–3. Those 14 are retried because no model call was made; they are not re-rolls.
+OpenRouter spend to the pause is $1.89 (18.161482 → 20.053937, in the ledger as
+`openrouter_at_pause`); the $20 cap is measured from the **first** `openrouter_before`, so
+the segments add. The 4 `RepeatedFormatError` exits stand as failures, as registered. Modal
+spend during the leak is read from the dashboard by the operator and reported in the
+outcome; the 100 idle containers are the cost of this defect, not of the measurement.
+
+**What does not change.** Predictions, gates, caps, stop rules, the comparator design and
+the 7a inference rules are untouched. The only post-hoc element added is the environment
+class, which cannot affect `c`, `u` or gold.

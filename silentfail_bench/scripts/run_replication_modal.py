@@ -39,10 +39,14 @@ def gen(ids: list[str], k: int, out: Path, cfg: Path, workers: int, step_limit: 
     flt = "^(" + "|".join(re.escape(i) for i in ids) + ")$"
     for c in range(k):
         run_dir = out / "traj" / f"cand{c}"; run_dir.mkdir(parents=True, exist_ok=True); t0 = time.time()
-        subprocess.run([str(MINI), "swebench", "--subset", "multilingual", "--split", "test", "--filter", flt, "-o", str(run_dir),
+        # Launched through envs/run_swebench_closing.py, not mini-extra: identical CLI, but each
+        # Modal sandbox is terminated when its trajectory ends (DEFECTS #21: upstream never does).
+        subprocess.run([sys.executable, "-m", "envs.run_swebench_closing", "--subset", "multilingual", "--split", "test", "--filter", flt, "-o", str(run_dir),
                         "-w", str(workers), "-c", base_config, "-c", str(cfg), "-c", f"model.model_kwargs.seed={1000 + c}",
-                        "-c", f"agent.step_limit={step_limit}"], stdout=open(run_dir / "gen.log", "a"), stderr=subprocess.STDOUT,
-                       env={k: v for k, v in os.environ.items() if k not in ("OPENAI_API_BASE", "OPENAI_BASE_URL")})   # never inherit a local model base URL
+                        "-c", f"agent.step_limit={step_limit}"],
+                       stdout=open(run_dir / "gen.log", "a"), stderr=subprocess.STDOUT, cwd=str(ROOT),
+                       env={**{k: v for k, v in os.environ.items() if k not in ("OPENAI_API_BASE", "OPENAI_BASE_URL")},   # never inherit a local model base URL
+                            "PYTHONPATH": str(ROOT)})
         cost = spent(out); print(f"[gen] cand {c}: {time.time()-t0:.0f}s, {len(list(run_dir.glob('*/*.traj.json')))} trajectories, cumulative est ${cost:.2f}", flush=True)
         if cost > cost_cap: print(f"[gen] COST CAP ${cost_cap} reached; stopping after cand {c}", flush=True); return
 

@@ -62,19 +62,29 @@ print(f"   {Path(fs[0]).parent.name}: exit={info.get('exit_status')} steps={step
       f"scaffold=${float(st.get('instance_cost') or 0):.4f} external=${ext:.4f}")
 print(f"   applied: step_limit={cfg.get('agent',{}).get('step_limit')} cost_limit={cfg.get('agent',{}).get('cost_limit')} "
       f"max_tokens={(cfg.get('model',{}).get('model_kwargs') or {}).get('max_tokens')}")
+print(f"   environment_type: {cfg.get('environment_type')}")
+if "swerex_modal_closing" not in str(cfg.get("environment_type")):
+    print("ABORT: the sandbox-closing environment did not apply (DEFECTS #21)"); sys.exit(2)
 if cfg.get("agent", {}).get("step_limit") != 100 or cfg.get("agent", {}).get("cost_limit") != 1.0:
     print("ABORT: the axis config did not apply"); sys.exit(2)
 proj = ext * 456
 print(f"   projected x456 from the external measurement: ${proj:.2f} (cap ${cap:.2f})")
 if proj > cap: print("ABORT: projection exceeds the OpenRouter cap; do not generate"); sys.exit(3)
 INNERPY
+  grep -h "terminated sandbox" data/smoke_a13/traj/cand0/*.log 2>/dev/null | head -1 | sed 's/^/   /' || true
   rm -rf data/smoke_a13
   echo "== smoke OK =="
   ;;
 generate)
   $V scripts/preflight_amendment13.py >/dev/null 2>&1 || { echo "ABORT: preflight failed; run it to see why"; exit 2; }
   mkdir -p $O
-  B=$(spend); echo "openrouter_before $B" >> $LEDGER; echo "== generate: 456 trajectories (usage before \$$B) =="
+  if [ "${A13_RESUME:-}" = "1" ] && grep -q "^openrouter_before " $LEDGER 2>/dev/null; then
+    # Resuming: the cost gate is measured from the FIRST before-mark, so paused segments add up.
+    B=$(grep "^openrouter_before " $LEDGER | head -1 | awk '{print $2}'); echo "openrouter_resume $(spend)" >> $LEDGER
+    echo "== generate (RESUME): 456 trajectories, existing ones skipped (usage at first start \$$B) =="
+  else
+    B=$(spend); echo "openrouter_before $B" >> $LEDGER; echo "== generate: 456 trajectories (usage before \$$B) =="
+  fi
   $V scripts/run_replication_modal.py --stage generate --instances-file $I --out $O \
       --mini-config $CFG --base-config swebench_backticks.yaml --k 4 --workers 6 --step-limit 100 --cost-cap $OR_CAP
   A=$(spend); echo "openrouter_after_generate $A" >> $LEDGER

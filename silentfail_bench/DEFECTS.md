@@ -910,3 +910,40 @@ honest options, in order: write the script and regenerate after the credit
 resets; or, if the paper is submitted first, state in the reproducibility
 appendix that this one readout is provided as data rather than as a rerunnable
 artefact.
+
+### #21 — Every Modal sandbox outlived its trajectory; the axis run stalled at Modal's 100-container cap *(infrastructure, upstream)*
+
+Found 1 October 2026, 14:48 EDT, when the Amendment 13 generation had written nothing for
+nine minutes and `modal container list` showed 100 live `swe-rex` containers for 100 finished
+trajectories. The operator's Modal "workspace limit" email was the same event.
+
+**Cause.** Two upstream defects stack. mini-swe-agent 2.4.6's batch runners
+(`run/benchmarks/swebench.py` and `programbench.py`) save the trajectory in their `finally`
+block and never call `env.stop()`. And swerex's `ModalDeployment.stop()` reads
+`if exit_code is not None: terminate()` — it terminates a sandbox only when the sandbox has
+already exited, so a live one is never killed even by callers that do use `stop()`. Each
+sandbox lives to its `deployment_timeout` (7200 s in the axis config; 3600 s in the pilot
+configs, which is why the 41-instance pilots never reached the cap). Once 100 were idle, every
+new `Sandbox.create` waited for a slot and the next 14 instances died in `SandboxTimeoutError`
+with zero model calls; the generator logged candidate 0 as complete at 100 of 114.
+
+**What it cost.** About 110 idle sandbox-hours on Modal (read from the dashboard by the
+operator), one wasted hour of wall clock, and 14 instances that had to be regenerated. It
+did not touch any trajectory that was written: the 100 are intact and the agent never saw a
+difference.
+
+**Fix.** `envs/swerex_modal_closing.py` terminates the sandbox when the environment object is
+released (`weakref.finalize`, which also fires at interpreter exit) and makes `stop()` effective;
+`envs/run_swebench_closing.py` launches the unchanged batch CLI with the registry name
+`swerex_modal` pointed at that class, so registered YAMLs stay byte-identical and the
+runner's image selection — which matches the literal name — still applies.
+`scripts/run_replication_modal.py` launches through it. Verified by a one-instance smoke:
+`Submitted`, the trajectory records the closing class, and the container count fell to zero
+35 s after the process ended with no app stop. The Amendment 13 record carries the mid-run
+deviation; `MENTOR_NOTE` and the working rules now say to watch `modal container list`
+during any batch run.
+
+**Lesson.** "Stop the swe-rex app after the run" (the rule since September) was treating the
+symptom: the app lingered *because* its sandboxes lingered. A resource that is created per
+trajectory needs a per-trajectory teardown that is proven by counting, not by reading the
+library's `stop()` and assuming it is called.

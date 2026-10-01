@@ -1,0 +1,3 @@
+openrouter_before 18.161482
+openai_balance_confirmed_over_20_by_operator 2026-10-01T17:09:51Z
+openrouter_at_pause 20.053937 2026-10-01T18:51:54Z  # generation killed at cand0=100/114: 100 idle sandboxes hit the Modal 100-container cap; 14 SandboxTimeoutError with zero model calls

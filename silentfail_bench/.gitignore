@@ -57,3 +57,6 @@ data/gold_modal/*/*
 !data/*/README.md
 !data/*/rescoring_bundle.jsonl
 silentfail_l4_package*
+
+# per-run spend ledgers are evidence
+!data/*/spend_ledger.txt
