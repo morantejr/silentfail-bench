@@ -1969,3 +1969,31 @@ outcome; the 100 idle containers are the cost of this defect, not of the measure
 **What does not change.** Predictions, gates, caps, stop rules, the comparator design and
 the 7a inference rules are untouched. The only post-hoc element added is the environment
 class, which cannot affect `c`, `u` or gold.
+
+## Amendment 13, second deviation recorded mid-run: slow sandbox starts were reported as failures
+
+Recorded 1 October 2026, 16:25 EDT, after the resumed generation was killed at candidate 1 =
+47 of 114 and before the second resume. Candidate 0 had completed (114: 110 `Submitted`,
+4 `RepeatedFormatError`) once the 14 instances from the first deviation were regenerated;
+they are in the data under candidate 0's seed with the closing environment class recorded.
+
+**What happened.** In candidate 1, 66 instances died in `SandboxTimeoutError` at ~51 s with
+**zero model calls**, while 47 ran normally. The cause is a second upstream defect (DEFECTS
+#22): swerex waits for the sandbox's tunnel with Modal's `Sandbox.tunnels()` default of 50 s,
+not the registered `startup_timeout` of 600 s, so any sandbox whose image pull or scheduling
+takes longer than 50 s is reported as failed before it starts. Candidate 0's first pass was
+not affected because its images were warm; by candidate 1 they were not. mini-swe-agent
+again wrote the failed instances into `preds.json` with an empty patch, and its resume logic
+skips by that key, so each candidate directory now carries a `RESUME_NOTE.md` listing the
+removed placeholders with a backup of the file as it was.
+
+**Fix, verified before the resume.** A one-line patch to the venv's swerex
+(`tunnels.aio(timeout=max(50, startup_timeout))`, marked `silentfail patch`), checked by the
+preflight and asserted at import by `envs/swerex_modal_closing.py`, which refuses to run
+without it. A one-instance smoke through the patched path: `Submitted`, 20 steps, $0.0118
+external, container self-closed. The smoke took seven minutes end to end, which is the slow
+start the patch now tolerates.
+
+**What this means for the measurement.** Nothing about `c`, `u` or gold changes; the 66
+instances are regenerated under candidate 1's seed exactly as the 14 were. Wall clock is
+longer than estimated. OpenRouter spend to this pause is $2.97 (`openrouter_at_pause2`).

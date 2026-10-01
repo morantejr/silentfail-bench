@@ -947,3 +947,33 @@ during any batch run.
 symptom: the app lingered *because* its sandboxes lingered. A resource that is created per
 trajectory needs a per-trajectory teardown that is proven by counting, not by reading the
 library's `stop()` and assuming it is called.
+
+### #22 — swerex waited for the sandbox tunnel with Modal's 50 s default, not the registered startup timeout *(infrastructure, upstream)*
+
+Found 1 October 2026, 16:15 EDT, when the resumed Amendment 13 generation showed 66
+`SandboxTimeoutError` tracebacks against 47 saved trajectories in candidate 1, and only 3
+containers live for 6 workers. Each failure came at ~51 s. A smoke earlier in the day had
+failed the same way and been recorded as transient; it was this.
+
+**Cause.** `swerex/deployment/modal.py` calls `self._sandbox.tunnels.aio()` with no timeout.
+Modal's signature is `tunnels(timeout: int = 50)`, and it raises `SandboxTimeoutError` when
+the tunnel is not ready in time — which for a cold multi-gigabyte Multilingual image is
+routinely more than 50 s. swerex's own `startup_timeout` (600 s here) is applied only
+*after* the tunnel call, so it never had a chance. Candidate 0's first pass ran on warm
+images and never hit it; candidate 1 did.
+
+**What it cost.** No model calls — every failure is pre-agent — but 66 instances had to be
+cleaned out of `preds.json` (mini-swe-agent writes failed instances there with an empty
+patch and then skips them on resume, so an uncleaned resume would have scored them as
+failures) and roughly an hour of wall clock.
+
+**Fix.** One line: `tunnels.aio(timeout=max(50, int(self._startup_timeout)))`, marked
+`silentfail patch` like the existing `add_python` patch, checked by
+`scripts/preflight_amendment13.py`, and asserted at import by `envs/swerex_modal_closing.py`
+so a venv without it cannot launch a batch. Verified by a one-instance smoke that took
+seven minutes to start and then ran normally.
+
+**Lesson.** The same lesson as #21 from the other side: a library's named timeout is not the
+timeout that binds. Read which call fails and what *its* default is. And "transient" is a
+hypothesis that needs a count, not a label — the smoke that failed once was the first
+sample of a 58% failure rate.

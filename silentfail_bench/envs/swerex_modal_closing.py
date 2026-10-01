@@ -23,6 +23,14 @@ import logging
 import weakref
 
 from minisweagent.environments.extra.swerex_modal import SwerexModalEnvironment
+import swerex.deployment.modal as _swerex_modal
+from pathlib import Path as _Path
+
+# DEFECTS #22: swerex waits for the sandbox tunnel with Modal's 50 s default, not the registered
+# startup_timeout, so a slow image pull is reported as SandboxTimeoutError with no model call.
+# The venv carries a one-line patch; refuse to run without it rather than fail at 55% silently.
+if "silentfail patch: Modal's default is 50 s" not in _Path(_swerex_modal.__file__).read_text():
+    raise RuntimeError("swerex tunnels-timeout patch missing from the venv (DEFECTS #22); apply it before any batch run")
 
 log = logging.getLogger("swerex_modal_closing")
 

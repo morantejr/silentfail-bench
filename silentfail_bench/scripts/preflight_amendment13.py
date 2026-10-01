@@ -65,6 +65,7 @@ if modal.exists():
     check(not live, "no Modal app still deployed or running (and quietly billing)", f"{len(live)} live")
 sw = ROOT / ".venv-swebench/lib/python3.12/site-packages/swerex/deployment/modal.py"
 check(sw.exists() and "add_python" in sw.read_text(), "swe-rex image patch still applied (else generation stalls on apt)")
+check(sw.exists() and "silentfail patch: Modal's default is 50 s" in sw.read_text(), "swe-rex tunnels-timeout patch applied (else slow image pulls die at 50 s, DEFECTS #22)")
 
 print("\ndataset")
 try:

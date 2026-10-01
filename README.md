@@ -37,7 +37,7 @@ about are exactly where its blind spots collect. **A null result is publishable*
 > [`CLAUDE_HANDOFF_OCT1.md`](CLAUDE_HANDOFF_OCT1.md) and Amendment 10 in the
 > preregistration. The old Amendment 7 runbook is retained only for downstream
 > stages after an open agent passes its capability gates.
-> Twenty numbered defects (including seven critic/instrument failures) are recorded in
+> Twenty-one numbered defects (including seven critic/instrument failures) are recorded in
 > [`silentfail_bench/DEFECTS.md`](silentfail_bench/DEFECTS.md), including one that
 > manufactured a result large enough to reverse the paper. Paper:
 > [`paper/main.pdf`](paper/main.pdf), 9-page submission version (body within seven)
