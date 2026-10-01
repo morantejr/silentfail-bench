@@ -1728,3 +1728,67 @@ environment leaves its `swe-rex` deployment up after a run (`ModalDeployment.sto
 never awaited), and the one created at 00:03 was still deployed at 11:30 with 46 tasks
 on record. It was stopped by hand. `modal app list` after every run is now part of the
 no-spend gate's definition of done.
+
+---
+
+# Amendment 12, 1 October 2026 — GLM-5.3 under DeepSeek's qualifying settings
+
+**Written before this run, after Amendments 10 and 11 were visible. Post hoc with respect
+to every setting below.** Amendment 10a §1 ruled GLM-5.3 out of the axis on two gates —
+13 of 41 submitted, and cost over the cap — and Amendment 11 then showed that the 40-step
+budget was the binding constraint for DeepSeek. This amendment asks whether the same is
+true of GLM. It exists for completeness and for the sentence the papers currently carry,
+"GLM-5.3's mechanism is unmeasured"; it **cannot** qualify GLM for the axis, for the reason
+in P12-3 below, and no outcome here changes which agent the axis would run on.
+
+## What the 40-step record actually shows
+
+From the committed trajectories: 22 of 41 exited `LimitsExceeded`, 6 `RepeatedFormatError`,
+13 `Submitted`; median 35 steps, maximum 40. Scaffold-reported cost $0.1739 per trajectory,
+**4.3×** the $0.040 cap — Amendment 10a's "roughly six times" was an overstatement and is
+corrected here. More than half the runs hit the ceiling, a stronger budget signal than
+DeepSeek's nine.
+
+## Two settings change, and attribution between them is not claimed
+
+GLM ran with `max_tokens: 4000`; DeepSeek's config raised its own cap to 16000 after
+recording that a tight cap starves the action and the turn parses to zero actions. GLM's
+six `RepeatedFormatError` exits are consistent with that mechanism. Testing the budget
+alone would leave a known instrument defect in place, so GLM runs under **DeepSeek's
+qualifying settings**: `step_limit = 100` and `max_tokens = 16000`, same 41 instances,
+same Modal environment, same text-based model class. The question answered is "does GLM
+qualify under the settings DeepSeek qualified under," which is the one the axis cares
+about. Because two things changed, a pass is not attributed to the budget alone.
+
+## Comparator
+
+`gpt-5-mini` at 100 steps is already measured on these instances in this environment
+(Amendment 11, `data/gold_modal/a11_gpt5mini_merged/report.json`). It is reused, not
+re-run. The classification of its five agent-caused crashes is reported both ways, as in
+Amendment 11, and P12-2 passes only if both agree.
+
+## Predictions
+
+- **P12-1 (it functions):** GLM submits a non-empty patch on at least 80% of instances.
+- **P12-2 (more capable at equal budget):** unconditional failure rate at least 10 points
+  below `gpt-5-mini`'s at 100 steps, under both classifications.
+- **P12-3 (affordable):** at or below $0.040 per trajectory. **Expected to fail.** The
+  40-step rate was already 4.3× over, and more steps and a larger token cap raise it. A
+  P12-3 failure keeps GLM disqualified for the axis whatever P12-1 and P12-2 show.
+
+## Readings, fixed now
+
+- P12-1 passes → the 40-step result was an artefact of the scaffold settings for GLM
+  too, and the papers' "mechanism unmeasured" becomes a measured statement. GLM stays
+  disqualified on cost.
+- P12-1 fails → GLM does not function under the settings that worked for DeepSeek; the
+  shortfall is not explained by budget or token cap. Reported as such.
+- Amendment 10's and 11's verdicts are unchanged under every outcome.
+
+## Caps and stop rules
+
+A one-instance smoke runs first. Its scaffold-reported cost is multiplied by 41; if the
+projection exceeds **$20** the full run does not start. OpenRouter is capped at **$20**
+for this amendment, measured externally by differencing the credits endpoint (balance
+before: $40.89 of $50). Modal ≤ **$5** (one generation run, one gold run) against $27.10
+read from the dashboard. No paid overage. Three-hour stop on generation.
