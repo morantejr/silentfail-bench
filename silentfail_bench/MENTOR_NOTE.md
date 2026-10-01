@@ -1305,3 +1305,42 @@ give −0.030, −0.014 and +0.013, every interval includes zero, loosest pooled
 +0.12 against the +0.05 we declared actionable. Per benchmark the unfitted rows disagree
 in sign. A bound, not an absence. 17 numbered instrument defects recorded, one of which
 would have published +0.375.
+
+---
+
+# 27. You were right about the step budget, and here is the measurement (2026-10-01, later)
+
+Section 26 conceded that the Amendment 10 gate was set by our own 40-step budget. Rather
+than leave that as a concession, Amendment 11 tested it: both agents re-run at 100 steps on
+the same 41 instances, registered before the run and declared post hoc with respect to the
+budget, because 100 was chosen knowing DeepSeek had submitted 32 of 41.
+
+| Gate | DeepSeek at 100 steps | Verdict |
+|---|---|---|
+| P11-1 functions | 39/41 = 0.951 (was 32/41 at 40) | PASS |
+| P11-2 more capable at equal budget | failure 0.098 vs gpt-5-mini 0.556 / 0.610 | PASS both ways |
+| P11-3 affordable | $0.0153/traj (gpt-5-mini $0.0357) | PASS |
+
+No DeepSeek trajectory reached the ceiling — the longest took 79 steps — so the 100-step
+result is not budget-limited either. All seven instances that died at the 40-step ceiling
+submitted, and six of them resolved. Gold: 37 of 41, zero harness errors.
+
+**The comparator needed care, and I want you to see where.** Three gpt-5-mini runs died on
+OpenAI's rate limit, not on the task; I regenerated them at one worker rather than score
+our rate limit as the model's failure. Five more rows came back from gold as "errors" and
+turned out to be gpt-5-mini's own patches breaking Django before any test ran — an
+`IndentationError`, a lost import, a circular import. The gold wrapper had one bucket for
+"the harness broke" and "the agent broke the package," and Amendment 10b's 10% rule, read
+literally, would have excluded those five failures from a capability comparison. I report
+the gap both ways and require both to pass; they do, at four times the bar. The wrapper is
+fixed, the reclassification is recorded as post hoc, and it is DEFECTS #19.
+
+**What it changes.** The agent axis is now runnable on a capable open-weight agent you
+named. It still needs its own amendment before it runs, and every number it produces will
+say that the agent qualified under a budget chosen after a failure. Amendment 10's 40-step
+verdict stands as the registered result at that budget; the papers now carry both.
+
+**What I would like from you**, unchanged from §26 and now more pointed: protocol or null as
+the lead framing — and, new, whether to spend the roughly $20 of remaining Modal credit on
+the axis now that it has a qualifying agent, or to submit first and run it for the next
+paper.

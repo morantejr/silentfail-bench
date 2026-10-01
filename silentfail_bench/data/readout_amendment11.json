@@ -1,0 +1,95 @@
+{
+  "amendment": 11,
+  "step_limit": 100,
+  "instances": 41,
+  "status": "post hoc with respect to the budget: 100 was chosen after Amendment 10's 32/41 was visible; a pass here is a new measurement and is not Amendment 10's P10-1 passing",
+  "P11_1": {
+    "submitted": 39,
+    "rate": 0.951,
+    "bar": 0.8,
+    "passes": true,
+    "at_40_steps_amendment_10": {
+      "submitted": 32,
+      "rate": 0.78
+    }
+  },
+  "P11_2": {
+    "deepseek": {
+      "population_A": 41,
+      "failures_A": 4,
+      "failure_rate_A": 0.098,
+      "population_B": 41,
+      "failures_B": 4,
+      "failure_rate_B": 0.098,
+      "resolved": 37,
+      "unresolved_plain": 4,
+      "agent_caused_crashes": [],
+      "infrastructure_errors": []
+    },
+    "gpt5mini_at_same_budget": {
+      "population_A": 36,
+      "failures_A": 20,
+      "failure_rate_A": 0.556,
+      "population_B": 41,
+      "failures_B": 25,
+      "failure_rate_B": 0.61,
+      "resolved": 16,
+      "unresolved_plain": 20,
+      "agent_caused_crashes": [
+        "django__django-11265",
+        "django__django-15128",
+        "django__django-15863",
+        "django__django-16901",
+        "pylint-dev__pylint-8898"
+      ],
+      "infrastructure_errors": []
+    },
+    "gap_A_amendment_10b_exclusion": 0.458,
+    "gap_B_agent_crashes_as_failures": 0.512,
+    "bar": 0.1,
+    "passes_A": true,
+    "passes_B": true,
+    "passes": true,
+    "classification_post_hoc": true,
+    "note": "passes only if both classifications agree; the post-hoc reclassification cannot decide the verdict",
+    "gpt5mini_registered_40_step_baseline_NOT_used": 0.486
+  },
+  "P11_3": {
+    "measured_total_usd": 0.6272,
+    "per_trajectory_usd": 0.0153,
+    "bar": 0.04,
+    "passes": true,
+    "source": "OpenRouter credits endpoint, differenced by the runner",
+    "gpt5mini_scaffold_reported_total_usd": 1.4637,
+    "gpt5mini_per_trajectory_usd": 0.0357
+  },
+  "budget_was_binding_at_40": {
+    "deepseek_steps_at_100": {
+      "n": 41,
+      "min": 7,
+      "median": 26,
+      "max": 79,
+      "hit_ceiling": 0,
+      "needed_over_40": 8
+    },
+    "gpt5mini_steps_at_100": {
+      "n": 41,
+      "min": 11,
+      "median": 21,
+      "max": 86,
+      "hit_ceiling": 0,
+      "needed_over_40": 7
+    },
+    "reading": "no DeepSeek trajectory reached the 100-step ceiling, so the 100-step result is not budget-limited"
+  },
+  "comparator_rerun": {
+    "instances": [
+      "astropy__astropy-14539",
+      "django__django-10914",
+      "matplotlib__matplotlib-26208"
+    ],
+    "why": "exited RateLimitError on OpenAI's 500k TPM ceiling at 6 workers; regenerated at 1 worker so a rate limit is not scored as a capability failure"
+  },
+  "all_gates_pass": true,
+  "decision": "All three pass at a 100-step budget. The agent axis becomes runnable on DeepSeek V4.1 Flash under its own amendment, and every result it produces must carry the post-hoc-budget caveat."
+}

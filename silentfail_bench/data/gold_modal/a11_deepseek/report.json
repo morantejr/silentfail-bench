@@ -1,0 +1,532 @@
+{
+ "run_id": "a11_deepseek",
+ "dataset": "SWE-bench/SWE-bench_Verified",
+ "total": 41,
+ "resolved_ids": [
+  "astropy__astropy-14539",
+  "django__django-10914",
+  "django__django-11206",
+  "django__django-12406",
+  "django__django-12754",
+  "django__django-13028",
+  "django__django-13417",
+  "django__django-13590",
+  "django__django-14017",
+  "django__django-14155",
+  "django__django-15037",
+  "django__django-15128",
+  "django__django-15278",
+  "django__django-15569",
+  "django__django-15863",
+  "django__django-16899",
+  "django__django-16901",
+  "django__django-9296",
+  "matplotlib__matplotlib-20488",
+  "matplotlib__matplotlib-25960",
+  "matplotlib__matplotlib-26208",
+  "pydata__xarray-6744",
+  "pylint-dev__pylint-4661",
+  "pylint-dev__pylint-8898",
+  "pytest-dev__pytest-5840",
+  "scikit-learn__scikit-learn-10844",
+  "scikit-learn__scikit-learn-13328",
+  "scikit-learn__scikit-learn-26323",
+  "sphinx-doc__sphinx-10449",
+  "sphinx-doc__sphinx-10673",
+  "sphinx-doc__sphinx-11445",
+  "sphinx-doc__sphinx-8269",
+  "sphinx-doc__sphinx-9591",
+  "sympy__sympy-13091",
+  "sympy__sympy-16886",
+  "sympy__sympy-17318",
+  "sympy__sympy-24539"
+ ],
+ "unresolved_ids": [
+  "astropy__astropy-14598",
+  "django__django-11265",
+  "django__django-13513",
+  "django__django-14034"
+ ],
+ "error_ids": [],
+ "oracle": [
+  {
+   "instance_id": "astropy__astropy-14539",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 40,
+   "f2p": "2/2",
+   "p2p": "46/46"
+  },
+  {
+   "instance_id": "astropy__astropy-14539",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 40,
+   "f2p": "0/2",
+   "p2p": "46/46"
+  },
+  {
+   "instance_id": "django__django-11265",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "1/1",
+   "p2p": "30/30"
+  },
+  {
+   "instance_id": "django__django-11265",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 18,
+   "f2p": "0/1",
+   "p2p": "30/30"
+  },
+  {
+   "instance_id": "django__django-11206",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "2/2",
+   "p2p": "4/4"
+  },
+  {
+   "instance_id": "django__django-11206",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 13,
+   "f2p": "0/2",
+   "p2p": "4/4"
+  }
+ ],
+ "details": [
+  {
+   "instance_id": "astropy__astropy-14539",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 40,
+   "f2p": "2/2",
+   "p2p": "46/46"
+  },
+  {
+   "instance_id": "astropy__astropy-14539",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 40,
+   "f2p": "0/2",
+   "p2p": "46/46"
+  },
+  {
+   "instance_id": "astropy__astropy-14539",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 42,
+   "f2p": "2/2",
+   "p2p": "46/46"
+  },
+  {
+   "instance_id": "django__django-11265",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "1/1",
+   "p2p": "30/30"
+  },
+  {
+   "instance_id": "django__django-11265",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 18,
+   "f2p": "0/1",
+   "p2p": "30/30"
+  },
+  {
+   "instance_id": "django__django-11265",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 15,
+   "f2p": "0/1",
+   "p2p": "30/30"
+  },
+  {
+   "instance_id": "django__django-11206",
+   "model_name_or_path": "ORACLE_reference_patch",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "2/2",
+   "p2p": "4/4"
+  },
+  {
+   "instance_id": "django__django-11206",
+   "model_name_or_path": "ORACLE_empty_patch",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 13,
+   "f2p": "0/2",
+   "p2p": "4/4"
+  },
+  {
+   "instance_id": "django__django-11206",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "2/2",
+   "p2p": "4/4"
+  },
+  {
+   "instance_id": "django__django-10914",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "1/1",
+   "p2p": "98/98"
+  },
+  {
+   "instance_id": "django__django-13028",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 11,
+   "f2p": "2/2",
+   "p2p": "276/276"
+  },
+  {
+   "instance_id": "django__django-13417",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "2/2",
+   "p2p": "280/280"
+  },
+  {
+   "instance_id": "django__django-13590",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 11,
+   "f2p": "1/1",
+   "p2p": "145/145"
+  },
+  {
+   "instance_id": "astropy__astropy-14598",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 37,
+   "f2p": "0/1",
+   "p2p": "175/175"
+  },
+  {
+   "instance_id": "django__django-12754",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "1/1",
+   "p2p": "112/112"
+  },
+  {
+   "instance_id": "django__django-14017",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 11,
+   "f2p": "2/2",
+   "p2p": "147/147"
+  },
+  {
+   "instance_id": "django__django-12406",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "3/3",
+   "p2p": "165/165"
+  },
+  {
+   "instance_id": "django__django-15037",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "1/1",
+   "p2p": "14/14"
+  },
+  {
+   "instance_id": "django__django-14155",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 12,
+   "f2p": "3/3",
+   "p2p": "89/89"
+  },
+  {
+   "instance_id": "django__django-15278",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "1/1",
+   "p2p": "138/138"
+  },
+  {
+   "instance_id": "django__django-15569",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 10,
+   "f2p": "2/2",
+   "p2p": "242/242"
+  },
+  {
+   "instance_id": "django__django-15863",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 10,
+   "f2p": "1/1",
+   "p2p": "9/9"
+  },
+  {
+   "instance_id": "django__django-16899",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 11,
+   "f2p": "2/2",
+   "p2p": "54/54"
+  },
+  {
+   "instance_id": "django__django-9296",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "1/1",
+   "p2p": "20/20"
+  },
+  {
+   "instance_id": "django__django-16901",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "1/1",
+   "p2p": "6/6"
+  },
+  {
+   "instance_id": "matplotlib__matplotlib-20488",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 24,
+   "f2p": "1/1",
+   "p2p": "111/111"
+  },
+  {
+   "instance_id": "django__django-15128",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "1/1",
+   "p2p": "282/282"
+  },
+  {
+   "instance_id": "matplotlib__matplotlib-25960",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 67,
+   "f2p": "1/1",
+   "p2p": "137/137"
+  },
+  {
+   "instance_id": "pylint-dev__pylint-4661",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 6,
+   "f2p": "1/1",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "pydata__xarray-6744",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 69,
+   "f2p": "3/3",
+   "p2p": "1815/1815"
+  },
+  {
+   "instance_id": "scikit-learn__scikit-learn-10844",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 5,
+   "f2p": "1/1",
+   "p2p": "16/16"
+  },
+  {
+   "instance_id": "django__django-13513",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 13,
+   "f2p": "0/1",
+   "p2p": "83/83"
+  },
+  {
+   "instance_id": "scikit-learn__scikit-learn-13328",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 5,
+   "f2p": "1/1",
+   "p2p": "9/9"
+  },
+  {
+   "instance_id": "pytest-dev__pytest-5840",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 7,
+   "f2p": "2/2",
+   "p2p": "51/51"
+  },
+  {
+   "instance_id": "pylint-dev__pylint-8898",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 10,
+   "f2p": "1/1",
+   "p2p": "18/18"
+  },
+  {
+   "instance_id": "matplotlib__matplotlib-26208",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 89,
+   "f2p": "2/2",
+   "p2p": "813/813"
+  },
+  {
+   "instance_id": "scikit-learn__scikit-learn-26323",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "1/1",
+   "p2p": "188/188"
+  },
+  {
+   "instance_id": "sphinx-doc__sphinx-8269",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "1/1",
+   "p2p": "5/5"
+  },
+  {
+   "instance_id": "sphinx-doc__sphinx-11445",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 6,
+   "f2p": "2/2",
+   "p2p": "8/8"
+  },
+  {
+   "instance_id": "sphinx-doc__sphinx-10449",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 7,
+   "f2p": "1/1",
+   "p2p": "30/30"
+  },
+  {
+   "instance_id": "sphinx-doc__sphinx-9591",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 6,
+   "f2p": "1/1",
+   "p2p": "44/44"
+  },
+  {
+   "instance_id": "sympy__sympy-16886",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 6,
+   "f2p": "1/1",
+   "p2p": "42/42"
+  },
+  {
+   "instance_id": "sympy__sympy-24539",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 7,
+   "f2p": "1/1",
+   "p2p": "62/62"
+  },
+  {
+   "instance_id": "sphinx-doc__sphinx-10673",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 5,
+   "f2p": "1/1",
+   "p2p": "9/9"
+  },
+  {
+   "instance_id": "sympy__sympy-17318",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 14,
+   "f2p": "1/1",
+   "p2p": "10/10"
+  },
+  {
+   "instance_id": "django__django-14034",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": false,
+   "patch_applied": false,
+   "runtime_s": 9,
+   "f2p": "0/1",
+   "p2p": "12/12"
+  },
+  {
+   "instance_id": "sympy__sympy-13091",
+   "model_name_or_path": "deepseek/deepseek-v4.1-flash",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 5,
+   "f2p": "2/2",
+   "p2p": "89/89"
+  }
+ ]
+}

@@ -50,6 +50,10 @@ data/*/traj/cand*/*
 !data/gold_modal/*/
 data/gold_modal/*/*
 !data/gold_modal/*/report.json
+# Amendment 11's comparator population is a merged prediction file, with a note beside
+# it recording which rows were regenerated and why. Seventh recurrence of this class.
+!data/*/predictions_merged.jsonl
+!data/*/MERGE_NOTE.md
 !data/*/README.md
 !data/*/rescoring_bundle.jsonl
 silentfail_l4_package*

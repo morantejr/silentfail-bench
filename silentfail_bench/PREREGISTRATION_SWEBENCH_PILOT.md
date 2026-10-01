@@ -1562,3 +1562,169 @@ blanket `data/*/*` rule — the sixth recurrence. Both are now tracked, along wi
 five further previously-dropped files the same fix recovered. `check_inputs_tracked.py`
 now also checks runtime-constructed path families as globs, so a future run
 directory is covered without editing the allow-list.
+
+---
+
+# Amendment 11, 1 October 2026 — does a larger step budget change the Amendment 10 result?
+
+**Written before this run and after Amendment 10's outcome was visible. The budget below
+was chosen knowing that DeepSeek submitted 32 of 41 against an 80% bar. That makes this
+amendment POST HOC with respect to the step budget, and the consequence is stated
+plainly: a pass here CANNOT be reported as Amendment 10's P10-1 passing. It is a new
+measurement with a new name.**
+
+## Why run it
+
+Amendment 10 attributed its gate failure in part to this scaffold: all nine missing
+patches exited `LimitsExceeded` at 33–39 of 40 steps, none failed to parse, and DeepSeek
+resolved 30 of the 32 instances where it did submit. The obvious objection is that the
+bar was set by our own budget. That objection deserves a measurement rather than an
+argument, and the measurement is cheap: roughly $11 against $23 of remaining Modal
+headroom inside the $30 credit.
+
+## Both arms move, or the comparison is rigged
+
+P10-2 compares DeepSeek's unconditional failure rate against `gpt-5-mini`'s 0.486,
+**measured at 40 steps**. Raising the candidate's budget while leaving the comparator at
+40 would hand DeepSeek the gap. So `gpt-5-mini` is re-run at the same budget on the same
+41 instances.
+
+**This costs us the leaderboard anchor for the re-run only.** Our 40-step `gpt-5-mini`
+figure agrees with the public leaderboard to 0.2 points at the configuration the
+leaderboard used, and that remains the paper's primary number. The 100-step `gpt-5-mini`
+figure is used **only** as the comparator inside this amendment and is not reported as a
+leaderboard-comparable result.
+
+## Design
+
+Same 41 Verified instances as Amendments 6 and 10, `k = 1`, harness gold, identical bars,
+`step_limit = 100` for both arms. 100 is two and a half times the original budget, chosen
+so that no reader can claim the budget was the binding constraint; it is not tuned to any
+observed value.
+
+- **P11-1 (it functions at a larger budget):** DeepSeek submits a non-empty patch on at
+  least 80% of instances.
+- **P11-2 (it is more capable at an equal budget):** DeepSeek's unconditional failure
+  rate is at least 10 points below `gpt-5-mini`'s **at the same 100-step budget**, with
+  empty patches and step-limit exits counted as failures per Amendment 7a §3.
+- **P11-3 (still affordable):** measured cost at or below $0.040 per trajectory.
+
+## Readings, fixed now
+
+- **P11-1 fails.** The 40-step result was not a budget artefact. The scaffold objection is
+  retired on evidence, Amendment 10's verdicts stand unchanged, and the agent axis stays
+  closed. This is the outcome that most strengthens the paper.
+- **All three pass.** A capable open-weight agent can be driven by this harness given a
+  larger budget, and the axis becomes runnable on it — but under a budget chosen after
+  seeing a failure. That caveat travels with any axis result produced this way and must be
+  stated wherever the axis is reported. Launching the axis still requires its own
+  amendment.
+- **P11-1 passes and P11-2 fails.** DeepSeek functions but is not more capable at an equal
+  budget, which would mean the 40-step capability gap was itself partly a budget artefact.
+  Report it and stop.
+
+Amendment 10's recorded verdicts do not change under any outcome, `gpt-6-luna` is not
+reinstated, and the paper's primary 40-step figures stand.
+
+## Caps and stop rules
+
+Modal ≤ **$10** for this amendment (two arms of generation plus two gold runs), against
+the $26 authorised cap of which ~$2.79 is consumed. OpenRouter ≤ **$3**, OpenAI ≤ **$3**,
+both measured externally by differencing the provider's usage endpoint rather than trusting
+the scaffold. **No paid overage.** If a cap is exceeded the run stops before gold. If
+either arm has not finished generation within three hours it is stopped and reported as
+incomplete rather than analysed.
+
+## Amendment 11, deviation recorded before any run: the comparator arm is blocked
+
+A one-instance smoke of the `gpt-5-mini` arm at `step_limit = 100`, run before committing
+to 82 trajectories, returned `AuthenticationError` from OpenAI: *"Your API key has been
+invalidated."* Cost $0.00, one API call, 27 seconds. The OpenRouter key is valid
+(HTTP 200, usage $8.478 of $50 granted), so the DeepSeek arm is unaffected.
+
+**Consequence for the three predictions:**
+
+- **P11-1 (it functions at a larger budget)** — answerable with the DeepSeek arm alone;
+  it references no comparator. This is the prediction that tests whether the 40-step bar
+  was an artefact of our budget, which is the objection Amendment 11 exists to answer.
+- **P11-3 (still affordable)** — answerable with the DeepSeek arm alone.
+- **P11-2 (more capable at an equal budget)** — **blocked.** It requires `gpt-5-mini`
+  re-measured at 100 steps. It will **not** be computed against the 40-step figure of
+  0.486, because comparing a 100-step candidate with a 40-step comparator is the rigging
+  this amendment was written to avoid.
+
+**Declared now, before the run:** if the DeepSeek arm proceeds alone, P11-2 is reported as
+*attempted and blocked on an invalidated credential*, not as passed, failed, or quietly
+omitted. It becomes answerable only if the comparator is re-run at the same budget, which
+requires a working key the operator sets themselves. Amendment 10's verdicts are unchanged
+either way.
+
+## Amendment 11 outcome, 1 October 2026 — all three gates pass at a 100-step budget
+
+Readout: `data/readout_amendment11.json`, from `scripts/readout_amendment11.py
+--deepseek-measured-cost 0.6272`. Both arms ran at `step_limit = 100` on the same 41
+Verified instances in the same Modal sandbox environment.
+
+| Gate | Bar | Measured | Verdict |
+|---|---|---|---|
+| P11-1 functions at a larger budget | ≥80% submit | DeepSeek **39/41 = 0.951** (40 steps: 32/41 = 0.780) | **PASS** |
+| P11-2 more capable at an equal budget | gap ≥ 10 pts | DeepSeek failure **0.098**; `gpt-5-mini` **0.556** (way A) / **0.610** (way B); gap **0.458 / 0.512** | **PASS, both ways** |
+| P11-3 still affordable | ≤ $0.040/traj | **$0.0153** (comparator $0.0357) | **PASS** |
+
+**The 40-step bar was the binding constraint, and 100 was not.** No DeepSeek trajectory
+reached the ceiling: the longest submitting run used 79 steps; seven of the 39 needed more
+than 40. All seven instances that exited `LimitsExceeded` at 40 steps submitted at 100, and
+nothing that submitted at 40 regressed. Gold: 37 resolved, 4 unresolved, 0 harness errors.
+The two remaining non-submissions exited `RepeatedFormatError` at 20 and 50 steps — the
+format problem is real but was never the binding constraint.
+
+**The comparator, and the classification declared post hoc.** `gpt-5-mini` at 100 steps:
+39 of 41 non-empty patches (two `Submitted` exits carried an empty diff), 16 resolved, 20
+plainly unresolved, and five rows the gold wrapper filed as `error`. Those five are the
+agent's own patches breaking the package before any test ran — an `IndentationError`, a
+lost import, a circular import, a `SyntaxError`, one hunk that did not apply — reproduced
+identically across two gold runs (DEFECTS #19). Amendment 10b's 10% exclusion rule was
+written for harness faults, so the readout reports both:
+
+- **Way A, Amendment 10b as written:** the five excluded, population 36, failure 20/36 = 0.556.
+- **Way B, Amendment 7a §3 unconditionally:** the five counted as failures, population 41,
+  failure 25/41 = 0.610.
+
+P11-2 is declared to pass only if both ways clear the bar. Both do, by more than four times
+the margin. The reclassification therefore does not decide the verdict, and it is recorded
+here as post hoc because it was made after the rows were seen.
+
+**Three comparator trajectories were regenerated at a single worker.** They had exited
+`RateLimitError` on OpenAI's 500,000 tokens-per-minute ceiling at six workers, which is our
+rate limit and not the model's ability; scoring them as capability failures would have
+inflated the comparator's rate by up to 7.3 points. All three submitted on the rerun; one
+needed 86 steps. The merge is recorded in `data/pilot_a11_gpt5mini/MERGE_NOTE.md`.
+
+**An observation, not a finding.** `gpt-5-mini` resolved 16 of 41 at 100 steps against the
+≈21 of 41 implied by its registered 40-step rate of 0.486. The two measurements come from
+different runs and the earlier one is leaderboard-anchored under a different environment,
+so this is not a controlled comparison and is not claimed; it is consistent with a larger
+budget letting a weaker agent rewrite whole files and break them, which is what the five
+crashed rows look like, and it would need its own registered test.
+
+**What this does and does not change.** Amendment 10's recorded verdicts stand: at 40
+steps DeepSeek failed the functioning gate, and that remains the registered result at that
+budget. Amendment 11 is a new measurement at a budget chosen after that outcome. The agent
+axis becomes **runnable** on DeepSeek V4.1 Flash, under its own amendment written before
+it runs, and every result it produces must state that its agent qualified under a post-hoc
+budget. The paper's primary 40-step figures, including the leaderboard-anchored
+`gpt-5-mini` number, are unchanged.
+
+**Spend.** OpenRouter: $0.6272 for the DeepSeek arm, measured externally; $0.0000 during
+the comparator arm, as sequencing intended. OpenAI, scaffold-reported: $1.3298 for the
+six-worker run plus $0.2506 for the three reruns. Modal is not readable from the
+repository; at the ledger's rates, two generation runs and **three** gold runs — the third,
+on the merged comparator, was unplanned and absorbed by the cap — come to roughly $8
+against the $10 authorised for this amendment and ~$23 of headroom. The operator should
+read the dashboard figure rather than rely on this estimate.
+
+One cost hazard the preflight caught afterwards: mini-swe-agent's `swerex_modal`
+environment leaves its `swe-rex` deployment up after a run (`ModalDeployment.stop` is
+never awaited), and the one created at 00:03 was still deployed at 11:30 with 46 tasks
+on record. It was stopped by hand. `modal app list` after every run is now part of the
+no-spend gate's definition of done.

@@ -28,7 +28,7 @@ SCRIPTS = ["scripts/readout_amendment5_corrected.py", "scripts/readout_sp1b.py",
            "scripts/readout_luckypass.py", "scripts/readout_pi_batch1.py",
            "scripts/readout_pi_batch2.py", "scripts/readout_pivotal.py",
            "scripts/readout_static_analysis.py", "scripts/verify_and_robustify.py",
-           "scripts/readout_tier15.py", "paper/check_consistency.py"]
+           "scripts/readout_tier15.py", "scripts/readout_amendment11.py", "paper/check_consistency.py"]
 PAT = re.compile(r'["\']((?:data|silentfail_bench/data)/[A-Za-z0-9_./-]+\.(?:jsonl|json|txt|md))["\']')
 
 tracked = set(subprocess.run(["git", "ls-files"], cwd=ROOT.parent, capture_output=True, text=True).stdout.split())
@@ -55,6 +55,9 @@ CONSTRUCTED = [
     ("scripts/readout_amendment10.py", "data/*/preds.json"),
     ("scripts/readout_amendment10.py", "data/gold_modal/*/report.json"),
     ("scripts/preflight_amendment7.py", "data/*/traj/cand*/preds.json"),
+    ("scripts/readout_amendment11.py", "data/*/predictions_merged.jsonl"),
+    ("scripts/readout_amendment11.py", "data/*/MERGE_NOTE.md"),
+    ("scripts/readout_amendment11.py", "data/*_rerun3/preds.json"),
 ]
 glob_checked = 0
 for s, pattern in CONSTRUCTED:

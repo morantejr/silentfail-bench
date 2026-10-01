@@ -620,6 +620,42 @@ states seven and the checker requires the built PDF to agree with whatever it st
 **Class.** A consistency guarantee anchored to the wrong invariant, over a coverage model that
 could only forbid known-bad text and never require known-good text.
 
+### #19 — The gold wrapper filed agent-caused test-run crashes as harness errors *(instrument / classification)*
+
+Found 1 October, on the Amendment 11 comparator arm. `modal/gold_modal.py` recorded five
+`gpt-5-mini` rows as `error`: one `patch apply failed`, four `KeyError: 'tests_status'`.
+Read as harness errors, 5 of 41 is 12.2%, which trips Amendment 10b's registered 10%
+ceiling and blocks P11-2 — the one prediction that decides whether the agent axis reopens.
+
+**They were not harness errors.** The test logs show, instance by instance, the agent's own
+patch breaking the package before any test could run: an `IndentationError` written into
+`django/db/models/sql/query.py`; a 21,134-character rewrite of `defaultfilters.py` that lost
+the `pprint` symbol; a circular import in `django.db.models`; a `SyntaxError` from an
+invalid escape sequence in pylint's `utils.py`; and one hunk that did not apply. swebench's
+`get_eval_report` raises `KeyError: 'tests_status'` when the eval script exits before the
+log parser can find a result, and the wrapper caught that generically as `error`. Under
+SWE-bench's own semantics every one of these is simply **not resolved**. The errors
+reproduced identically across two gold runs, which is what distinguished them from
+flakiness, and the DeepSeek arm's two empty-patch rows on the same instances were scored
+as plain `unresolved` because the wrapper skips the apply step for an empty patch — so the
+same outcome was bucketed two ways depending only on whether the patch was empty.
+
+**Why it matters.** Amendment 10b's exclusion rule exists for infrastructure faults — image
+pulls, sandbox crashes, missing records. Applying it to agent-caused crashes would have
+excluded five of the comparator's failures from a capability comparison, in the
+comparator's favour, and either blocked P11-2 or understated the gap.
+
+**Fixes.** `gold_modal.py` now records a non-applying diff and an import-crashed test run
+as `unresolved` with an `unresolved_reason`, reserving `error` for exceptions where no test
+output exists. Committed reports are records and are not rewritten; `readout_amendment11.py`
+reclassifies from their `details` with the same rule, reports the failure rate **both ways**
+(10b exclusion, and agent crashes counted as failures per Amendment 7a §3), and passes
+P11-2 only if both ways agree — so the post-hoc reclassification cannot be what decides the
+verdict. Declared in the pre-registration with the verdict under each classification.
+
+**Class.** One bucket for two causes; an exclusion rule written for the instrument applied
+to the agent.
+
 ## Correction: my bite test reported four failures that did not exist (2026-09-30)
 
 The 2026-09-29 bite test of the lucky-pass and taxonomy assertions reported

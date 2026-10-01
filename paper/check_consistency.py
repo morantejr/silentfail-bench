@@ -847,6 +847,46 @@ ok = all(x in _mn for x in (f"{_g1['submitted']}/{_a10['instances']} = {_g1['rat
 print(f"  {'ok  ' if ok else 'FAIL'}  MENTOR_NOTE section 26 reports the gate numbers from the readout")
 if not ok: fail.append("mentor note A10 gate numbers")
 
+# --- Amendment 11: every artifact carries the 100-step result, from its readout ---
+print("\nAmendment 11 (100-step budget) vs data/readout_amendment11.json:")
+_a11 = json.loads((D / "readout_amendment11.json").read_text())
+_q1, _q2, _q3 = _a11["P11_1"], _a11["P11_2"], _a11["P11_3"]
+_ds, _gm = _q2["deepseek"], _q2["gpt5mini_at_same_budget"]
+_mx = _a11["budget_was_binding_at_40"]["deepseek_steps_at_100"]["max"]
+ok = _a11["all_gates_pass"] is True and _q1["passes"] and _q2["passes"] and _q3["passes"] \
+    and _q2["passes_A"] and _q2["passes_B"] and _q2["classification_post_hoc"] is True
+print(f"  {'ok  ' if ok else 'FAIL'}  all three gates pass, P11-2 under both classifications, reclassification flagged post hoc")
+if not ok: fail.append("A11 gate verdicts")
+# the budget must be provably non-binding at 100, or the result is not what the papers say
+ok = _a11["budget_was_binding_at_40"]["deepseek_steps_at_100"]["hit_ceiling"] == 0 and _mx < 100
+print(f"  {'ok  ' if ok else 'FAIL'}  no DeepSeek trajectory hit the 100-step ceiling (max {_mx})")
+if not ok: fail.append("A11 ceiling")
+# The gaps are derived quantities: pin them to their own inputs, not to a threshold.
+# A threshold alone let 0.458 drift to 0.508 unnoticed in the bite test -- the same
+# shape as the +0.12 bound guarded only by `> 0.05` (DEFECTS #15).
+_gA = round(_gm["failure_rate_A"] - _ds["failure_rate_A"], 3)
+_gB = round(_gm["failure_rate_B"] - _ds["failure_rate_B"], 3)
+ok = abs(_q2["gap_A_amendment_10b_exclusion"] - _gA) < 1e-9 and abs(_q2["gap_B_agent_crashes_as_failures"] - _gB) < 1e-9 \
+    and _gA >= 0.10 and _gB >= 0.10
+print(f"  {'ok  ' if ok else 'FAIL'}  gaps recompute from the rates ({_gA} / {_gB}) and both clear 0.10")
+if not ok: fail.append("A11 gap")
+_sym = (Path(__file__).resolve().parent / "main_symposium.tex").read_text()
+for _nm, _src in (("main.tex", tex), ("main_short.tex", short), ("main_agentverify.tex", _avt), ("main_symposium.tex", _sym)):
+    for _want, _lab in ((f"{_q1['submitted']} of {_a11['instances']}", "submit count"),
+                        (f"({_q1['rate']:.3f}", "submit rate"),
+                        (f"longest {_mx} steps", "longest run"),
+                        (f"{_ds['failure_rate_B']:.3f}", "DeepSeek failure rate"),
+                        (f"{_gm['failure_rate_B']:.3f}", "comparator failure rate, crashes counted"),
+                        (f"{_gm['failure_rate_A']:.3f}", "comparator failure rate, crashes excluded"),
+                        ("post hoc", "post-hoc budget declared")):
+        ok = _want in _src
+        print(f"  {'ok  ' if ok else 'FAIL'}  {_nm} {_lab}: {'found' if ok else 'MISSING'} -> {_want}")
+        if not ok: fail.append(f"{_nm} A11 {_lab}")
+# Amendment 10's recorded 40-step verdict must survive: a new measurement does not rewrite the old one
+ok = f"{_g1['submitted']} of {_a10['instances']}" in tex and "32 of 41" in short and "at 40 steps" in tex.lower() or "40-step" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  the 40-step Amendment 10 result is still reported alongside the 100-step one")
+if not ok: fail.append("A10 verdict erased by A11")
+
 _a7_real = subprocess.run(
     [sys.executable, str(_root / "silentfail_bench/scripts/readout_amendment7.py")],
     capture_output=True, text=True,

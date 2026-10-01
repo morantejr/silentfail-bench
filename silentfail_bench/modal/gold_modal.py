@@ -48,7 +48,11 @@ def run_one(ts, pred: dict, log_dir: Path, timeout: int) -> dict:
                 if rc == 0: applied = True; break
             if not applied: applied = sh("git apply --check --reverse /tmp/patch.diff")[0] == 0
             if not applied:
-                (log_dir / "patch_apply.txt").write_text(out); rec.update(error="patch apply failed"); return rec
+                # A malformed diff is the agent's failure, not the harness's: count it as
+                # unresolved with a reason rather than as an infrastructure error.
+                (log_dir / "patch_apply.txt").write_text(out)
+                rec.update(resolved=False, patch_applied=False, runtime_s=round(time.time() - t0),
+                           unresolved_reason="patch apply failed"); return rec
         put("/eval.sh", ts.eval_script)
         rc, test_output = sh("/bin/bash /eval.sh", to=timeout)
         (log_dir / "test_output.txt").write_text(test_output)
@@ -56,6 +60,16 @@ def run_one(ts, pred: dict, log_dir: Path, timeout: int) -> dict:
         rec.update(resolved=bool(report["resolved"]), patch_applied=applied, runtime_s=round(time.time() - t0),
                    f2p=f"{len(report['tests_status']['FAIL_TO_PASS']['success'])}/{len(ts.FAIL_TO_PASS)}",
                    p2p=f"{len(report['tests_status']['PASS_TO_PASS']['success'])}/{len(ts.PASS_TO_PASS)}")
+    except KeyError as e:
+        # The eval script ran and wrote a log, but the log parser found no test
+        # results: the patched code failed to import (SyntaxError, circular import,
+        # a lost symbol). That is the agent breaking the package, so it is unresolved,
+        # not a harness error. Only when no test output exists at all is it an error.
+        if str(e).strip("'") == "tests_status" and (log_dir / "test_output.txt").exists():
+            rec.update(resolved=False, patch_applied=applied, runtime_s=round(time.time() - t0),
+                       unresolved_reason="test run produced no report: patched code failed to import")
+        else:
+            rec.update(error=f"{type(e).__name__}: {str(e)[:300]}")
     except Exception as e:
         rec.update(error=f"{type(e).__name__}: {str(e)[:300]}")
     finally:
