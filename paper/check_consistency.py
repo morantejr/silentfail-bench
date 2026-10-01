@@ -895,6 +895,32 @@ ok = f"{_g1['submitted']} of {_a10['instances']}" in tex and "32 of 41" in short
 print(f"  {'ok  ' if ok else 'FAIL'}  the 40-step Amendment 10 result is still reported alongside the 100-step one")
 if not ok: fail.append("A10 verdict erased by A11")
 
+# --- Amendment 12: GLM, not evaluable as registered, reported descriptively everywhere ---
+print("\nAmendment 12 (GLM under DeepSeek's settings) vs data/readout_amendment12.json:")
+_a12 = json.loads((D / "readout_amendment12.json").read_text())
+_r1, _r2, _r3 = _a12["P12_1"], _a12["P12_2"], _a12["P12_3"]
+_cut = len(_r1["binding_limit"]["cost_limit_0.25_cut"])
+ok = _r1["evaluable_as_registered"] is False and _cut > 0 and len(_r1["binding_limit"]["step_limit_cut"]) == 0 \
+    and _r3["passes"] is False and _a12["all_gates_pass"] is False
+print(f"  {'ok  ' if ok else 'FAIL'}  P12-1 not evaluable ({_cut} cost-cap cuts, 0 step-cap cuts), P12-3 fails, no gate set passes")
+if not ok: fail.append("A12 verdicts")
+ok = _r2["glm"]["resolved"] == _r1["submitted"]
+print(f"  {'ok  ' if ok else 'FAIL'}  every submitted GLM patch resolved ({_r2['glm']['resolved']} of {_r1['submitted']}), as the papers claim")
+if not ok: fail.append("A12 resolved-equals-submitted")
+_sym12 = (Path(__file__).resolve().parent / "main_symposium.tex").read_text()
+for _nm, _src in (("main.tex", tex), ("main_short.tex", short), ("main_agentverify.tex", _avt), ("main_symposium.tex", _sym12)):
+    for _want, _lab in ((f"submitted on {_r1['submitted']} of {_a12['instances']}", "GLM submit count"),
+                        (f"{_cut} of {_a12['instances']} runs were cut by a \\$0.25", "cost-cap cut count"),
+                        (f"\\${_r3['per_trajectory_usd']:.2f}", "GLM cost per trajectory"),
+                        ("budget question is unanswered for GLM", "not-evaluable framing"),
+                        ("disqualified on cost at any budget", "disqualification stated")):
+        ok = _want in _src
+        print(f"  {'ok  ' if ok else 'FAIL'}  {_nm} {_lab}: {'found' if ok else 'MISSING'} -> {_want[:48]}")
+        if not ok: fail.append(f"{_nm} A12 {_lab}")
+    ok = "was not taken to gold" not in _src and "reached 13 of 41 without gold" not in _src
+    print(f"  {'ok  ' if ok else 'FAIL'}  {_nm} no stale 'not taken to gold' claim")
+    if not ok: fail.append(f"{_nm} A12 stale gold claim")
+
 _a7_real = subprocess.run(
     [sys.executable, str(_root / "silentfail_bench/scripts/readout_amendment7.py")],
     capture_output=True, text=True,

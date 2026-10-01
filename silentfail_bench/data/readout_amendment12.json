@@ -1,0 +1,105 @@
+{
+  "amendment": 12,
+  "step_limit": 100,
+  "max_tokens": 16000,
+  "instances": 41,
+  "status": "post hoc with respect to every setting; two settings changed (budget and token cap) so a pass is not attributed to either alone; cannot qualify GLM for the axis",
+  "P12_1": {
+    "submitted": 16,
+    "rate": 0.39,
+    "bar": 0.8,
+    "passes": false,
+    "evaluable_as_registered": false,
+    "binding_limit": {
+      "cost_limit_0.25_cut": [
+        "astropy__astropy-14539",
+        "astropy__astropy-14598",
+        "django__django-11206",
+        "django__django-11265",
+        "django__django-12406",
+        "django__django-13513",
+        "django__django-14017",
+        "django__django-14034",
+        "django__django-14155",
+        "django__django-15037",
+        "django__django-15128",
+        "django__django-16901",
+        "matplotlib__matplotlib-20488",
+        "matplotlib__matplotlib-25960",
+        "matplotlib__matplotlib-26208",
+        "pylint-dev__pylint-4661",
+        "pylint-dev__pylint-8898",
+        "pytest-dev__pytest-5840",
+        "sphinx-doc__sphinx-10673",
+        "sphinx-doc__sphinx-11445",
+        "sphinx-doc__sphinx-8269",
+        "sympy__sympy-13091",
+        "sympy__sympy-17318"
+      ],
+      "step_limit_cut": [],
+      "other_limits_exceeded": []
+    },
+    "reading": "the registered budget question is NOT answered: the per-trajectory cost cap, a setting the amendment did not name, cut these runs before the step budget could bind; reported descriptively",
+    "at_40_steps_4k_tokens": {
+      "submitted": 13,
+      "rate": 0.317
+    }
+  },
+  "P12_2": {
+    "glm": {
+      "population_A": 41,
+      "failures_A": 25,
+      "failure_rate_A": 0.61,
+      "population_B": 41,
+      "failures_B": 25,
+      "failure_rate_B": 0.61,
+      "resolved": 16,
+      "unresolved_plain": 25,
+      "agent_caused_crashes": [],
+      "infrastructure_errors": []
+    },
+    "gpt5mini_at_same_budget_from_amendment_11": {
+      "population_A": 36,
+      "failures_A": 20,
+      "failure_rate_A": 0.556,
+      "population_B": 41,
+      "failures_B": 25,
+      "failure_rate_B": 0.61,
+      "resolved": 16,
+      "unresolved_plain": 20,
+      "agent_caused_crashes": [
+        "django__django-11265",
+        "django__django-15128",
+        "django__django-15863",
+        "django__django-16901",
+        "pylint-dev__pylint-8898"
+      ],
+      "infrastructure_errors": []
+    },
+    "gap_A": -0.054,
+    "gap_B": 0.0,
+    "bar": 0.1,
+    "passes_A": false,
+    "passes_B": false,
+    "passes": false,
+    "classification_post_hoc": true
+  },
+  "P12_3": {
+    "measured_total_usd": 9.0378,
+    "per_trajectory_usd": 0.2204,
+    "bar": 0.04,
+    "passes": false,
+    "source": "OpenRouter credits endpoint, differenced by the runner",
+    "at_40_steps_scaffold_usd": 0.1739
+  },
+  "steps_at_100": {
+    "n": 41,
+    "min": 0,
+    "median": 32,
+    "max": 69,
+    "hit_ceiling": 0,
+    "needed_over_40": 13
+  },
+  "all_gates_pass": false,
+  "decision": "NOT EVALUABLE AS REGISTERED: the $0.25 cost limit cut 23 of 41 runs before the step budget could bind. Under that cap GLM submitted on 16 of 41. P12-3 fails at any budget, so GLM stays disqualified for the axis; Amendments 10 and 11 unchanged; the papers' 'mechanism unmeasured' stands."
+}

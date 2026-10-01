@@ -12,7 +12,7 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: draft v0.9.17 (2026-10-01) — the registered endpoint, computed four
+> **Status: draft v0.9.18 (2026-10-01) — the registered endpoint, computed four
 > ways, puts disagreement's incremental value over the selector's own score at
 > indistinguishable from zero, loosest pooled upper bound +0.12 over 47 failures
 > and 46 repositories.** A SWE-bench Verified pilot (41 instances, 12 positives)

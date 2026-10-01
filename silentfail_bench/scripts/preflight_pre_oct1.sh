@@ -45,6 +45,12 @@ a11_done=0
 [ -f silentfail_bench/data/readout_amendment11.json ] && \
   silentfail_bench/.venv-swebench/bin/python -c "import json,sys; d=json.load(open('silentfail_bench/data/readout_amendment11.json')); sys.exit(0 if d['all_gates_pass'] is True and d['P11_2']['passes_A'] and d['P11_2']['passes_B'] and d['P11_3']['measured_total_usd'] > 0 else 1)" && a11_done=1
 [ "$a11_done" = "1" ] && chk 1 "Amendment 11 has run; readout records all gates passing under both classifications, non-zero cost" || chk 0 "Amendment 11 readout missing, or a gate fails, or the classifications disagree, or cost is zero"
+# Amendment 12 (GLM) must be on record as NOT evaluable -- cost cap, not step cap -- with a
+# non-zero measured cost, so nobody later reads its 16/41 as a budget verdict.
+a12_done=0
+[ -f silentfail_bench/data/readout_amendment12.json ] && \
+  silentfail_bench/.venv-swebench/bin/python -c "import json,sys; d=json.load(open('silentfail_bench/data/readout_amendment12.json')); b=d['P12_1']['binding_limit']; sys.exit(0 if d['P12_1']['evaluable_as_registered'] is False and len(b['cost_limit_0.25_cut'])>0 and len(b['step_limit_cut'])==0 and d['P12_3']['measured_total_usd']>0 and d['all_gates_pass'] is False else 1)" && a12_done=1
+[ "$a12_done" = "1" ] && chk 1 "Amendment 12 has run; readout records P12-1 not evaluable (cost cap, not step cap), non-zero cost, no gate set passing" || chk 0 "Amendment 12 readout missing, or it reports a budget verdict it cannot support"
 [ -x silentfail_bench/scripts/run_amendment10_pilot.sh ] && chk 1 "executable pilot runner present" || chk 0 "executable pilot runner present"
 [ -f silentfail_bench/scripts/readout_amendment10.py ] && chk 1 "Amendment 10 gate readout present" || chk 0 "Amendment 10 gate readout present"
 grep -q "Amendment 10a" silentfail_bench/PREREGISTRATION_SWEBENCH_PILOT.md && chk 1 "Amendment 10a recorded (stop rule, ledger, cost enforcement)" || chk 0 "Amendment 10a recorded"

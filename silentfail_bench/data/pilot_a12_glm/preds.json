@@ -1,0 +1,207 @@
+{
+  "astropy__astropy-14539": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "astropy__astropy-14539",
+    "model_patch": ""
+  },
+  "astropy__astropy-14598": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "astropy__astropy-14598",
+    "model_patch": ""
+  },
+  "django__django-12406": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-12406",
+    "model_patch": ""
+  },
+  "django__django-13028": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-13028",
+    "model_patch": "diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py\nindex ce18098fd2..d65141b834 100755\n--- a/django/db/models/sql/query.py\n+++ b/django/db/models/sql/query.py\n@@ -1124,7 +1124,10 @@ class Query(BaseExpression):\n \n     def check_filterable(self, expression):\n         \"\"\"Raise an error if expression cannot be used in a WHERE clause.\"\"\"\n-        if not getattr(expression, 'filterable', True):\n+        if (\n+            hasattr(expression, 'resolve_expression') and\n+            not getattr(expression, 'filterable', True)\n+        ):\n             raise NotSupportedError(\n                 expression.__class__.__name__ + ' is disallowed in the filter '\n                 'clause.'\n"
+  },
+  "django__django-13513": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-13513",
+    "model_patch": ""
+  },
+  "django__django-13590": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-13590",
+    "model_patch": "diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py\nindex 4648daf395..ee98984826 100755\n--- a/django/db/models/sql/query.py\n+++ b/django/db/models/sql/query.py\n@@ -1077,10 +1077,14 @@ class Query(BaseExpression):\n         elif isinstance(value, (list, tuple)):\n             # The items of the iterable may be expressions and therefore need\n             # to be resolved independently.\n-            return type(value)(\n+            values = (\n                 self.resolve_lookup_value(sub_value, can_reuse, allow_joins)\n                 for sub_value in value\n             )\n+            type_ = type(value)\n+            if hasattr(type_, '_make'):  # namedtuple\n+                return type_(*values)\n+            return type_(values)\n         return value\n \n     def solve_lookup_type(self, lookup):\n"
+  },
+  "django__django-11206": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-11206",
+    "model_patch": ""
+  },
+  "django__django-14017": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-14017",
+    "model_patch": ""
+  },
+  "django__django-10914": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-10914",
+    "model_patch": "diff --git a/django/conf/global_settings.py b/django/conf/global_settings.py\nindex acee9887d2..bdeec80610 100755\n--- a/django/conf/global_settings.py\n+++ b/django/conf/global_settings.py\n@@ -304,7 +304,7 @@ FILE_UPLOAD_TEMP_DIR = None\n \n # The numeric mode to set newly-uploaded files to. The value should be a mode\n # you'd pass directly to os.chmod; see https://docs.python.org/library/os.html#files-and-directories.\n-FILE_UPLOAD_PERMISSIONS = None\n+FILE_UPLOAD_PERMISSIONS = 0o644\n \n # The numeric mode to assign to newly-created directories, when uploading files.\n # The value should be a mode as you'd pass to os.chmod;\ndiff --git a/docs/howto/deployment/checklist.txt b/docs/howto/deployment/checklist.txt\nindex c31bcac62a..e40db9af53 100755\n--- a/docs/howto/deployment/checklist.txt\n+++ b/docs/howto/deployment/checklist.txt\n@@ -157,12 +157,8 @@ Now is a good time to check your backup strategy for these files.\n :setting:`FILE_UPLOAD_PERMISSIONS`\n ----------------------------------\n \n-With the default file upload settings, files smaller than\n-:setting:`FILE_UPLOAD_MAX_MEMORY_SIZE` may be stored with a different mode\n-than larger files as described in :setting:`FILE_UPLOAD_PERMISSIONS`.\n-\n-Setting :setting:`FILE_UPLOAD_PERMISSIONS` ensures all files are uploaded with\n-the same permissions.\n+The mode to use when saving uploaded files. See\n+:setting:`FILE_UPLOAD_PERMISSIONS`.\n \n HTTPS\n =====\ndiff --git a/docs/ref/settings.txt b/docs/ref/settings.txt\nindex 46e99af993..eba5bd2e31 100755\n--- a/docs/ref/settings.txt\n+++ b/docs/ref/settings.txt\n@@ -1484,7 +1484,7 @@ This value mirrors the functionality and caveats of the\n ``FILE_UPLOAD_PERMISSIONS``\n ---------------------------\n \n-Default: ``None``\n+Default: ``0o644``\n \n The numeric mode (i.e. ``0o644``) to set newly uploaded files to. For\n more information about what these modes mean, see the documentation for\ndiff --git a/docs/releases/3.0.txt b/docs/releases/3.0.txt\nindex 5d9bff086e..1cbf0c43b3 100755\n--- a/docs/releases/3.0.txt\n+++ b/docs/releases/3.0.txt\n@@ -290,6 +290,11 @@ Miscellaneous\n * ``ContentType.__str__()`` now includes the model's ``app_label`` to\n   disambiguate model's with the same name in different apps.\n \n+* The default :setting:`FILE_UPLOAD_PERMISSIONS` is now ``0o644``. With the\n+  previous ``None`` default, the permissions of uploaded files were\n+  inconsistent, depending on whether they were uploaded to a temporary file\n+  (often mode ``0o600``) or in memory (using the system's standard umask).\n+\n .. _deprecated-features-3.0:\n \n Features deprecated in 3.0\n"
+  },
+  "django__django-11265": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-11265",
+    "model_patch": ""
+  },
+  "django__django-14034": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-14034",
+    "model_patch": ""
+  },
+  "django__django-15037": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-15037",
+    "model_patch": ""
+  },
+  "django__django-15128": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-15128",
+    "model_patch": ""
+  },
+  "django__django-14155": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-14155",
+    "model_patch": ""
+  },
+  "django__django-13417": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-13417",
+    "model_patch": "diff --git a/django/db/models/query.py b/django/db/models/query.py\nindex 85cd8311a7..67ffe7f000 100644\n--- a/django/db/models/query.py\n+++ b/django/db/models/query.py\n@@ -1224,7 +1224,12 @@ class QuerySet:\n             return True\n         if self.query.extra_order_by or self.query.order_by:\n             return True\n-        elif self.query.default_ordering and self.query.get_meta().ordering:\n+        elif (\n+            self.query.default_ordering and\n+            self.query.get_meta().ordering and\n+            # A default ordering doesn't affect GROUP BY queries.\n+            not self.query.group_by\n+        ):\n             return True\n         else:\n             return False\ndiff --git a/docs/releases/3.1.2.txt b/docs/releases/3.1.2.txt\nindex 1243654bfb..f9e45370ab 100644\n--- a/docs/releases/3.1.2.txt\n+++ b/docs/releases/3.1.2.txt\n@@ -11,3 +11,8 @@ Bugfixes\n \n * Fixed a bug in Django 3.1 where ``FileField`` instances with a callable\n   storage were not correctly deconstructed (:ticket:`31941`).\n+\n+* Fixed a regression in Django 3.1 where the :attr:`.QuerySet.ordered`\n+  attribute returned incorrectly ``True`` for ``GROUP BY`` queries (e.g.\n+  ``.annotate().values()``) on models with ``Meta.ordering``. A model's\n+  ``Meta.ordering`` doesn't affect such queries (:ticket:`31990`).\n"
+  },
+  "django__django-15863": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-15863",
+    "model_patch": "diff --git a/django/template/defaultfilters.py b/django/template/defaultfilters.py\nindex 7a5b28d159..23c3a08c67 100644\n--- a/django/template/defaultfilters.py\n+++ b/django/template/defaultfilters.py\n@@ -151,7 +151,7 @@ def floatformat(text, arg=-1):\n             use_l10n = False\n             arg = arg[:-1] or -1\n     try:\n-        input_val = repr(text)\n+        input_val = str(text)\n         d = Decimal(input_val)\n     except InvalidOperation:\n         try:\n"
+  },
+  "django__django-15569": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-15569",
+    "model_patch": "diff --git a/django/db/models/query_utils.py b/django/db/models/query_utils.py\nindex 0caa165e15..6917820604 100644\n--- a/django/db/models/query_utils.py\n+++ b/django/db/models/query_utils.py\n@@ -217,6 +217,7 @@ class RegisterLookupMixin:\n         if lookup_name is None:\n             lookup_name = lookup.lookup_name\n         del cls.class_lookups[lookup_name]\n+        cls._clear_cached_lookups()\n \n \n def select_related_descend(field, restricted, requested, load_fields, reverse=False):\n"
+  },
+  "django__django-15278": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-15278",
+    "model_patch": "diff --git a/django/db/backends/sqlite3/schema.py b/django/db/backends/sqlite3/schema.py\nindex 6752a8e3c0..3ff0a3f7db 100644\n--- a/django/db/backends/sqlite3/schema.py\n+++ b/django/db/backends/sqlite3/schema.py\n@@ -324,10 +324,15 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):\n \n     def add_field(self, model, field):\n         \"\"\"Create a field on a model.\"\"\"\n-        # Fields with default values cannot by handled by ALTER TABLE ADD\n-        # COLUMN statement because DROP DEFAULT is not supported in\n-        # ALTER TABLE.\n-        if not field.null or self.effective_default(field) is not None:\n+        if (\n+            # Primary keys and unique fields are not supported in ALTER TABLE\n+            # ADD COLUMN.\n+            field.primary_key or field.unique or\n+            # Fields with default values cannot by handled by ALTER TABLE ADD\n+            # COLUMN statement because DROP DEFAULT is not supported in\n+            # ALTER TABLE.\n+            not field.null or self.effective_default(field) is not None\n+        ):\n             self._remake_table(model, create_field=field)\n         else:\n             super().add_field(model, field)\n"
+  },
+  "django__django-16899": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-16899",
+    "model_patch": "diff --git a/django/contrib/admin/checks.py b/django/contrib/admin/checks.py\nindex c395b0bde2..2c90dedc31 100644\n--- a/django/contrib/admin/checks.py\n+++ b/django/contrib/admin/checks.py\n@@ -771,10 +771,11 @@ class BaseModelAdminChecks:\n             except FieldDoesNotExist:\n                 return [\n                     checks.Error(\n-                        \"The value of '%s' is not a callable, an attribute of \"\n-                        \"'%s', or an attribute of '%s'.\"\n+                        \"The value of '%s' refers to '%s', which is not a callable, \"\n+                        \"an attribute of '%s', or an attribute of '%s'.\"\n                         % (\n                             label,\n+                            field_name,\n                             obj.__class__.__name__,\n                             obj.model._meta.label,\n                         ),\ndiff --git a/docs/ref/checks.txt b/docs/ref/checks.txt\nindex df0adbef63..1b2306b2af 100644\n--- a/docs/ref/checks.txt\n+++ b/docs/ref/checks.txt\n@@ -675,8 +675,9 @@ with the admin site:\n * **admin.E033**: The value of ``ordering`` refers to ``<field name>``, which\n   is not a field of ``<model>``.\n * **admin.E034**: The value of ``readonly_fields`` must be a list or tuple.\n-* **admin.E035**: The value of ``readonly_fields[n]`` is not a callable, an\n-  attribute of ``<ModelAdmin class>``, or an attribute of ``<model>``.\n+* **admin.E035**: The value of ``readonly_fields[n]`` refers to\n+  ``<field_name>``, which is not a callable, an attribute of\n+  ``<ModelAdmin class>``, or an attribute of ``<model>``.\n * **admin.E036**: The value of ``autocomplete_fields`` must be a list or tuple.\n * **admin.E037**: The value of ``autocomplete_fields[n]`` refers to\n   ``<field name>``, which is not a field of ``<model>``.\n"
+  },
+  "django__django-16901": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-16901",
+    "model_patch": ""
+  },
+  "django__django-9296": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-9296",
+    "model_patch": "diff --git a/django/core/paginator.py b/django/core/paginator.py\nindex 1f92da5d4f..f7800f1ee2 100644\n--- a/django/core/paginator.py\n+++ b/django/core/paginator.py\n@@ -106,6 +106,10 @@ class Paginator:\n         \"\"\"\n         return range(1, self.num_pages + 1)\n \n+    def __iter__(self):\n+        for page_number in self.page_range:\n+            yield self.page(page_number)\n+\n     def _check_object_list_is_ordered(self):\n         \"\"\"\n         Warn if self.object_list is unordered (typically a QuerySet).\ndiff --git a/docs/releases/3.1.txt b/docs/releases/3.1.txt\nindex da954bab56..6ca6d35ea5 100644\n--- a/docs/releases/3.1.txt\n+++ b/docs/releases/3.1.txt\n@@ -162,6 +162,11 @@ Models\n \n * ...\n \n+Pagination\n+~~~~~~~~~~\n+\n+* :class:`Paginator` is now iterable, yielding the pages it contains.\n+\n Requests and Responses\n ~~~~~~~~~~~~~~~~~~~~~~\n \n"
+  },
+  "matplotlib__matplotlib-26208": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "matplotlib__matplotlib-26208",
+    "model_patch": ""
+  },
+  "matplotlib__matplotlib-25960": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "matplotlib__matplotlib-25960",
+    "model_patch": ""
+  },
+  "matplotlib__matplotlib-20488": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "matplotlib__matplotlib-20488",
+    "model_patch": ""
+  },
+  "pylint-dev__pylint-4661": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "pylint-dev__pylint-4661",
+    "model_patch": ""
+  },
+  "pydata__xarray-6744": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "pydata__xarray-6744",
+    "model_patch": "diff --git a/xarray/core/rolling.py b/xarray/core/rolling.py\nindex aef290f6..e20ff1c0 100644\n--- a/xarray/core/rolling.py\n+++ b/xarray/core/rolling.py\n@@ -270,13 +270,17 @@ class DataArrayRolling(Rolling[\"DataArray\"]):\n     def __iter__(self) -> Iterator[tuple[RollingKey, DataArray]]:\n         if self.ndim > 1:\n             raise ValueError(\"__iter__ is only supported for 1d-rolling\")\n-        stops = np.arange(1, len(self.window_labels) + 1)\n-        starts = stops - int(self.window[0])\n-        starts[: int(self.window[0])] = 0\n+        dim0 = self.dim[0]\n+        window0 = int(self.window[0])\n+        offset = (window0 + 1) // 2 if self.center[0] else 1\n+        stops = np.arange(offset, self.obj.sizes[dim0] + offset)\n+        starts = stops - window0\n+        starts[: window0 - offset] = 0\n+\n         for (label, start, stop) in zip(self.window_labels, starts, stops):\n-            window = self.obj.isel({self.dim[0]: slice(start, stop)})\n+            window = self.obj.isel({dim0: slice(start, stop)})\n \n-            counts = window.count(dim=self.dim[0])\n+            counts = window.count(dim=[dim0])\n             window = window.where(counts >= self.min_periods)\n \n             yield (label, window)\n"
+  },
+  "pytest-dev__pytest-5840": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "pytest-dev__pytest-5840",
+    "model_patch": ""
+  },
+  "scikit-learn__scikit-learn-13328": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "scikit-learn__scikit-learn-13328",
+    "model_patch": "diff --git a/sklearn/linear_model/huber.py b/sklearn/linear_model/huber.py\nindex 65c686400..285913684 100644\n--- a/sklearn/linear_model/huber.py\n+++ b/sklearn/linear_model/huber.py\n@@ -251,7 +251,8 @@ class HuberRegressor(LinearModel, RegressorMixin, BaseEstimator):\n         self : object\n         \"\"\"\n         X, y = check_X_y(\n-            X, y, copy=False, accept_sparse=['csr'], y_numeric=True)\n+            X, y, copy=False, accept_sparse=['csr'], y_numeric=True,\n+            dtype=[np.float64, np.float32])\n         if sample_weight is not None:\n             sample_weight = np.array(sample_weight)\n             check_consistent_length(y, sample_weight)\n"
+  },
+  "pylint-dev__pylint-8898": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "pylint-dev__pylint-8898",
+    "model_patch": ""
+  },
+  "scikit-learn__scikit-learn-10844": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "scikit-learn__scikit-learn-10844",
+    "model_patch": ""
+  },
+  "sphinx-doc__sphinx-10449": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sphinx-doc__sphinx-10449",
+    "model_patch": "diff --git a/CHANGES b/CHANGES\nindex bc32362ae..da3bb8352 100644\n--- a/CHANGES\n+++ b/CHANGES\n@@ -16,6 +16,9 @@ Features added\n Bugs fixed\n ----------\n \n+* #9575: autodoc: The return type of a class is no longer shown in the\n+  description when ``autodoc_typehints`` is set to ``'description'``\n+\n Testing\n --------\n \ndiff --git a/sphinx/ext/autodoc/typehints.py b/sphinx/ext/autodoc/typehints.py\nindex 06768168e..4491e1ce2 100644\n--- a/sphinx/ext/autodoc/typehints.py\n+++ b/sphinx/ext/autodoc/typehints.py\n@@ -28,7 +28,7 @@ def record_typehints(app: Sphinx, objtype: str, name: str, obj: Any,\n             for param in sig.parameters.values():\n                 if param.annotation is not param.empty:\n                     annotation[param.name] = typing.stringify(param.annotation, mode)\n-            if sig.return_annotation is not sig.empty:\n+            if sig.return_annotation is not sig.empty and objtype != 'class':\n                 annotation['return'] = typing.stringify(sig.return_annotation, mode)\n     except (TypeError, ValueError):\n         pass\n"
+  },
+  "scikit-learn__scikit-learn-26323": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "scikit-learn__scikit-learn-26323",
+    "model_patch": "diff --git a/sklearn/compose/_column_transformer.py b/sklearn/compose/_column_transformer.py\nindex 4eddd12b1..cd8271981 100644\n--- a/sklearn/compose/_column_transformer.py\n+++ b/sklearn/compose/_column_transformer.py\n@@ -296,7 +296,10 @@ class ColumnTransformer(TransformerMixin, _BaseComposition):\n         transformers = (\n             trans\n             for _, trans, _ in chain(\n-                self.transformers, getattr(self, \"transformers_\", [])\n+                self.transformers,\n+                getattr(self, \"transformers_\", []),\n+                # Since we can't compare 'passthrough' before fit\n+                [(\"remainder\", self.remainder, \"\")],\n             )\n             if trans not in {\"passthrough\", \"drop\"}\n         )\n"
+  },
+  "sphinx-doc__sphinx-11445": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sphinx-doc__sphinx-11445",
+    "model_patch": ""
+  },
+  "sphinx-doc__sphinx-10673": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sphinx-doc__sphinx-10673",
+    "model_patch": ""
+  },
+  "django__django-12754": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-12754",
+    "model_patch": "diff --git a/django/db/migrations/autodetector.py b/django/db/migrations/autodetector.py\nindex 30616c0172..85c3013897 100644\n--- a/django/db/migrations/autodetector.py\n+++ b/django/db/migrations/autodetector.py\n@@ -563,6 +563,16 @@ class MigrationAutodetector:\n                 if isinstance(base, str) and \".\" in base:\n                     base_app_label, base_name = base.split(\".\", 1)\n                     dependencies.append((base_app_label, base_name, None, True))\n+                    # Depend on the removal of base fields if the new model has\n+                    # a field with the same name.\n+                    old_base_model_state = self.from_state.models.get((base_app_label, base_name))\n+                    new_base_model_state = self.to_state.models.get((base_app_label, base_name))\n+                    if old_base_model_state and new_base_model_state:\n+                        removed_base_fields = set(old_base_model_state.fields).difference(\n+                            new_base_model_state.fields,\n+                        ).intersection(model_state.fields)\n+                        for removed_base_field in removed_base_fields:\n+                            dependencies.append((base_app_label, base_name, removed_base_field, False))\n             # Depend on the other end of the primary key if it's a relation\n             if primary_key_rel:\n                 dependencies.append((\n"
+  },
+  "sympy__sympy-16886": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sympy__sympy-16886",
+    "model_patch": "diff --git a/sympy/crypto/crypto.py b/sympy/crypto/crypto.py\nindex ca552191c..0c556b6ef 100644\n--- a/sympy/crypto/crypto.py\n+++ b/sympy/crypto/crypto.py\n@@ -1520,7 +1520,7 @@ def decipher_kid_rsa(msg, key):\n     \"..-\": \"U\", \"...-\": \"V\",\n     \".--\": \"W\", \"-..-\": \"X\",\n     \"-.--\": \"Y\", \"--..\": \"Z\",\n-    \"-----\": \"0\", \"----\": \"1\",\n+    \"-----\": \"0\", \".----\": \"1\",\n     \"..---\": \"2\", \"...--\": \"3\",\n     \"....-\": \"4\", \".....\": \"5\",\n     \"-....\": \"6\", \"--...\": \"7\",\n"
+  },
+  "sphinx-doc__sphinx-8269": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sphinx-doc__sphinx-8269",
+    "model_patch": ""
+  },
+  "sympy__sympy-17318": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sympy__sympy-17318",
+    "model_patch": ""
+  },
+  "sphinx-doc__sphinx-9591": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sphinx-doc__sphinx-9591",
+    "model_patch": "diff --git a/CHANGES b/CHANGES\nindex 4e98b2c8a..76d026d10 100644\n--- a/CHANGES\n+++ b/CHANGES\n@@ -42,6 +42,8 @@ Bugs fixed\n   function pointers.\n * #9564: smartquotes: don't adjust typography for text with\n   language-highlighted ``:code:`` role.\n+* #9585: py domain: Cross-references in property's type annotations are not\n+  generated\n \n Testing\n --------\ndiff --git a/sphinx/domains/python.py b/sphinx/domains/python.py\nindex e8330e81c..9875a9f4b 100644\n--- a/sphinx/domains/python.py\n+++ b/sphinx/domains/python.py\n@@ -861,7 +861,8 @@ class PyProperty(PyObject):\n \n         typ = self.options.get('type')\n         if typ:\n-            signode += addnodes.desc_annotation(typ, ': ' + typ)\n+            annotations = _parse_annotation(typ, self.env)\n+            signode += addnodes.desc_annotation(typ, '', nodes.Text(': '), *annotations)\n \n         return fullname, prefix\n \n"
+  },
+  "sympy__sympy-24539": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sympy__sympy-24539",
+    "model_patch": ""
+  },
+  "sympy__sympy-13091": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sympy__sympy-13091",
+    "model_patch": ""
+  }
+}

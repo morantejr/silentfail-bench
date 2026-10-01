@@ -1344,3 +1344,25 @@ verdict stands as the registered result at that budget; the papers now carry bot
 the lead framing — and, new, whether to spend the roughly $20 of remaining Modal credit on
 the axis now that it has a qualifying agent, or to submit first and run it for the next
 paper.
+
+
+---
+
+# 28. GLM, for completeness — and a mistake of mine caught at 33 of 41 (2026-10-01, later)
+
+You named two open-weight agents. Section 27 covered DeepSeek. Amendment 12 ran GLM-5.3
+under DeepSeek's qualifying settings, 100 steps and a 16k token cap, to see whether the
+budget explained its 13 of 41 too.
+
+It cannot say. Both configs carry a `cost_limit` of $0.25 per trajectory that I did not
+name when I called the settings identical. It never bound DeepSeek at 1.5 cents a run; it
+cut 23 of 41 GLM runs at a median of 31 steps, none near the ceiling. I caught it at 33 of
+41, declared it before the readout, and committed the declaration ahead of the data.
+
+What the run does show: GLM submitted 16 patches and all 16 resolved. It is accurate
+when it finishes and roughly fifteen times DeepSeek's price, so it fails the affordability
+gate at any budget and stays out of the axis — the decision that was already made. The
+papers keep "mechanism unmeasured," now with the reason. Answering the budget question
+properly would cost $25–40 to settle nothing, and I have not run it.
+
+Amendment 11's result is untouched: no DeepSeek or gpt-5-mini run came within half of that cap.

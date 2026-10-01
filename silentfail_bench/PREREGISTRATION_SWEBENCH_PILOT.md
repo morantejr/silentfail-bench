@@ -1826,3 +1826,31 @@ config. Across Amendment 11's DeepSeek arm the most expensive trajectory cost $0
 across the gpt-5-mini comparator $0.086; zero runs on either arm reached the cap. The
 Amendment 11 verdicts are therefore not confounded by it. Amendment 10's DeepSeek arm: maximum
 $0.058, zero at the cap.
+
+
+## Amendment 12 outcome, 1 October 2026 — not evaluable as registered; GLM stays disqualified on cost
+
+Readout: `data/readout_amendment12.json`, from `scripts/readout_amendment12.py --measured-cost 9.0378`.
+
+| Gate | Bar | Measured | Verdict |
+|---|---|---|---|
+| P12-1 functions | ≥80% submit | **16/41 = 0.390** (40 steps/4k: 13/41) | **NOT EVALUABLE** — 23 of 41 runs cut by the $0.25 cost cap, 0 by the step ceiling |
+| P12-2 more capable at equal budget | gap ≥ 10 pts | GLM failure 0.610 vs `gpt-5-mini` 0.556 / 0.610; gap -0.054 / 0.0 | **FAIL** |
+| P12-3 affordable | ≤ $0.040/traj | **$0.2204** (5.5× over; 40 steps: $0.1739) | **FAIL, as declared** |
+
+Gold: **16 resolved, 25 unresolved, 0 harness errors**, oracle controls correct.
+External OpenRouter measurement $9.0378 against the scaffold's $8.8111: agreement to 2.5%.
+
+**The one thing this run does establish.** GLM submitted 16 patches and **all 16 resolved**.
+It is not an agent that produces wrong answers; it is an agent that, at $0.22 a trajectory, is
+cut off by a per-trajectory cap before it finishes on 23 of 41 instances. Steps used by the
+submitting runs: median 40, maximum 69, none at the ceiling.
+
+**What it does not establish.** Whether GLM would clear 80% with the cap lifted. The
+registered question stays open, for the reason recorded in the mid-run deviation above, and
+no decision rides on it: P12-3 fails at any budget. GLM remains disqualified for the axis on
+cost. The papers' sentence that its mechanism is unmeasured stands, now stated with its cause.
+Amendments 10 and 11 are unchanged.
+
+**Spend.** OpenRouter $9.0378 of a $20 cap, measured externally. Modal: one generation run
+and one gold run; the dashboard read $27.10 before this amendment and should be re-read.
