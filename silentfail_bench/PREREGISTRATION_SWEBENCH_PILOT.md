@@ -1854,3 +1854,75 @@ Amendments 10 and 11 are unchanged.
 
 **Spend.** OpenRouter $9.0378 of a $20 cap, measured externally. Modal: one generation run
 and one gold run; the dashboard read $27.10 before this amendment and should be re-read.
+
+
+---
+
+# Amendment 13, 1 October 2026 — the agent axis, on the agent that qualified
+
+**Written before any axis trajectory exists on this agent. Post hoc in one declared respect:**
+the agent qualified under a budget (100 steps) chosen after Amendment 10's failure at 40, and
+every number this axis produces carries that caveat. Nothing else below is tuned to an outcome.
+
+## What runs
+
+Amendment 7's design, unchanged in every registered respect except the agent and its budget:
+the **same 114 SWE-bench Multilingual instances** as the replication, `k = 4` (456 trajectories),
+the same m=4 audit panel, the same 4B selector, the mandatory `gpt-5` strong-selector arm, the
+same harness gold, analysed by `scripts/readout_amendment7.py` under **Amendment 7a's rules**
+(unconditional failure rates, unfitted primary estimator, 20-failure floor, null claim only
+below +0.05, the 0.65 pool gate, the frozen random arm). The agent is **DeepSeek V4.1 Flash**
+under `configs/mini_swe_deepseek_axis.yaml`, which names every limit: `step_limit 100`,
+`max_tokens 16000`, `cost_limit 1.00`. The cost limit is a ceiling that must not bind; a
+trajectory that reaches it is reported as a cut, as Amendment 12 taught.
+
+Output goes to a **fresh** directory, `data/agent_axis_deepseek`. The 100 `gpt-6-luna`
+trajectories in `data/agent_axis` are untouched and, per Amendment 10, are a discarded
+capability pilot; they are not mixed in and their hashes still verify.
+
+## The capability comparison, two ways, both declared now
+
+Registered **A7-P1** compares against `gpt-5-mini`'s replication rate, which is a band
+(0.476–0.752) because only 213 of 456 replication slots have gold, and which was measured at
+40 steps. Amendment 11 established that comparing a 100-step candidate with a 40-step
+comparator hands the candidate the gap. So this amendment adds an **equal-budget comparator**:
+`gpt-5-mini`, `k = 1`, 100 steps, same 114 instances, `configs/mini_swe_openai_axis.yaml`,
+gold run `a13_gpt5mini_100`. Both comparisons are reported. The registered A7-P1 verdict uses
+the registered band; the equal-budget figure is reported beside it, and if the two disagree
+the disagreement is stated rather than resolved by choosing one.
+
+## Predictions
+
+A7-P1, A7-P2, A7-P3 exactly as registered in Amendment 7 and read under Amendment 7a. No new
+thresholds. The agent-axis predictions the papers currently list as "registered and
+unanswered" become answered — or, under 7a, INCONCLUSIVE, which is a legitimate reading and
+was predicted to be the likely one.
+
+## Stages, in order, each gated
+
+1. One-instance smoke of the DeepSeek axis config on a Multilingual instance (`--limit 1`,
+   `k=1`); must submit; cost projected ×456 must be under the OpenRouter cap. Deleted after.
+2. Generate 456 trajectories, 6 workers. OpenRouter spend measured externally by differencing
+   the credits endpoint; the runner's own cap is a second line.
+3. Bundle; must be exactly 114 × 4 slots.
+4. Panel scoring on Modal GPU, 4k prefix, the four registered auditors plus the 4B selector,
+   by HuggingFace repo id (the slug form silently scores nothing).
+5. `gpt-5` judges every candidate, J1 only.
+6. `prepare_amendment7.py` against the new bundle: four candidate-indexed gold inputs and the
+   frozen random arm.
+7. Four gold runs, `a7_agent_axis_cand{0..3}`, oracle controls on cand0, on
+   `swe-bench/SWE-Bench_Multilingual` (verified to carry `image`, `eval_script`, `log_parser`,
+   `eval_type`; the replication's gold used it).
+8. The equal-budget comparator: generate `k=1` at 100 steps, gold `a13_gpt5mini_100`.
+9. `readout_amendment7.py` pointed at the new directory, plus the comparator figure.
+
+## Caps and stop rules
+
+OpenRouter ≤ **$20** for generation (balance $31.85 before; DeepSeek's Multilingual rate is
+expected around $0.03 a trajectory, ≈ $14). OpenAI ≤ **$20** for the judge (~$9) and the
+comparator (~$8); the operator confirms the account holds it before stage 5. Modal ≤ **$22**
+(Amendment 7b's cap) against $27.10 on the dashboard before Amendment 12, re-read before
+launch. **No paid overage.** If any cap is exceeded the pipeline stops before the next paid
+stage and the partial state is reported, not analysed. The `swe-rex` deployment is stopped at
+the end; `modal app list` is part of done. Wall clock: roughly twelve hours; a stage that has
+not finished within twice its estimate is stopped and reported.
