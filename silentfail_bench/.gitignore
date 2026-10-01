@@ -40,6 +40,16 @@ data/*/*
 # because CHECKPOINT_HASHES.json attests it and preflight_amendment7.py reads it
 data/*/traj/cand*/*
 !data/*/traj/cand*/preds.json
+# capability-pilot inputs. readout_amendment10.py computes its gates from
+# data/<run>/preds.json and data/gold_modal/<run-id>/report.json. Amendment 6's
+# equivalents are tracked only because they predate the blanket rule, so the
+# Amendment 10 pair was silently dropped -- the sixth recurrence of this class.
+# The run dirs also hold a 15 MB logs/ tree, so negate the directory and
+# re-exclude its contents before re-including the one file that is wanted.
+!data/*/preds.json
+!data/gold_modal/*/
+data/gold_modal/*/*
+!data/gold_modal/*/report.json
 !data/*/README.md
 !data/*/rescoring_bundle.jsonl
 silentfail_l4_package*

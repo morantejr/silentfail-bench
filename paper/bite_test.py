@@ -247,7 +247,11 @@ def main():
         note = exempt.get(f, {}).get(p, why)
         print(f"  {tag:10s} {f.split('/')[-1]}{p}: {note}")
     needed = {(f, p) for f, p, _ in uncaught}
-    stale = [(f, p) for f, paths in exempt.items() for p in paths if (f, p) not in needed]
+    # Only judge exemptions for files this run actually swept: under --file every
+    # other file's exemptions would otherwise be reported as no longer needed.
+    swept = {f for f, _ in todo}
+    stale = [(f, p) for f, paths in exempt.items() if f in swept
+             for p in paths if (f, p) not in needed]
     for f, p in stale:
         print(f"  STALE      {f.split('/')[-1]}{p}: now pinned; remove this exemption")
     if stale:

@@ -12,7 +12,7 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: draft v0.9.11 (2026-09-30) — the registered endpoint, computed four
+> **Status: draft v0.9.12 (2026-10-01) — the registered endpoint, computed four
 > ways, puts disagreement's incremental value over the selector's own score at
 > indistinguishable from zero, loosest pooled upper bound +0.12 over 47 failures
 > and 46 repositories.** A SWE-bench Verified pilot (41 instances, 12 positives)
@@ -37,10 +37,10 @@ about are exactly where its blind spots collect. **A null result is publishable*
 > [`CLAUDE_HANDOFF_OCT1.md`](CLAUDE_HANDOFF_OCT1.md) and Amendment 10 in the
 > preregistration. The old Amendment 7 runbook is retained only for downstream
 > stages after an open agent passes its capability gates.
-> Fourteen numbered defects (including seven critic/instrument failures) are recorded in
+> Fifteen numbered defects (including seven critic/instrument failures) are recorded in
 > [`silentfail_bench/DEFECTS.md`](silentfail_bench/DEFECTS.md), including one that
 > manufactured a result large enough to reverse the paper. Paper:
-> [`paper/main.pdf`](paper/main.pdf), 9-page submission version (body under six)
+> [`paper/main.pdf`](paper/main.pdf), 9-page submission version (body within six)
 > [`paper/main_short.pdf`](paper/main_short.pdf). See [`UPDATES.md`](UPDATES.md).
 Before spending Modal credit (resets **1 Oct**): [`CLAUDE_HANDOFF_OCT1.md`](CLAUDE_HANDOFF_OCT1.md)
 and `silentfail_bench/scripts/preflight_pre_oct1.sh`.
@@ -56,7 +56,7 @@ and `silentfail_bench/scripts/preflight_pre_oct1.sh`.
 | [`UPDATES.md`](UPDATES.md) | **Research log — one entry per stage: done / learned / changed** |
 | `SilentFail_AAAI_Proposal.pdf` / `.tex` | The original proposal |
 | `paper/main.pdf` | The paper (full version) |
-| `paper/main_short.pdf` | Nine-page submission version; body under six pages, then references |
+| `paper/main_short.pdf` | Nine-page submission version; body within six pages, then references |
 | [`archive/drafts/`](archive/drafts/) | Earlier drafts and write-ups, kept for the record |
 
 ## Two things a reader should know up front

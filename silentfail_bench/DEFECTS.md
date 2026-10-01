@@ -538,6 +538,39 @@ and it is wired into `preflight_pre_oct1.sh`.
 
 **Class.** Correcting a generated file without correcting the generator.
 
+### #17 — A gate overwrote the data it was checking, and a cost gate passed on $0.00 *(tooling)*
+
+Found 2026-10-01, minutes after the Amendment 10 pilot completed.
+`preflight_pre_oct1.sh` probed the readout's fail-closed behaviour by invoking
+`readout_amendment10.py --out data/pilot_deepseek_a10 --measured-cost 0` and
+requiring exit 2. That worked while the directory was empty. Once the pilot had
+run, the readout found its inputs, succeeded, and **rewrote the committed readout**
+with `measured_total_usd: 0.0`, `per_trajectory_usd: 0.0` and, worse,
+`P10_3.passes: true` — the affordability gate passing on a cost that was never
+measured. The real figures, $0.5527 and $0.0135, were destroyed.
+
+It surfaced only because the new Amendment 10 assertions in
+`check_consistency.py` compare the readout's cost against the papers and failed on
+`$0.0000 per trajectory`. Without those assertions the corrupted file would have
+been committed, and the paper's $0.0135 would have had no support in the data.
+
+This is the same defect class as the runner's blind cost gate fixed on 30 September
+(`.get('total_usage', 0)` yielding $0.00 and passing the cap), reappearing one
+stage later: **a zero cost cannot distinguish free from unmeasured, and anything
+that treats the two alike will pass when it should refuse.**
+
+**Fixes.** `readout_amendment10.py` now refuses `--measured-cost <= 0` with exit 2
+before writing anything, so the exact invocation that caused the corruption leaves
+the file untouched. The preflight probes fail-closed behaviour against a `mktemp -d`
+scratch directory and a run-id with no gold, so it can never write into a real
+output. Its stale "output directory is fresh" check, which could not pass after the
+run, is replaced by the post-run property that matters: the readout exists, records
+`all_gates_pass: false`, and carries a non-zero measured cost. Both new guards were
+bite-tested by inducing the failure each catches.
+
+**Class.** A check with a side effect on its own subject; and a zero treated as a
+measurement.
+
 ## Correction: my bite test reported four failures that did not exist (2026-09-30)
 
 The 2026-09-29 bite test of the lucky-pass and taxonomy assertions reported

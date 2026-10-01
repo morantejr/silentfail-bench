@@ -1,0 +1,146 @@
+{
+ "run_id": "s5_verified",
+ "dataset": "SWE-bench/SWE-bench_Verified",
+ "total": 14,
+ "resolved_ids": [
+  "django__django-10914",
+  "django__django-12754",
+  "django__django-14017",
+  "django__django-16899",
+  "scikit-learn__scikit-learn-13328",
+  "scikit-learn__scikit-learn-26323"
+ ],
+ "unresolved_ids": [
+  "django__django-11265",
+  "django__django-14155",
+  "django__django-15128",
+  "pylint-dev__pylint-4661",
+  "pytest-dev__pytest-5840",
+  "sympy__sympy-13091"
+ ],
+ "error_ids": [
+  "pylint-dev__pylint-8898",
+  "sympy__sympy-17318"
+ ],
+ "oracle": [],
+ "details": [
+  {
+   "instance_id": "django__django-10914",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 10,
+   "f2p": "1/1",
+   "p2p": "98/98"
+  },
+  {
+   "instance_id": "django__django-11265",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "0/1",
+   "p2p": "30/30"
+  },
+  {
+   "instance_id": "django__django-12754",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "1/1",
+   "p2p": "112/112"
+  },
+  {
+   "instance_id": "django__django-14017",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 12,
+   "f2p": "2/2",
+   "p2p": "147/147"
+  },
+  {
+   "instance_id": "django__django-14155",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 11,
+   "f2p": "0/3",
+   "p2p": "89/89"
+  },
+  {
+   "instance_id": "django__django-15128",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 19,
+   "f2p": "1/1",
+   "p2p": "281/282"
+  },
+  {
+   "instance_id": "django__django-16899",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 11,
+   "f2p": "2/2",
+   "p2p": "54/54"
+  },
+  {
+   "instance_id": "pylint-dev__pylint-4661",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 7,
+   "f2p": "0/1",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "pylint-dev__pylint-8898",
+   "model_name_or_path": "s5_judge_verified",
+   "error": "patch apply failed"
+  },
+  {
+   "instance_id": "pytest-dev__pytest-5840",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 7,
+   "f2p": "0/2",
+   "p2p": "51/51"
+  },
+  {
+   "instance_id": "scikit-learn__scikit-learn-13328",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 7,
+   "f2p": "1/1",
+   "p2p": "9/9"
+  },
+  {
+   "instance_id": "scikit-learn__scikit-learn-26323",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "1/1",
+   "p2p": "188/188"
+  },
+  {
+   "instance_id": "sympy__sympy-13091",
+   "model_name_or_path": "s5_judge_verified",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "1/2",
+   "p2p": "84/89"
+  },
+  {
+   "instance_id": "sympy__sympy-17318",
+   "model_name_or_path": "s5_judge_verified",
+   "error": "patch apply failed"
+  }
+ ]
+}

@@ -55,6 +55,14 @@ def main() -> int:
     a.add_argument("--instances", type=Path, required=True)
     a = a.parse_args()
 
+    # A zero measured cost cannot distinguish "free" from "never measured", which is
+    # the blind-cost-gate failure the runner already guards against on its side. The
+    # pre-Oct-1 preflight used --measured-cost 0 as a fail-closed probe and, once real
+    # data existed, overwrote this readout with $0.0000 and P10-3 passing.
+    if a.measured_cost <= 0:
+        print("ABORT: --measured-cost must be > 0. A zero cost is an unmeasured cost, "
+              "and P10-3 would pass on it. Pass the runner's differenced figure.")
+        return 2
     instances = [l.strip() for l in a.instances.read_text().splitlines() if l.strip()]
     preds_f = a.out / "preds.json"
     gold_f = ROOT / "data/gold_modal" / a.run_id / "report.json"

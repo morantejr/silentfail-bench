@@ -415,7 +415,8 @@ if not ok: fail.append("R-P1 short narration")
 ok = re.search(r"\\textbf\{R-P1\}[^\n]*\\emph\{Passed\.\}", short) is None
 print(f"  {'ok  ' if ok else 'FAIL'}  short paper does not mark R-P1 as Passed")
 if not ok: fail.append("R-P1 short Passed")
-_hist = tex[tex.index("label{sec:history}") : tex.index("\\end{tabularx}", tex.index("label{sec:history}"))]
+# the claim-change table is a longtable since v0.9.12: tabularx cannot break across pages
+_hist = tex[tex.index("label{sec:history}") : tex.index("\\end{longtable}", tex.index("label{sec:history}"))]
 _ver_nums = [int(x) for x in re.findall(r"v0\.9\.(\d+)", _hist)]
 _title_m = re.search(r"Working draft v0\.9\.(\d+)", tex)
 _max_ver = max(_ver_nums) if _ver_nums else None
@@ -514,8 +515,8 @@ print(f"  {'ok  ' if ok else 'FAIL'}  mentor note reports corrected A5 mixed sig
 if not ok: fail.append("mentor A5 signs")
 # Derive the version from the paper's own title block, which is already checked
 # against the changelog. Hardcoding it here meant three places to hand-sync.
-ok = f"draft v0.9.{_title_m.group(1)}" in _readme and "9-page submission version (body under six)" in _readme \
-    and "Nine-page submission version; body under six pages" in _readme \
+ok = f"draft v0.9.{_title_m.group(1)}" in _readme and "9-page submission version (body within six)" in _readme \
+    and "Nine-page submission version; body within six pages" in _readme \
     and "7-page cut" not in _readme and "cut to 7 pages" not in _readme
 print(f"  {'ok  ' if ok else 'FAIL'}  README status/version and short-paper length are current")
 if not ok: fail.append("README status")
@@ -634,6 +635,64 @@ for _b in ("verified", "multilingual"):
             fail.append(f"taxonomy internal consistency {_b}/{_k}")
 print(f"  ok    taxonomy per-class counts agree across both encodings and every floor flag "
       f"follows from n < {_fl}" if not [f for f in fail if f.startswith('taxonomy internal')] else "")
+
+# --- Amendment 10 outcome: every gate number must come from its readout ---
+print("\nAmendment 10 capability gates vs data/pilot_deepseek_a10/readout_amendment10.json:")
+_a10 = json.loads((D / "pilot_deepseek_a10/readout_amendment10.json").read_text())
+_g1, _g2, _g3 = _a10["P10_1"], _a10["P10_2"], _a10["P10_3"]
+# The decision is the load-bearing part: a passing gate set would mean the axis ran.
+ok = _a10["all_gates_pass"] is False and _g1["passes"] is False \
+    and _g2["passes"] is True and _g3["passes"] is True
+print(f"  {'ok  ' if ok else 'FAIL'}  gate verdicts are (P10-1 {_g1['passes']}, P10-2 {_g2['passes']}, "
+      f"P10-3 {_g3['passes']}), all_gates_pass {_a10['all_gates_pass']}")
+if not ok: fail.append("A10 gate verdicts")
+# the one failing gate, stated identically in both papers
+for _nm, _src in (("main.tex", tex), ("main_short.tex", short)):
+    _n = _src.count(f"{_g1['submitted']} of {_a10['instances']}")
+    ok = _n >= 1 and f"{int(_g1['bar'] * 100)}\\%" in _src
+    print(f"  {'ok  ' if ok else 'FAIL'}  {_nm} quotes {_g1['submitted']} of {_a10['instances']} "
+          f"against the {int(_g1['bar'] * 100)}% bar ({_n} mention(s))")
+    if not ok: fail.append(f"{_nm} A10 submit count")
+_resolved = _a10["instances"] - _g2["failures"]
+for _nm, _src in (("main.tex", tex), ("main_short.tex", short)):
+    for _want, _lab in ((f"{_resolved} of {_a10['instances']} resolved", "resolved count"),
+                        (f"failure rate of {_g2['failure_rate']:.3f} against", "failure rate"),
+                        (f"{_g2['gpt5mini_baseline']['failure_rate']:.3f}", "gpt-5-mini baseline"),
+                        (f"\\${_g3['per_trajectory_usd']:.4f} per trajectory", "cost per trajectory")):
+        ok = _want in _src or (_lab == "failure rate" and f"failure rate of {_g2['failure_rate']:.3f}" in _src)
+        print(f"  {'ok  ' if ok else 'FAIL'}  {_nm} {_lab}: {'found' if ok else 'MISSING'} -> {_want}")
+        if not ok: fail.append(f"{_nm} A10 {_lab}")
+# the mechanism the run falsified must not survive anywhere
+_banned = "ability to hold a text-driven action format"
+ok = _banned not in tex and _banned not in short
+print(f"  {'ok  ' if ok else 'FAIL'}  the format-drift mechanism the gold run falsified is absent from both papers")
+if not ok: fail.append("A10 stale format-drift mechanism")
+# the step-budget mechanism, and the refusal to renegotiate the budget
+for _nm, _src in (("main.tex", tex), ("main_short.tex", short)):
+    ok = "exhausted the step budget" in _src or "exhausted the 40-step budget" in _src
+    print(f"  {'ok  ' if ok else 'FAIL'}  {_nm} states the step-budget mechanism")
+    if not ok: fail.append(f"{_nm} A10 mechanism")
+
+# --- the short paper's page budget, measured rather than asserted ---
+# The README claimed "body under six pages" and nothing verified it; the body in
+# fact fills six, and an edit on 1 Oct silently pushed the conclusion onto page 7.
+# This is a submission gate, so it fails closed if it cannot be measured.
+print("\nshort-paper page budget, measured from the built PDF:")
+_pdf = Path("paper/main_short.pdf")
+try:
+    import pypdf
+    _pages = [p.extract_text() or "" for p in pypdf.PdfReader(str(_pdf)).pages]
+except Exception as _e:                      # missing dep or missing/corrupt PDF
+    print(f"  FAIL  cannot measure main_short.pdf ({type(_e).__name__}: {_e}). "
+          f"Install pypdf or rebuild the PDF; an unverifiable page budget is not a passing one.")
+    fail.append("short paper page budget unmeasurable")
+else:
+    _concl = next((i for i, t_ in enumerate(_pages, 1) if "Conclusion" in t_), None)
+    _refs = next((i for i, t_ in enumerate(_pages, 1) if "References" in t_), None)
+    ok = _concl is not None and _concl <= 6 and _refs is not None and _refs >= _concl
+    print(f"  {'ok  ' if ok else 'FAIL'}  {len(_pages)} pages; conclusion starts p{_concl}, "
+          f"references p{_refs}; body must close by p6")
+    if not ok: fail.append("short paper body exceeds six pages")
 
 _a7_real = subprocess.run(
     [sys.executable, str(_root / "silentfail_bench/scripts/readout_amendment7.py")],

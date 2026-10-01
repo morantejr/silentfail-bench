@@ -1490,3 +1490,75 @@ the retracted value. The block is now derived from the readouts it describes, an
 requires each committed JSON to match what its script produces. It restores the tree
 either way and is wired into `preflight_pre_oct1.sh`. Recorded as DEFECTS #15
 and #16, and as changelog row v0.9.11.
+
+---
+
+# Amendment 10 outcome, 1 October 2026 — DeepSeek V4.1 Flash fails the functioning gate
+
+Run at 00:03–00:38 local on the registered date, with no override. Gates were
+registered in Amendment 10 before any trajectory existed and are identical to
+Amendment 6's so the two models are comparable. Readout:
+`data/pilot_deepseek_a10/readout_amendment10.json`.
+
+| Gate | Registered bar | Measured | Verdict |
+|---|---|---|---|
+| P10-1 it functions | ≥80% submit a non-empty patch | 32/41 = 0.780 | **FAIL** |
+| P10-2 it is more capable | ≥10 pts below `gpt-5-mini`'s 0.486 | 0.268, gap 0.218 | PASS |
+| P10-3 it is affordable | ≤$0.040 per trajectory | $0.0135 | PASS |
+
+Harness gold: 30 resolved, 11 unresolved, **0 harness errors**. Measured
+OpenRouter spend $0.5527 against a $5.00 cap, differenced externally from the
+credits endpoint because `cost_tracking` is disabled in the config.
+
+**Decision: STOP.** `all_gates_pass` is false, so per Amendment 10a §1 the agent
+axis is not launched, GLM-5.3 is not substituted, and the study does not revert to
+`gpt-6-luna`. This is reported as a negative capability result.
+
+## The failure is one instance, and the bar is not renegotiated
+
+33 of 41 would have been 0.805 and a pass. The temptation to round 0.780 up, to
+drop the instance that timed out, or to raise the step limit and re-run is exactly
+what the stop rule was written against, and the ambiguity was already resolved
+against the fallback in Amendment 10a §1. The bar was 80% before the outcome was
+visible, so it is 80% now.
+
+## The failing gate was checked for validity, which is a different question
+
+Before accepting this as a capability result, the nine missing patches were
+examined to see whether the gate had measured our scaffold rather than the model.
+All nine exited `LimitsExceeded` at 33–39 of 40 steps. None failed to parse, none
+crashed, and none was killed by the 120-second command timeout; 15 such timeouts
+occurred during the run and the agent continued past each. `gpt-6-luna` cleared the
+same bar at 41/41 under the same scaffold, the same 40-step limit and the same
+harness gold (P6-1), which is why the bars were made identical. The gate measured
+convergence within a fixed budget, which is what it was for, so the result stands
+without an asterisk.
+
+Whether DeepSeek would pass at 60 steps is a separate, untested question. Answering
+it requires re-registering the comparison and re-running `gpt-6-luna` at the new
+budget as well, because a budget changed for one arm destroys the comparability
+that makes the number mean anything.
+
+## A published mechanism claim is corrected by this run
+
+`main_short.tex` previously explained the open-weight shortfall as ``not coding
+ability but the ability to hold a text-driven action format for forty turns.''
+That inference came from runs without gold and is **wrong for DeepSeek**: it holds
+the format well enough to produce 32 valid patches and resolve 30 of 41, beating
+the baseline agent by 21.8 points of failure rate. The mechanism is step-budget
+exhaustion, not format drift. Both papers now say so.
+
+The submit count also replicates: `pilot_deepseek_v2` gave 31 of 41 and this
+registered run gives 32 of 41. The 13-of-41 figure quoted for DeepSeek elsewhere
+belongs to the hung run recorded in DEFECTS.md, which is not a capability
+measurement. GLM-5.3's 13 of 41 was never taken to gold, so its mechanism remains
+unmeasured and no claim is made about it.
+
+## Data committed with this outcome
+
+The readout's two inputs, `data/pilot_deepseek_a10/preds.json` and
+`data/gold_modal/a10_deepseek_pilot/report.json`, were initially excluded by the
+blanket `data/*/*` rule — the sixth recurrence. Both are now tracked, along with
+five further previously-dropped files the same fix recovered. `check_inputs_tracked.py`
+now also checks runtime-constructed path families as globs, so a future run
+directory is covered without editing the allow-list.
