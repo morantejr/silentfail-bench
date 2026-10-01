@@ -1,0 +1,41 @@
+% Two-page abstract for the Agent Evaluation Science Fall 2026 symposium (NYC).
+% Non-archival, presentation only, not anonymous; the CFP allows 4-6 pp short paper
+% OR a 2 pp abstract with references excluded. main_short.tex's body is seven pages,
+% so this is the conforming option rather than a cut of it.
+% Every number here is asserted against the same source JSON by paper/check_consistency.py.
+\documentclass[10pt]{article}
+\usepackage[margin=0.85in]{geometry}
+\usepackage{amsmath,amssymb,booktabs,array}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+% long \texttt names are unbreakable and overflowed the measure
+\sloppy
+\setlength{\parskip}{0.3em}\setlength{\parindent}{0pt}
+\pagestyle{empty}
+\newcommand{\DeltaAUROC}{\Delta\mathrm{AUROC}}
+
+\title{\vspace{-2.5em}\textbf{Auditing the Winner: Evaluate Failure Detectors on the Population the Selector Actually Commits}\vspace{-0.5em}}
+\author{Joseph Morante\\ \small Algoverse AI Research\vspace{-1em}}
+\date{}
+
+\begin{document}\maketitle
+
+\textbf{The question.} When an agent commits the best of $n$ attempts under a learned critic, the committed trajectory is where that critic's confidence and its errors coincide. A common proposal is to audit it with a panel of critics disjoint from the selector and escalate on disagreement. Audit signals are almost always evaluated over \emph{candidate pools}; a deployed auditor runs \emph{after} selection. We evaluate one on the population a selector actually commits, against the selector's own score, with executed gold.
+
+\textbf{Setup.} Pre-registered throughout, with dated amendments. SWE-bench Verified (41 instances, 9 repositories) and SWE-bench Multilingual (114 instances, 37 repositories); \texttt{gpt-5-mini} at a 40-step limit; best-of-4 selection by a reward model; a checkpoint-disjoint audit panel; $u$ is the sample SD of rank-normalised panel scores, fit on training repositories only; gold is trajectory-level success under the official \texttt{swebench} 5.x harness, positive class failure. Silent failures --- committed, agent-declared-complete trajectories that fail hidden tests --- were 35\% and 45\% of the population.
+
+\textbf{Result.} On the registered endpoint, the out-of-fold gain in AUROC from adding panel disagreement to the selector's own score, disagreement adds nothing detectable. Pooled over 111 rows, 47 failures and 46 repositories, the three estimators that use every row give $-0.030$, $-0.014$ and $+0.013$; every interval includes zero; the loosest pooled upper bound is $+0.12$. Disagreement alone ranks failures at 0.51 and 0.57. This held across 4k--16k contexts, pruned windows, eight reward models from 1B to 32B, two re-selection regimes and a panel of LLM judges. The pilot's positives did not replicate on 37 fresh repositories: $u_{\max}$ fell from 0.686 to 0.541 and the 1B critic from 0.712 to 0.485.
+
+\textbf{Why the population matters.} On Verified the selector's own score ranks failures at 0.81 among candidates it passed over and 0.61 among those it committed --- the selection-conditional gap measured directly. Pool performance does not answer the deployment question. On Multilingual that critic has no signal in either arm (0.43 and 0.51), so the gap is observed on one benchmark only.
+
+\textbf{The dissociation.} Individual critics carry information their disagreement discards. \texttt{gpt-6-sol} ranks silent failures at 0.776 [0.68, 0.87] on the replication and 0.826 on the pilot, while the disagreement of that newer pair falls to 0.41, \emph{below} the weaker trio's 0.51--0.53. Better judges; worse disagreement. Test--retest shows the critics are stable ($r\geq0.98$), so the failure is in what disagreement measures, not in critic noise.
+
+\textbf{What we claim, and what we do not.} A bound, not an absence. With 47 positives the study supports failure to reject and an upper bound of $+0.12$, above the $+0.05$ this project declared actionable; establishing equivalence would need roughly five times the failures. A capable agent produces fewer of them, so that study is more expensive, not cheaper.
+
+\textbf{Seven ways the instrument lied to us.} Each would have produced a publishable-looking result. A sandbox flag hid \texttt{numpy} from the gold harness, scoring every trajectory a failure. A judge critic emitted three distinct values over 640 candidates, so best-of-16 silently became first-draw. Harness image pulls failed on an architecture manifest: 41/41 failures in 499 seconds. Our power function reported $\approx$0.40 power under the true null against a correct 0.010. Repository grouping truncated hyphenated names, so held-out repositories were not held out. Rank normalisation was fit on all rows. And the selector-axis analysis filtered by the \emph{previous} selector's committed candidate, manufacturing $+0.375$ from a collapsed baseline where the correct population gives $+0.012$. The rule we adopted: a rate of exactly 0\% or 100\%, or a statistic that cannot move, is an instrument, not a result.
+
+\textbf{The open axis.} A capable open-weight agent was tested against gates registered before the run. \texttt{DeepSeek-V4.1-Flash} is the \emph{more} capable agent --- 30 of 41 resolved, an unconditional failure rate of 0.268 against \texttt{gpt-5-mini}'s 0.486, at \$0.0135 per trajectory --- but submitted a patch on 32 of 41 against an 80\% bar, failing the functioning gate by one instance; all nine misses exhausted the step budget rather than failing to parse. Raising the budget for one arm would destroy comparability with the agent that passed at 41 of 41, so the axis was not launched. A stronger agent remains the open axis, now behind a measurement rather than an assumption.
+
+\textbf{What we would like to discuss.} Whether the selection-conditional protocol --- selected population, selector baseline, out-of-sample incremental value, clustering on the real dependence unit, executed gold, oracle controls on the instrument --- is the right default for evaluating audit signals, and what a purpose-built post-selection auditor would have to beat.
+
+\end{document}

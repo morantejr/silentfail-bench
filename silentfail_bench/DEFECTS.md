@@ -277,7 +277,9 @@ or skip predicate that disagrees with where the data actually is, failing by
 doing nothing rather than by raising. The check that catches it is to assert a
 non-zero count from the consumer's own glob, not to trust that files exist.
 
-## The population defect that manufactured a paper-reversing result (found 2026-09-27, in a deliberate error hunt)
+### #7 — The population defect that manufactured a paper-reversing result *(corrupts the selector axis)*
+
+Found 2026-09-27 in a deliberate error hunt. `prereg_readout_amendment5.py` carries two references to "DEFECTS #7" that pointed at nothing until this heading was numbered; #6 is unused.
 
 **Symptom.** Amendment 5's registered leave-one-repository-out logistic reported
 `ΔAUROC = +0.375 [+0.214, +0.522]` on Multilingual — large, apparently

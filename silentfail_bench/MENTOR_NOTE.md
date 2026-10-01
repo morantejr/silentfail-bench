@@ -1056,6 +1056,8 @@ errors are now caught and the clean tree passes.
 
 # 24. The mentor's objection, tested (Amendment 5, 2026-09-27)
 
+> **SUPERSEDED in part — see section 25.** A population defect (DEFECTS #7) changed the selector answer below: S-P2 moves from pass to fail and the $+0.375$ endpoint becomes $+0.012$. Read section 25 first.
+
 *"Try to test the bench on more capable models; it is very likely that the
 framework works simply because you test a very hard bench on weak agent and
 selector."*

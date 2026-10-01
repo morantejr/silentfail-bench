@@ -789,6 +789,42 @@ both("disagree in sign", "per-benchmark sign disagreement disclosed")
 both(f"{a5['corrected']['multilingual']['repositories']} repositories", "corrected A5 population names its repositories")
 both(f"{jg['verified']['single_judges']['gpt-6-sol'][0]:.3f}", "best-detector superlative quotes the pilot too")
 
+# --- the symposium abstract is a third artifact; pin it to the same sources ---
+# main_short.tex drifted from main.tex and shipped four false claims into a submission.
+# A new standalone artifact gets its numbers asserted on day one rather than later.
+print("\nsymposium abstract (paper/main_symposium.tex):")
+_sym = (Path(__file__).resolve().parent / "main_symposium.tex").read_text()
+_symchecks = [
+    (f"{_pooled['logistic_LORO']['delta']:+.3f}".replace("+", "$+").replace("-", "$-") + "$", "pooled LORO delta"),
+    (f"the loosest pooled upper bound is ${r2(_pu[_loose])}$", "loosest pooled bound"),
+    (f"{_g1['submitted']} of {_a10['instances']} against an 80\\% bar", "A10 submit count and bar"),
+    (f"{_a10['instances'] - _g2['failures']} of {_a10['instances']} resolved", "A10 resolved count"),
+    (f"failure rate of {_g2['failure_rate']:.3f} against", "A10 failure rate"),
+    (f"\\${_g3['per_trajectory_usd']:.4f} per trajectory", "A10 cost"),
+    (f"{jg['multilingual']['single_judges']['gpt-6-sol'][0]:.3f}", "best detector, replication"),
+    (f"{jg['verified']['single_judges']['gpt-6-sol'][0]:.3f}", "best detector, pilot"),
+    ("A bound, not an absence", "bound-not-absence framing"),
+    ("exhausted the step budget", "A10 step-budget mechanism"),
+]
+for _want, _lab in _symchecks:
+    ok = _want in _sym
+    print(f"  {'ok  ' if ok else 'FAIL'}  {_lab}: {'found' if ok else 'MISSING'} -> {_want[:52]}")
+    if not ok: fail.append(f"symposium {_lab}")
+# the symposium venue is not double-blind, so the author block must be present
+ok = "Joseph Morante" in _sym and "Algoverse" in _sym
+print(f"  {'ok  ' if ok else 'FAIL'}  not anonymised (this venue is not double-blind)")
+if not ok: fail.append("symposium author block")
+# and it must stay inside two pages
+try:
+    import pypdf as _pp
+    _n = len(_pp.PdfReader(str(Path(__file__).resolve().parent / "main_symposium.pdf")).pages)
+    ok = _n <= 2
+    print(f"  {'ok  ' if ok else 'FAIL'}  built PDF is {_n} page(s); the CFP's abstract option allows 2")
+    if not ok: fail.append("symposium page limit")
+except Exception as _e:
+    print(f"  FAIL  cannot measure main_symposium.pdf ({type(_e).__name__})")
+    fail.append("symposium pdf unmeasurable")
+
 _a7_real = subprocess.run(
     [sys.executable, str(_root / "silentfail_bench/scripts/readout_amendment7.py")],
     capture_output=True, text=True,

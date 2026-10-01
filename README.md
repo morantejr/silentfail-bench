@@ -12,7 +12,7 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: draft v0.9.14 (2026-10-01) — the registered endpoint, computed four
+> **Status: draft v0.9.15 (2026-10-01) — the registered endpoint, computed four
 > ways, puts disagreement's incremental value over the selector's own score at
 > indistinguishable from zero, loosest pooled upper bound +0.12 over 47 failures
 > and 46 repositories.** A SWE-bench Verified pilot (41 instances, 12 positives)
@@ -37,7 +37,7 @@ about are exactly where its blind spots collect. **A null result is publishable*
 > [`CLAUDE_HANDOFF_OCT1.md`](CLAUDE_HANDOFF_OCT1.md) and Amendment 10 in the
 > preregistration. The old Amendment 7 runbook is retained only for downstream
 > stages after an open agent passes its capability gates.
-> Sixteen numbered defects (including seven critic/instrument failures) are recorded in
+> Seventeen numbered defects (including seven critic/instrument failures) are recorded in
 > [`silentfail_bench/DEFECTS.md`](silentfail_bench/DEFECTS.md), including one that
 > manufactured a result large enough to reverse the paper. Paper:
 > [`paper/main.pdf`](paper/main.pdf), 9-page submission version (body within seven)
@@ -58,7 +58,24 @@ and `silentfail_bench/scripts/preflight_pre_oct1.sh`.
 | `paper/main.pdf` | The paper (full version) |
 | `paper/main_short.pdf` | Nine-page submission version; body within seven pages, then references |
 | `paper/main_agentverify.pdf` | Anonymous IEEE version, 8 pages including references; **generated** by `paper/make_agentverify.py` from `main_short.tex` |
+| `paper/main_symposium.pdf` | Two-page abstract for the Agent Evaluation Science symposium; not anonymous, numbers pinned by the checker |
 | [`archive/drafts/`](archive/drafts/) | Earlier drafts and write-ups, kept for the record |
+
+## Where this is being submitted
+
+Recorded here because the repository that builds the submission did not say, while
+`paper/make_agentverify.py` already hard-codes the venue's format requirements.
+
+| Target | Artifact | Deadline | Status |
+|---|---|---|---|
+| AGENTVERIFY 2027 @ ICSE | `paper/main_agentverify.pdf` — anonymous IEEE, 8 pp incl. refs | abstract 1 Nov, paper 6 Nov (workshop CFP) **vs** 13 Nov (ICSE umbrella) | **deadline disputed — ask the chairs** |
+| Agent Evaluation Science, Fall 2026 NYC | 4–6 pp body or 2 pp abstract, refs excluded, not anonymous | registration 20 Oct, submission 25 Oct | non-archival, presentation only; requires attendance |
+
+These dates come from the author's venue trackers dated 2026-09-29, not from a CFP
+read by this repository, and the Nov 6 / Nov 13 conflict is unresolved. Treat 6 Nov as
+the conservative planning date until the organisers confirm. `main_short.pdf`'s body is
+seven pages and therefore does **not** conform to the symposium's 4–6 page limit; the
+2 pp abstract is the conforming option.
 
 ## Two things a reader should know up front
 
