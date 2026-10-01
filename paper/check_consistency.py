@@ -694,6 +694,36 @@ else:
           f"references p{_refs}; body must close by p6")
     if not ok: fail.append("short paper body exceeds six pages")
 
+# --- the anonymous IEEE submission must be generated, current, and clean ---
+print("\nAGENTVERIFY submission (paper/main_agentverify.tex, generated):")
+_av = subprocess.run([sys.executable, str(Path(__file__).resolve().parent / "make_agentverify.py"), "--check"],
+                     capture_output=True, text=True)
+ok = _av.returncode == 0
+print(f"  {'ok  ' if ok else 'FAIL'}  generated file matches main_short.tex ({_av.stdout.strip() or _av.stderr.strip()})")
+if not ok: fail.append("agentverify stale")
+_avt = (Path(__file__).resolve().parent / "main_agentverify.tex").read_text()
+# double-blind: nothing identifying may survive the preamble swap
+_ids = [t for t in ("Morante", "Algoverse", "morantejr", "github.com") if t in _avt]
+print(f"  {'ok  ' if not _ids else 'FAIL'}  no identifying token in the anonymous source"
+      + (f" (found {_ids})" if _ids else ""))
+if _ids: fail.append("agentverify not anonymous")
+# the venue's limit is 8 pages INCLUDING references
+_avpdf = Path(__file__).resolve().parent / "main_agentverify.pdf"
+try:
+    import pypdf
+    _avp = pypdf.PdfReader(str(_avpdf)).pages
+    _n = len(_avp)
+    _anon = not any(t in " ".join((q.extract_text() or "") for q in _avp).lower()
+                    for t in ("morante", "algoverse", "morantejr"))
+    ok = _n <= 8 and _anon
+    print(f"  {'ok  ' if ok else 'FAIL'}  built PDF is {_n} pages including references (limit 8), "
+          f"author-anonymous {_anon}")
+    if not ok: fail.append("agentverify page limit or anonymity")
+except Exception as _e:
+    print(f"  FAIL  cannot measure main_agentverify.pdf ({type(_e).__name__}: {_e}); "
+          f"an unverifiable page limit is not a passing one")
+    fail.append("agentverify pdf unmeasurable")
+
 _a7_real = subprocess.run(
     [sys.executable, str(_root / "silentfail_bench/scripts/readout_amendment7.py")],
     capture_output=True, text=True,

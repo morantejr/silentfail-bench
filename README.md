@@ -12,7 +12,7 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: draft v0.9.12 (2026-10-01) — the registered endpoint, computed four
+> **Status: draft v0.9.13 (2026-10-01) — the registered endpoint, computed four
 > ways, puts disagreement's incremental value over the selector's own score at
 > indistinguishable from zero, loosest pooled upper bound +0.12 over 47 failures
 > and 46 repositories.** A SWE-bench Verified pilot (41 instances, 12 positives)
@@ -57,6 +57,7 @@ and `silentfail_bench/scripts/preflight_pre_oct1.sh`.
 | `SilentFail_AAAI_Proposal.pdf` / `.tex` | The original proposal |
 | `paper/main.pdf` | The paper (full version) |
 | `paper/main_short.pdf` | Nine-page submission version; body within six pages, then references |
+| `paper/main_agentverify.pdf` | Anonymous IEEE version, 8 pages including references; **generated** by `paper/make_agentverify.py` from `main_short.tex` |
 | [`archive/drafts/`](archive/drafts/) | Earlier drafts and write-ups, kept for the record |
 
 ## Two things a reader should know up front
