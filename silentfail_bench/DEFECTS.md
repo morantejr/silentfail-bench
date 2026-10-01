@@ -571,6 +571,53 @@ bite-tested by inducing the failure each catches.
 **Class.** A check with a side effect on its own subject; and a zero treated as a
 measurement.
 
+### #18 — The submission cut shipped the defects the long paper had already fixed *(reporting / tooling)*
+
+Found 1 October by an external review of the generated AGENTVERIFY PDF, then confirmed by
+two independent audits. `make_agentverify.py` guaranteed that the submission matched
+`main_short.tex`. Nobody checked that `main_short.tex` matched `main.tex`. The generator
+therefore propagated a stale cut byte-faithfully into a double-blind submission.
+
+**What shipped.** `main_short.tex:54` carried "No circle crosses it" three lines below its
+own statement that $u_{\max}=0.686$ beat the 0.665 bar — the caption corrected in the long
+paper as defect #8 eight days earlier. The abstract claimed point estimates that cleared the
+baseline "all fell to chance", contradicted by its own Figure 3 caption and by three judges
+whose replication intervals exclude 0.50. 0.494 was attributed to "six chat RMs" when it is
+the registered four-member panel, and the table that would let a reader recover that had been
+cut. "Eight to thirty-six clusters" sat under a pooled-only table where the fits are 45 and 4.
+Eight registered disclosures were absent: F-P1, F-P2, F-P3, A4c-P1's declined narrowing, the
+go/no-go, A2-P2's verdict, the `gpt-5-mini` self-evaluation confound, and calibration. A
+concentration *conclusion* stood in a section heading although F-P1 failed. Six pointers
+addressed an appendix, a long version and a repository that no standalone submission carries.
+
+**Why the checker was green.** Its short-paper coverage was almost entirely a **blocklist** —
+phrases a previous audit had already found there. Positive assertions ("this correct statement
+must be present") ran against `main.tex` only, with four exceptions. A blocklist cannot see
+the two edits a page cut actually makes: compressing a scoped claim into an unscoped one, and
+dropping a disclosure. The short paper was reliably right wherever it copied a number and
+reliably wrong wherever it compressed an argument.
+
+**A second, independent miss in the same caption.** `main.tex` itself said "Two squares do"
+while exactly one plotted $-c$ (0.736) clears the ruler, contradicting its own `tab:ladder`
+caption. Defect #8 pinned the circles half of that sentence and left the squares half
+unchecked, so the checker guarded a false clause for eight days.
+
+**Fixes.** The long paper's squares sentence is corrected and both counts are now derived from
+`make_figures.py`'s plotted rows rather than asserted. Nineteen positive assertions now require
+the short paper *and* the generated submission to carry the long paper's corrections, including
+every one of the disclosures above. The IEEE-specific defects — `\label` on `\paragraph`
+rendering as "III-0b", run-in headings rendering as "Setup.:", two uncited figures — are fixed
+in the generator or the source rather than the output. Three of the new guards were bite-tested
+by reintroducing the exact defect each catches.
+
+**Also recorded honestly:** rewriting a dangling appendix pointer, I introduced a reference to
+`sec:instrument` before the label existed. The 1 Oct corrections pushed the short body from six
+pages to seven; rather than cut a registered disclosure to hold a round number, the README now
+states seven and the checker requires the built PDF to agree with whatever it states.
+
+**Class.** A consistency guarantee anchored to the wrong invariant, over a coverage model that
+could only forbid known-bad text and never require known-good text.
+
 ## Correction: my bite test reported four failures that did not exist (2026-09-30)
 
 The 2026-09-29 bite test of the lucky-pass and taxonomy assertions reported

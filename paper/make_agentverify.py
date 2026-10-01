@@ -53,7 +53,19 @@ def generate() -> str:
     # Full-width floats: a two-column IEEE page makes column-width figures unreadable.
     body = re.sub(r"\\begin\{(figure|table)\}\[t\]", r"\\begin{\1*}[t]", body)
     body = re.sub(r"\\end\{(figure|table)\}", r"\\end{\1*}", body)
+
+    # A labelled \paragraph has no number in IEEEtran, so \ref to one renders as the
+    # enclosing section plus a dummy counter -- "III-0b". Promote exactly those to
+    # \subsection, which IEEE numbers properly (III-A, III-B).
+    body = re.sub(r"\\paragraph\{([^}]*)\}(\\label\{[^}]*\})",
+                  lambda m: r"\subsection{" + m.group(1).rstrip(".") + "}" + m.group(2), body)
+
+    # IEEEtran appends a colon to run-in headings, so "Setup." renders as "Setup.:".
+    body = re.sub(r"\\paragraph\{([^}]*?)\.\}", r"\\paragraph{\1}", body)
+
     body = body.replace(r"\bibliographystyle{plainnat}", r"\bibliographystyle{IEEEtran}")
+    # \balance was tried here and pushed a stray line onto a ninth column, producing
+    # three overfull vboxes for a cosmetic gain; zero overfull boxes wins.
     out = PREAMBLE + body
     # The source names the author only in the preamble, which is discarded above;
     # assert that nothing identifying rode along in the body.

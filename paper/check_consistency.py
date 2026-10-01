@@ -361,6 +361,19 @@ print("\naudit: caption / headline / superseded JSON traps:")
 ok = "No circle crosses it" not in tex and "Exactly one circle crosses it" in tex and "0.686" in tex
 print(f"  {'ok  ' if ok else 'FAIL'}  fig:ladder caption acknowledges the plotted u_max crossing")
 if not ok: fail.append("fig:ladder caption")
+# The squares half of the same caption was never pinned, and said "Two squares do" while only
+# one -c in the plotted set clears the ruler. Derive both counts from make_figures.py.
+_ruler = json.loads((D / "swebench_pilot50/covariate_baseline.json").read_text())["single_covariate_AUROC"]["patch_added_lines"]
+_plotted = [(float(u), float(c)) for _, u, c in re.findall(r'\("([^"]+)",\s*([0-9.]+),\s*([0-9.]+),', figs)]
+_circ = [u for u, c in _plotted if u > _ruler]
+_sqr = [c for u, c in _plotted if c > _ruler]
+WORDN = {1: "Exactly one", 2: "Two", 3: "Three"}
+ok = len(_circ) == 1 and len(_sqr) == 1 \
+    and f"{WORDN[len(_sqr)]} square does" in tex and "Two squares do" not in tex \
+    and f"{max(_sqr):.3f}" in tex
+print(f"  {'ok  ' if ok else 'FAIL'}  fig:ladder squares: {len(_sqr)} of {len(_plotted)} plotted "
+      f"$-c$ exceed the {_ruler} ruler (max {max(_sqr)}), and the caption says so")
+if not ok: fail.append("fig:ladder squares count")
 ok = "It does not work." not in tex and "It does not work." not in short
 print(f"  {'ok  ' if ok else 'FAIL'}  banned absolute 'It does not work.' absent from both papers")
 if not ok: fail.append("absolute does-not-work")
@@ -515,8 +528,11 @@ print(f"  {'ok  ' if ok else 'FAIL'}  mentor note reports corrected A5 mixed sig
 if not ok: fail.append("mentor A5 signs")
 # Derive the version from the paper's own title block, which is already checked
 # against the changelog. Hardcoding it here meant three places to hand-sync.
-ok = f"draft v0.9.{_title_m.group(1)}" in _readme and "9-page submission version (body within six)" in _readme \
-    and "Nine-page submission version; body within six pages" in _readme \
+# Do not hardcode the body length here: the README states it, and the measured
+# page-budget check below requires the built PDF to agree with that statement.
+_body_claim = re.search(r"9-page submission version \(body within (six|seven)\)", _readme)
+ok = f"draft v0.9.{_title_m.group(1)}" in _readme and _body_claim is not None \
+    and f"Nine-page submission version; body within {_body_claim.group(1)} pages" in _readme \
     and "7-page cut" not in _readme and "cut to 7 pages" not in _readme
 print(f"  {'ok  ' if ok else 'FAIL'}  README status/version and short-paper length are current")
 if not ok: fail.append("README status")
@@ -689,10 +705,17 @@ except Exception as _e:                      # missing dep or missing/corrupt PD
 else:
     _concl = next((i for i, t_ in enumerate(_pages, 1) if "Conclusion" in t_), None)
     _refs = next((i for i, t_ in enumerate(_pages, 1) if "References" in t_), None)
-    ok = _concl is not None and _concl <= 6 and _refs is not None and _refs >= _concl
+    # The 1 Oct corrections (per-benchmark heterogeneity, F-P1/F-P3, the A4c-P1 overrule and
+    # the self-evaluation disclosure) pushed the body from six pages to seven. Cutting a
+    # registered disclosure to hold a round number would be the wrong trade, so the bar is
+    # now whatever the README claims, and the two must not drift apart. The hard page limit
+    # lives on main_agentverify.pdf, which faces a real one.
+    _claimed = 7 if "body within seven" in _readme else (6 if "body within six" in _readme else None)
+    ok = (_concl is not None and _refs is not None and _refs >= _concl
+          and _claimed is not None and _concl <= _claimed)
     print(f"  {'ok  ' if ok else 'FAIL'}  {len(_pages)} pages; conclusion starts p{_concl}, "
-          f"references p{_refs}; body must close by p6")
-    if not ok: fail.append("short paper body exceeds six pages")
+          f"references p{_refs}; README claims the body closes by p{_claimed}")
+    if not ok: fail.append("short paper body length disagrees with the README")
 
 # --- the anonymous IEEE submission must be generated, current, and clean ---
 print("\nAGENTVERIFY submission (paper/main_agentverify.tex, generated):")
@@ -723,6 +746,48 @@ except Exception as _e:
     print(f"  FAIL  cannot measure main_agentverify.pdf ({type(_e).__name__}: {_e}); "
           f"an unverifiable page limit is not a passing one")
     fail.append("agentverify pdf unmeasurable")
+
+# --- the short paper must carry the long paper's corrections, not just avoid its banned phrases ---
+# Before 1 Oct the short-paper coverage here was almost entirely a blocklist of strings a
+# previous audit had found. Positive assertions ran against main.tex only, so every
+# correction the long paper received could be, and was, absent from the submission cut:
+# a false figure caption, an unscoped replication superlative, four undisclosed registered
+# predictions and a misattributed panel size all shipped into the anonymous PDF.
+print("\nshort paper carries the long paper's corrections:")
+_shortsrc = {"main_short.tex": short, "main_agentverify.tex": _avt}
+
+def both(pred, label, want=True):
+    bad = [n for n, src in _shortsrc.items() if (pred in src) is not want]
+    ok_ = not bad
+    print(f"  {'ok  ' if ok_ else 'FAIL'}  {label}" + ("" if ok_ else f" -> wrong in {', '.join(bad)}"))
+    if not ok_: fail.append(f"short: {label}")
+
+# 1. the figure caption must state the crossing it plots, in every version
+both("Exactly one circle crosses it", "fig:ladder caption admits the plotted crossing")
+both("No circle crosses it", "the false 'No circle crosses it' is gone", want=False)
+# 2. the replication superlative must stay scoped: judges did not fall to chance
+both("all fell to chance", "no unscoped 'all fell to chance'", want=False)
+both("no configuration produced a replicable signal", "no unscoped 'no configuration' claim", want=False)
+# 3. registered predictions the cut dropped
+for _lab in ("F-P1", "F-P3", "A4c-P1"):
+    both(_lab, f"{_lab} disclosed")
+both("self-evaluation", "the gpt-5-mini self-evaluation confound disclosed")
+# 4. the panel behind 0.494 and 0.439 is the registered four-member one
+both("four-member panel", "0.494 / 0.439 attributed to the four-member panel")
+both("six chat RMs from 1B to 8B with the patch in view (panel", "no six-member panel misreading", want=False)
+# 5. the fragility sentence must match the table it sits under
+both("eight to thirty-six clusters", "no per-benchmark cluster range under a pooled-only table", want=False)
+# 6. F-P1 failed, so no concentration conclusion
+both("did not concentrate failure", "no concentration conclusion from a failed prediction", want=False)
+both("did not detect increased failure under selection", "the failure-to-detect wording is used")
+# 7. a standalone submission may not point at documents it does not carry
+for _ph in ("in the appendix", "the long version", "extended version of this paper"):
+    both(_ph, f"no dangling pointer to '{_ph}'", want=False)
+# 8. the pooled bound must not hide the per-benchmark sign disagreement
+both("disagree in sign", "per-benchmark sign disagreement disclosed")
+# 9/10. the corrected A5 population triple, and the best detector on both benchmarks
+both(f"{a5['corrected']['multilingual']['repositories']} repositories", "corrected A5 population names its repositories")
+both(f"{jg['verified']['single_judges']['gpt-6-sol'][0]:.3f}", "best-detector superlative quotes the pilot too")
 
 _a7_real = subprocess.run(
     [sys.executable, str(_root / "silentfail_bench/scripts/readout_amendment7.py")],
