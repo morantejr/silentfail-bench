@@ -141,7 +141,8 @@ readout)
   echo "== Amendment 7a readout on the DeepSeek axis =="
   $V scripts/readout_amendment7.py --bundle $O/rescoring_bundle.jsonl --instances $I \
       --scores-dir $O/modal/prefix4k --judge-cache $O/judge_gpt5.jsonl \
-      --random-picks $O/gold_inputs/random_picks.jsonl --out $O/readout_amendment7_deepseek.json
+      --random-picks $O/gold_inputs/random_picks.jsonl --out $O/readout_amendment7_deepseek.json \
+      --agent-label deepseek-v4.1-flash
   echo "== stop the swe-rex deployment =="
   for a in $($MODAL app list 2>/dev/null | grep -E "deployed|running" | grep -oE "ap-[A-Za-z0-9]+"); do $MODAL app stop --yes "$a" >/dev/null 2>&1 || true; done
   $MODAL app list 2>/dev/null | grep -cE "deployed|running|stopping" | xargs echo "   Modal apps still live:"

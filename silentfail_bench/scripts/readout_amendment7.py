@@ -306,7 +306,7 @@ def compare_to_old(arm_4b, arm_judge):
     for name in ("S_4b", "S_judge"):
         out["arms"][name] = {
             key: {
-                "gpt6_luna": round(float(new[name][key]), 3),
+                AGENT_KEY: round(float(new[name][key]), 3),
                 "gpt5_mini": round(float(old[name][key]), 3),
                 "difference": round(float(new[name][key] - old[name][key]), 3),
             }
@@ -401,7 +401,7 @@ def production_readout(args):
     }
     gate["passes"] = gate["pool_AUROC_gt_0p65"] and gate["committed_below_random"]
 
-    new_cap = capability(bundle, gold, "gpt-6-luna")
+    new_cap = capability(bundle, gold, a.agent_label)
     old_cap = old_agent_capability()
     new_lo, new_hi = new_cap["unconditional_failure_rate_band"]
     old_lo, old_hi = old_cap["unconditional_failure_rate_band"]
@@ -444,8 +444,15 @@ def production_readout(args):
     print(f"\nwrote {args.out}")
 
 
+AGENT_KEY = "gpt6_luna"   # overwritten from --agent-label in main()
+
 def main():
     ap = argparse.ArgumentParser()
+    # The new agent's label was hardcoded as "gpt-6-luna" when this was written for Amendment
+    # 7; Amendment 13 runs the same design on DeepSeek. Default preserved so the September
+    # dry run and fixture test are unchanged.
+    ap.add_argument("--agent-label", default="gpt-6-luna",
+                    help="name of the new agent in the output (Amendment 13: deepseek-v4.1-flash)")
     ap.add_argument("--dry-run", action="store_true",
                     help="exercise every path against the gpt-5-mini replication data")
     ap.add_argument("--bundle", type=Path, default=ROOT / "data/agent_axis/rescoring_bundle.jsonl")
@@ -456,6 +463,8 @@ def main():
     ap.add_argument("--random-picks", type=Path, default=ROOT / "data/agent_axis/gold_inputs/random_picks.jsonl")
     ap.add_argument("--out", type=Path, default=ROOT / "data/agent_axis/readout_amendment7.json")
     a = ap.parse_args()
+    global AGENT_KEY
+    AGENT_KEY = "".join(ch if ch.isalnum() else "_" for ch in a.agent_label).strip("_").replace("__", "_")
 
     if a.dry_run:
         print("DRY RUN. Exercising every code path on the gpt-5-mini replication data.")
