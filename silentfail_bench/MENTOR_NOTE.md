@@ -1225,3 +1225,83 @@ credit.
 2. Whether to run the agent axis on 1 October, given that inconclusive is the
    likely result, or to submit with the axis declared untested.
 3. A venue, since nothing is formatted and that decision sets the deadline.
+
+---
+
+# 26. Your three questions, answered by events (2026-10-01)
+
+Section 25 ended with three asks. Two are now settled by what happened, and the third
+is the one that still matters.
+
+## 2. Whether to run the agent axis on 1 October — settled: it did not qualify
+
+Run at 00:03 on the registered date, no override. Both open-weight agents you named
+were tested against gates registered before any trajectory existed, identical to
+Amendment 6's so the two are comparable.
+
+| Gate | Bar | DeepSeek V4.1 Flash | GLM-5.3 |
+|---|---|---|---|
+| P10-1 functions | ≥80% submit a patch | **32/41 = 0.780 — FAIL** | 13/41 = 0.317 — FAIL |
+| P10-2 more capable | ≥10 pts below gpt-5-mini's 0.486 | 0.268, gap 0.218 — PASS | never taken to gold |
+| P10-3 affordable | ≤$0.040/trajectory | $0.0135 — PASS | ~6× over cap |
+
+Harness gold: 30 resolved, 11 unresolved, 0 harness errors, $0.5527 of OpenRouter
+against a $5.00 cap. `all_gates_pass` is false, so per Amendment 10a §1 the axis was
+not launched, GLM was not substituted and nothing reverted to `gpt-6-luna`.
+
+**The honest shape of it: DeepSeek is the more capable agent and still does not
+qualify.** It beats our own agent by 21.8 points of failure rate at a quarter of the
+cost, and misses the functioning gate by one instance. 33 of 41 would have passed.
+
+**I expect your first objection, and I think you are right.** All nine missing patches
+exited `LimitsExceeded` at 33–39 of 40 steps — none failed to parse, none crashed, and
+the 120-second command timeout fired 15 times and was survived each time. So the gate
+was set by *our* 40-step budget, and this is in part a finding about this scaffold
+rather than about the models. DeepSeek resolved 30 of the 32 instances where it did
+submit. Both papers now say so explicitly.
+
+**What I did not do, and why.** I did not raise the limit. `gpt-6-luna` cleared the same
+bar at 41/41 under the same budget, and our `gpt-5-mini` figure agrees with the public
+leaderboard to 0.2 points at the configuration the leaderboard used — 40 steps, native
+tool calls. Raising it for one arm destroys that anchor, and raising it *after* seeing
+0.780 against 0.80 is choosing the budget from the outcome, which is the same error
+class as the population defect in §25. If the 60-step question is worth answering it
+needs a new amendment covering both arms, and the cost is re-running the baselines, not
+the API calls.
+
+## 3. A venue — recorded
+
+AGENTVERIFY 2027 at ICSE: anonymous IEEE, 8 pages including references, built and
+passing. Abstract 1 Nov, paper 6 Nov on the workshop CFP, against an ICSE umbrella date
+of 13 Nov; the conflict is unresolved and I am treating 6 Nov as conservative. Agent
+Evaluation Science (NYC, 20 Nov) as the non-archival venue, two-page abstract, due 25
+Oct. Both artifacts build clean. Two things still need doing by hand: an anonymised
+repository mirror, because the submission is double-blind and the current link
+identifies us, and a note to the chairs on which November date is real.
+
+## 1. Whether the S-P2 withdrawal changes the contribution — still open, and the question that matters
+
+Two independent AI reviews converged on the same answer this week, which I did not
+expect: the contribution is the **protocol**, not the null. Evaluate an audit signal on
+the population a selector actually commits, against the selector's own score, with
+executed gold, out of sample, clustered on the real dependence unit, with oracle
+controls on the instrument. The null is then the empirical demonstration that pool
+performance does not transfer — the selector ranks failures at 0.81 among candidates it
+passed over and 0.61 among those it committed.
+
+On that reading S-P2's failure costs little: it narrows a limitation rather than
+removing a contribution. On the other reading, where the null is the contribution, S-P2
+failing on the corrected population makes the strong-selector cell merely consistent
+with the null (upper bound +0.073) and the paper thinner.
+
+**I would like your view on which framing to submit under**, because it changes the
+abstract and the central figure, and it is the one call I do not want to make from a
+reviewer's opinion alone.
+
+## Where the numbers stand
+
+Pooled over 111 rows, 47 failures and 46 repositories: three full-coverage estimators
+give −0.030, −0.014 and +0.013, every interval includes zero, loosest pooled upper bound
++0.12 against the +0.05 we declared actionable. Per benchmark the unfitted rows disagree
+in sign. A bound, not an absence. 17 numbered instrument defects recorded, one of which
+would have published +0.375.

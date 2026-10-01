@@ -825,6 +825,28 @@ except Exception as _e:
     print(f"  FAIL  cannot measure main_symposium.pdf ({type(_e).__name__})")
     fail.append("symposium pdf unmeasurable")
 
+# --- the scaffold attribution, which the mentor's first objection lands on ---
+# Amendment 10 declared that a both-models gate failure is "a finding about the scaffold
+# and not about the models". That sentence lived only in the pre-registration while the
+# papers reported the gate failure, leaving the obvious objection unanswered in print.
+print("\nscaffold attribution for the Amendment 10 gate failure:")
+_resolved = _a10["instances"] - _g2["failures"]
+for _nm, _src in (("main.tex", tex), ("main_short.tex", short),
+                  ("main_agentverify.tex", _avt),
+                  ("main_symposium.tex", (Path(__file__).resolve().parent / "main_symposium.tex").read_text())):
+    ok = "this scaffold" in _src and f"{_resolved} of the {_g1['submitted']}" in _src
+    print(f"  {'ok  ' if ok else 'FAIL'}  {_nm} attributes the bar to this scaffold and gives the "
+          f"{_resolved}-of-{_g1['submitted']} submitted-and-resolved figure")
+    if not ok: fail.append(f"{_nm} scaffold attribution")
+# the mentor note must carry the gate table, not a recollection of it
+_mn = _mentor
+ok = all(x in _mn for x in (f"{_g1['submitted']}/{_a10['instances']} = {_g1['rate']}",
+                            f"{_g2['failure_rate']}, gap {_g2['gap']}",
+                            f"${_g3['per_trajectory_usd']}",
+                            f"${_g3['measured_total_usd']}"))
+print(f"  {'ok  ' if ok else 'FAIL'}  MENTOR_NOTE section 26 reports the gate numbers from the readout")
+if not ok: fail.append("mentor note A10 gate numbers")
+
 _a7_real = subprocess.run(
     [sys.executable, str(_root / "silentfail_bench/scripts/readout_amendment7.py")],
     capture_output=True, text=True,
