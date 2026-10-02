@@ -3,3 +3,9 @@ openai_balance_confirmed_over_20_by_operator 2026-10-01T17:09:51Z
 openrouter_at_pause 20.053937 2026-10-01T18:51:54Z  # generation killed at cand0=100/114: 100 idle sandboxes hit the Modal 100-container cap; 14 SandboxTimeoutError with zero model calls
 openrouter_resume 20.066225
 openrouter_at_pause2 21.135381 2026-10-01T20:13:55+00:00  # killed at cand1=46/114: 66 SandboxTimeoutError at ~51s, Modal tunnels() default timeout, zero model calls
+openrouter_resume 21.147969
+openrouter_at_pause3 21.257307 2026-10-02T00:59:44+00:00  # generator wedged after the 16:45 EDT wifi drop; killed at cand1=52/114 after 227 min without progress
+openrouter_resume 21.257307
+openrouter_at_pause4 2026-10-02T07:10:09Z  # wedged after the two cand1 stragglers hit the 7200 s sandbox lifetime; killed at cand1=112/114
+openrouter_resume 22.545487
+openrouter_at_pause5 2026-10-02T11:41:02Z  # two cand1 instances declared endpoint failures after two full attempts each; see ENDPOINT_FAILURES.json

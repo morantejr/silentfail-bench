@@ -62,11 +62,20 @@ def spent(out: Path) -> float:
 def bundle(ids: list[str], k: int, out: Path, seed: int, train_frac: float) -> None:
     from datasets import load_dataset
     meta = {r["instance_id"]: r for r in load_dataset(DATASET, split="test") if r["instance_id"] in set(ids)}
+    ef_path = out / "ENDPOINT_FAILURES.json"
+    endpoint_failures = {k: v for k, v in json.loads(ef_path.read_text()).items() if k.startswith("cand")} if ef_path.exists() else {}
     rows = []
     for i in ids:
         for c in range(k):
             p = out / "traj" / f"cand{c}" / i / f"{i}.traj.json"
-            if not p.exists(): continue
+            if not p.exists():
+                # A declared endpoint failure (ENDPOINT_FAILURES.json) is an excluded row, not a missing one.
+                if i in endpoint_failures.get(f"cand{c}", {}):
+                    rows.append({"instance_id": i, "candidate": c, "problem_statement": meta[i]["problem_statement"], "repo": repo_from_instance(i),
+                                 "split": assign_split(repo_from_instance(i), train_frac=train_frac, salt=str(seed)), "text": "", "final_solution": "",
+                                 "exit_status": "EndpointFailure", "steps": 0, "visible_pass": False, "excluded": True,
+                                 "exclusion_reason": "endpoint_failure", "committed_index_primary": -1, "g": None})
+                continue
             try: d = json.loads(p.read_text()); text = traj_text(d); sub = d["info"].get("submission") or ""; st = d["info"].get("exit_status"); steps = len(d.get("messages", []))
             except Exception as e: text, sub, st, steps = "", "", f"traj_unreadable:{type(e).__name__}", 0
             repo = repo_from_instance(i)
@@ -75,7 +84,7 @@ def bundle(ids: list[str], k: int, out: Path, seed: int, train_frac: float) -> N
                          "exit_status": st, "steps": steps, "visible_pass": st == "Submitted", "excluded": not sub.strip(),
                          "committed_index_primary": -1, "g": None})
     (out / "rescoring_bundle.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
-    n_inst = len({r["instance_id"] for r in rows}); print(f"[bundle] {len(rows)} candidates over {n_inst} instances; submitted {sum(r['visible_pass'] for r in rows)}; empty patches {sum(r['excluded'] for r in rows)}", flush=True)
+    n_inst = len({r["instance_id"] for r in rows}); print(f"[bundle] {len(rows)} candidates over {n_inst} instances; submitted {sum(r['visible_pass'] for r in rows)}; empty patches {sum(r['excluded'] for r in rows)}; declared endpoint failures {sum(r.get('exit_status') == 'EndpointFailure' for r in rows)}", flush=True)
 
 
 def select(out: Path, scores_dir: Path) -> None:

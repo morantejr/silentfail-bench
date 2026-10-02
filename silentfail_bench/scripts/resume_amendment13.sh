@@ -26,11 +26,13 @@ $V - "$O" <<'PY'
 import json, glob, shutil, sys, datetime
 from pathlib import Path
 O = Path(sys.argv[1]); stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+ef_path = O / "ENDPOINT_FAILURES.json"
+EF = {k: set(v) for k, v in json.loads(ef_path.read_text()).items() if k.startswith("cand")} if ef_path.exists() else {}
 for c in range(4):
     p = O / f"traj/cand{c}/preds.json"
     if not p.exists(): print(f"   cand{c}: no preds.json yet"); continue
     d = json.loads(p.read_text()); traj = {q.split("/")[-2] for q in glob.glob(f"{O}/traj/cand{c}/*/*.traj.json")}
-    ph = sorted(i for i, r in d.items() if not (r.get("model_patch") or "").strip() and i not in traj)
+    ph = sorted(i for i, r in d.items() if not (r.get("model_patch") or "").strip() and i not in traj and i not in EF.get(f"cand{c}", set()))
     if ph:
         shutil.copy(p, p.with_name(f"preds.json.{stamp.replace(' ', '_').replace(':', '')}_with_{len(ph)}_empty_entries"))
         for i in ph: del d[i]

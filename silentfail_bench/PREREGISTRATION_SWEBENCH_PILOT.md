@@ -1997,3 +1997,27 @@ start the patch now tolerates.
 **What this means for the measurement.** Nothing about `c`, `u` or gold changes; the 66
 instances are regenerated under candidate 1's seed exactly as the 14 were. Wall clock is
 longer than estimated. OpenRouter spend to this pause is $2.97 (`openrouter_at_pause2`).
+
+## Amendment 13, third deviation recorded mid-run: two instances declared endpoint failures
+
+Recorded 2 October 2026, 05:20 EDT, before the fifth resume. Candidate 1 stands at 112 of 114.
+The remaining two, hashicorp__terraform-34900 and valkey-io__valkey-790, were attempted twice
+in full (00:50–02:50 and 03:05–05:12). In both attempts the agent ran normally for 20–30 steps
+and then every model call failed at the HTTP layer (`RemoteDisconnected`, read timeouts) and
+was retried without limit by mini-swe-agent while the sandbox sat idle; the first attempt
+ended when the sandbox reached its 7200 s lifetime, the second was killed by hand after an
+hour of retries. The same instance (valkey-790) completed normally in candidate 0, so this is
+the endpoint failing on a particular request, not the agent failing on the task.
+
+**Declared rule.** An instance whose two full attempts both end this way is an *endpoint
+failure*: no trajectory, no capability verdict. It enters the bundle as an excluded row
+(`exit_status: EndpointFailure`, `exclusion_reason: endpoint_failure`) so that the bundle keeps
+456 rows over 114 instances; the selector chooses among that instance's three remaining
+candidates. The Amendment 13 outcome reports A7-P1 both ways — with the two rows excluded
+(the registered Amendment 10b treatment of infrastructure errors) and with them counted as
+failures — and P7-style inference is unaffected unless the two readings disagree, in which
+case the stricter one is reported. The list is `data/agent_axis_deepseek/ENDPOINT_FAILURES.json`;
+the recovery script will not regenerate anything on it; any later instance meeting the same
+rule is added to that file with its evidence before the run continues.
+
+No prediction, gate, cap or stop rule changes. Trajectories written so far are untouched.

@@ -1,0 +1,14 @@
+{
+  "declared": "2026-10-02T05:20 EDT, before the fifth resume",
+  "rule": "An instance whose two full attempts both ended in an uncapped OpenRouter retry loop (RemoteDisconnected / read timeout on the same request) with the sandbox alive and idle is an endpoint failure: no trajectory, no capability verdict. It enters the bundle as an excluded row with exit_status EndpointFailure and is reported both ways (excluded; counted as a failure) in the Amendment 13 outcome.",
+  "cand1": {
+    "hashicorp__terraform-34900": {
+      "attempts": 2,
+      "evidence": "attempt 1: ~00:50-02:50, sandbox hit the 7200 s lifetime while the worker retried; attempt 2: 03:05-05:12, last sandbox command 04:11, then an hour of OpenRouter retries (114 retry lines in gen.log for the attempt)"
+    },
+    "valkey-io__valkey-790": {
+      "attempts": 2,
+      "evidence": "same two windows; last sandbox command 04:07; completed normally in candidate 0"
+    }
+  }
+}

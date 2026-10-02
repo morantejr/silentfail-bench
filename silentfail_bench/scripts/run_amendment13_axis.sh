@@ -98,7 +98,9 @@ cut = [f for f in glob.glob(f"{sys.argv[1]}/traj/cand*/*/*.traj.json")
 print(f"   trajectories at the $1.00 cost ceiling: {len(cut)}" + ("  <- reported as cuts in the readout" if cut else ""))
 INNERPY
   $V -c "import sys; sys.exit(0 if $COST <= $OR_CAP else 1)" || { echo "ABORT: spend exceeded the cap; do not proceed to scoring"; exit 3; }
-  [ "$N" -eq 456 ] || { echo "ABORT: $N of 456 trajectories; generation incomplete -- inspect before scoring"; exit 3; }
+  EF=$($V -c "import json,sys; d=json.load(open('$O/ENDPOINT_FAILURES.json')) if __import__('os').path.exists('$O/ENDPOINT_FAILURES.json') else {}; print(sum(len(v) for k,v in d.items() if k.startswith('cand')))")
+  echo "   declared endpoint failures (ENDPOINT_FAILURES.json): $EF"
+  [ $((N + EF)) -eq 456 ] || { echo "ABORT: $N trajectories + $EF declared endpoint failures != 456; generation incomplete -- inspect before scoring"; exit 3; }
   ;;
 score)
   echo "== bundle =="
