@@ -86,7 +86,7 @@ generate)
     B=$(spend); echo "openrouter_before $B" >> $LEDGER; echo "== generate: 456 trajectories (usage before \$$B) =="
   fi
   $V scripts/run_replication_modal.py --stage generate --instances-file $I --out $O \
-      --mini-config $CFG --base-config swebench_backticks.yaml --k 4 --workers 6 --step-limit 100 --cost-cap $OR_CAP
+      --mini-config $CFG --base-config swebench_backticks.yaml --k 4 --workers "${A13_WORKERS:-6}" --step-limit 100 --cost-cap $OR_CAP
   A=$(spend); echo "openrouter_after_generate $A" >> $LEDGER
   COST=$($V -c "print(f'{$A - $B:.4f}')")
   N=$(ls $O/traj/cand*/*/*.traj.json 2>/dev/null | wc -l | tr -d ' ')
