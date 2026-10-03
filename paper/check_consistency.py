@@ -950,6 +950,12 @@ _res = [p["rank_scale"]["share_residual"] for b in _cd.values() for p in b["pane
 _trj = [p["rank_scale"]["share_trajectory"] for b in _cd.values() for p in b["panels"].values()]
 _crt = [p["rank_scale"]["share_critic"] for b in _cd.values() for p in b["panels"].values()]
 check("rank-scale critic share under 1% everywhere", max(_crt) < 0.01, True)
+# the paper prints the RANGE of the trajectory and residual shares, so interior values cannot be pinned by the sentence;
+# the three shares of each decomposition sum to one, which pins every one of them.
+for _bn, _b in _cd.items():
+    for _pn, _p in _b["panels"].items():
+        _rs = _p["rank_scale"]
+        check(f"rank-scale shares sum to one ({_bn}/{_pn})", _rs["share_critic"] + _rs["share_trajectory"] + _rs["share_residual"], 1.0, tol=0.002)
 check("interaction-share sentence derives", f"the remaining {int(round(min(_res)*100))}--{int(round(max(_res)*100))}\\% is critic-by-trajectory interaction" in tex, True)
 check("trajectory-share sentence derives", f"a shared trajectory level accounts for {int(round(min(_trj)*100))}--{int(round(max(_trj)*100))}\\%" in tex, True)
 _ev, _em = _cd["verified"]["E2_error_correlation"], _cd["multilingual"]["E2_error_correlation"]
