@@ -977,6 +977,24 @@ for name, txt in (("main.tex", _prose_main), ("main_short.tex", _prose_short), (
     check(f"A13 critic collapse stated in the abstract of {name} (rates)", _s_rates.replace(" against ", " of 456 attempts against ") in _ab, True)
     check(f"A13 critic collapse stated in the abstract of {name} (judge AUROC)", _fmt3(_gate["pool_AUROC_detect"]) in _ab, True)
     check(f"A13 critic collapse stated in the abstract of {name} (RM range)", (_fmt3(_rm_lo) in _ab) and (_fmt3(_rm_hi) in _ab), True)
+_orc_n = 0; _orc_bad = 0
+for _c in range(4):
+    for _d in json.loads((D / f"gold_modal/a7_agent_axis_cand{_c}/report.json").read_text())["details"]:
+        _m = _d.get("model_name_or_path", "")
+        if _m.startswith("ORACLE"):
+            _orc_n += 1
+            if (_m.endswith("reference_patch") and not _d.get("resolved")) or (_m.endswith("empty_patch") and _d.get("resolved")): _orc_bad += 1
+check("A13 oracle rows across the four gold reports (only cand0 ran with --oracle 3)", _orc_n, 6)
+check("A13 oracle anomalies", _orc_bad, 0)
+check("A13 oracle sentence in main.tex derives", f"{_orc_n - _orc_bad} of {_orc_n} oracle checks" in _prose_main, True)
+_stale = ("remains the open axis", "remains untested", "that is the next experiment", "is the open axis", "more expensive, not cheaper", "every critic is at chance", "every critic at chance", "fails first", "it was 0.671")
+def _body_no_history(txt):
+    return re.sub(r"\\begin\{longtable\}.*?\\end\{longtable\}", "", txt, flags=re.S)
+for name, txt in (("main.tex", _body_no_history(_prose_main)), ("main_short.tex", _prose_short), ("main_agentverify.tex", _prose_av), ("main_symposium.tex", _prose_symp), ("README.md", _readme13), ("MENTOR_NOTE.md", _mentor13)):
+    _hits = [ph for ph in _stale if ph in txt]
+    check(f"A13 no stale or reaching phrase in {name} {_hits}", len(_hits), 0)
+for name, txt in (("main.tex", _prose_main), ("main_short.tex", _prose_short), ("main_agentverify.tex", _prose_av)):
+    check(f"A13 abstract of {name} says descriptive only", "descriptive only" in _abstract(txt), True)
 check("A13 upper bounds exceed +0.05 (so 'descriptive only' is not an equivalence claim)", (_ej["CI95"][1] > 0.05) and (_e4["CI95"][1] > 0.05), True)
 
 print("\n" + ("ALL CONSISTENT" if not fail else f"{len(fail)} MISMATCH(ES): " + "; ".join(fail)))

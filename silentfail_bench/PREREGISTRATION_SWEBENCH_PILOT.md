@@ -2105,3 +2105,18 @@ registered $22 cap. OpenAI balance after the run: $23.23 (operator reading). Reg
 readout: `data/agent_axis_deepseek/readout_amendment7_deepseek.json`; the comparator function
 double-counted evaluated empty patches in its first run (0.675) and was corrected to the set
 union before this record was written (0.579, equal to the raw 66/114).
+
+**Corrections and a late-recorded deviation, 3 October 2026, after Cursor's review of the
+artifacts.** (i) The outcome's phrase "every critic is at chance on this agent" overstates:
+three of the six point estimates exceed 0.5 (0.517, 0.523, 0.552). The registered statement
+is that no critic clears the selector bar of 0.65; the artifacts now say that. (ii) The gloss
+"it was 0.671 on gpt-5-mini" referred to the judge's detection AUROC *inside the selected arm*
+of the September run (`comparison_to_gpt5_mini.arms.S_judge.raw_AUROC_detect.gpt5_mini`), a
+different population from this pool AUROC; removed from the artifacts and stated correctly.
+(iii) **Fourth deviation, recorded late.** Stage 2 above registers six workers. Generation was
+resumed at 18 workers at 17:58 EDT on 2 October (ledger line `workers_raised_6_to_18`, commit
+`b6a134e`) because the model endpoint's per-step latency bound a six-worker pool to about
+0.2 trajectories a minute; seeds, limits and configs were unchanged. It was written to the
+ledger at the time but omitted from this section until the review. (iv) "24 of 24 oracle checks" in the outcome above was **wrong**: only candidate 0's gold run
+carried the oracle pairs (`--oracle 3`), so the four reports hold six oracle rows, all clean.
+The artifacts now say 6 of 6 and the checker derives the count from the reports.

@@ -35,7 +35,7 @@ about are exactly where its blind spots collect. **A null result is publishable*
 > for gpt-5-mini at the same budget), but the registered selector gate failed: the gpt-5
 > judge's pool AUROC for detecting this agent's failures is 0.552 against a bar of 0.65
 > and the reward models sit at 0.419–0.523, so the cell is reported as descriptive only.
-> On a capable agent the premise of critic selection fails first. The registered readout is
+> No critic cleared the registered selector bar on that agent. The registered readout is
 > `silentfail_bench/data/agent_axis_deepseek/readout_amendment7_deepseek.json`; the
 > deviations are in the Amendment 13 section of the preregistration.
 > Twenty-one numbered defects (including seven critic/instrument failures) are recorded in

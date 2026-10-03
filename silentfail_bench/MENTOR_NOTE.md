@@ -1373,16 +1373,18 @@ Amendment 11's result is untouched: no DeepSeek or gpt-5-mini run came within ha
 
 DeepSeek V4.1 Flash, 456 attempts over the registered 114 Multilingual instances, four
 candidates per instance at 100 steps, every candidate graded: 365/456 resolved (80.0%), no
-harness errors, 24/24 oracle checks.
+harness errors, 6/6 oracle checks (candidate 0's gold run carried the oracle pairs).
 
 - **A7-P1 passed.** Unconditional failure rate 0.200 against 0.579 for gpt-5-mini (0.196
   excluding the two declared endpoint failures) at the same 100-step budget on the same
-  instances (merged after a single-worker rerun of 17 rate-limited instances; both
+  instances (merged after a two-worker rerun of 17 rate-limited instances, one worker for any that
+  rate-limited again; both
   classification ways coincide, no crashes, no infrastructure errors). Gap 0.379 on a bar of 0.10.
 - **The 7a selector gate failed.** The gpt-5 judge's pool AUROC for detecting failure over the
-  436 graded attempts is 0.552 (bar 0.65; it was 0.671 on gpt-5-mini); reproduced independently
+  436 graded attempts is 0.552 (bar 0.65; on the earlier gpt-5-mini trajectories the same
+  judge's detection AUROC inside the selected arm was 0.671, a different population); reproduced independently
   with the detection sign checked (0.448 flipped). The five reward models: 0.464, 0.487, 0.517,
-  0.419, 0.523. Every critic is at chance on this agent.
+  0.419, 0.523. No critic clears 0.65.
 - **Floor.** Committed failures 17 (judge arm, n=113) and 19 (4B arm, n=109), under 20.
 - **Descriptive endpoint.** Primary ΔAUROC +0.020 [−0.120, +0.149] (judge) and +0.032
   [−0.079, +0.140] (4B); AUROC(u) 0.544 [0.400, 0.697] and 0.502 [0.356, 0.649].
