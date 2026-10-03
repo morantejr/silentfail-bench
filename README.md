@@ -60,6 +60,7 @@ and `silentfail_bench/scripts/preflight_pre_oct1.sh`.
 | `paper/main_short.pdf` | Nine-page submission version; body within seven pages, then references |
 | `paper/main_agentverify.pdf` | Anonymous IEEE version, 8 pages including references; **generated** by `paper/make_agentverify.py` from `main_short.tex` |
 | `paper/main_symposium.pdf` | Two-page abstract for the Agent Evaluation Science symposium; not anonymous, numbers pinned by the checker |
+| `paper/frontier_main.pdf` | The long paper with its contribution framed at the strongest level the data carry (measurement, bound, critic collapse, follow-up); **generated** by `paper/make_frontier.py` from `main.tex`, no new numbers; not a submission artifact |
 | `silentfail_bench/data/agent_axis_deepseek/readout_amendment7_deepseek.json` | Amendment 13 registered readout: A7-P1 PASS, selector gate FAIL, descriptive only; every input it reads is tracked |
 | `silentfail_bench/data/agent_axis_deepseek/readout_amendment13_panel.json` | Pool AUROC of every critic on the DeepSeek attempts, both signs; **generated** by `scripts/readout_amendment13_panel.py` |
 | `silentfail_bench/data/agent_axis_deepseek/ENDPOINT_FAILURES.json` | The two declared endpoint failures with their evidence and the rule (Amendment 13, third deviation) |
