@@ -118,6 +118,10 @@ INNERPY
       --only "Ray2333/GRM-gemma2-2B-rewardmodel-ft Ray2333/GRM-Llama3.2-3B-rewardmodel-ft Skywork/Skywork-Reward-V2-Llama-3.2-1B Skywork/Skywork-Reward-V2-Qwen3-1.7B Skywork/Skywork-Reward-V2-Qwen3-4B"
   mkdir -p $O/modal
   $MODAL volume get silentfail-out /agent_axis_deepseek $O/modal --force
+  # modal >= 1.5 nests the remote directory name under the destination; flatten to the September layout
+  if ls $O/modal/agent_axis_deepseek/prefix4k/scores_gpu_*.json >/dev/null 2>&1; then
+    mkdir -p $O/modal/prefix4k && mv $O/modal/agent_axis_deepseek/prefix4k/scores_gpu_*.json $O/modal/prefix4k/ && rm -rf $O/modal/agent_axis_deepseek
+  fi
   ls $O/modal/prefix4k/scores_gpu_*.json | wc -l | xargs echo "   score files:"
   [ "$(ls $O/modal/prefix4k/scores_gpu_*.json 2>/dev/null | wc -l | tr -d ' ')" -ge 5 ] || { echo "ABORT: fewer than 5 score files; --only probably matched nothing"; exit 3; }
   echo "== gpt-5 judges every candidate, J1 =="
