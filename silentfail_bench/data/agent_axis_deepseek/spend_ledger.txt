@@ -13,3 +13,5 @@ openrouter_resume 22.631883
 openrouter_at_pause6 2026-10-02T20:42:09Z  # Mac slept 12:56-16:40 on battery with the lid closed; cand2 102 placeholders from the 10:38-11:37 sleep, cand3 frozen at 21
 openrouter_resume 23.115873
 workers_raised_6_to_18 2026-10-02T21:44:53Z  # execution setting only; endpoint latency bound the 6-worker pool to ~0.2 traj/min
+openrouter_resume 23.439258
+paused_lid_closed 2026-10-03T01:56:35Z  # Mac in deep sleep since 18:12 EDT on battery; generator killed and app stopped so idle sandboxes do not bill; resume with scripts/resume_amendment13.sh when awake
