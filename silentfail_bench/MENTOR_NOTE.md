@@ -1200,6 +1200,8 @@ fit.
 
 ## Where the agent axis stands
 
+*Superseded by §29 below: the axis ran on 1–3 October.*
+
 Paused at 100 of 456 trajectories, no gold run, nothing computed. It resumes when
 the Modal credit resets on 1 October and costs about $11 of OpenAI and $11 of
 Modal under the first estimate. A second PI audit found that estimate and the
@@ -1366,3 +1368,38 @@ papers keep "mechanism unmeasured," now with the reason. Answering the budget qu
 properly would cost $25–40 to settle nothing, and I have not run it.
 
 Amendment 11's result is untouched: no DeepSeek or gpt-5-mini run came within half of that cap.
+
+## 29. The agent axis ran, and no critic qualified as its selector (Amendment 13, 1–3 October)
+
+DeepSeek V4.1 Flash, 456 attempts over the registered 114 Multilingual instances, four
+candidates per instance at 100 steps, every candidate graded: 365/456 resolved (80.0%), no
+harness errors, 24/24 oracle checks.
+
+- **A7-P1 passed.** Unconditional failure rate 0.200 against 0.579 for gpt-5-mini (0.196
+  excluding the two declared endpoint failures) at the same 100-step budget on the same
+  instances (merged after a single-worker rerun of 17 rate-limited instances; both
+  classification ways coincide, no crashes, no infrastructure errors). Gap 0.379 on a bar of 0.10.
+- **The 7a selector gate failed.** The gpt-5 judge's pool AUROC for detecting failure over the
+  436 graded attempts is 0.552 (bar 0.65; it was 0.671 on gpt-5-mini); reproduced independently
+  with the detection sign checked (0.448 flipped). The five reward models: 0.464, 0.487, 0.517,
+  0.419, 0.523. Every critic is at chance on this agent.
+- **Floor.** Committed failures 17 (judge arm, n=113) and 19 (4B arm, n=109), under 20.
+- **Descriptive endpoint.** Primary ΔAUROC +0.020 [−0.120, +0.149] (judge) and +0.032
+  [−0.079, +0.140] (4B); AUROC(u) 0.544 [0.400, 0.697] and 0.502 [0.356, 0.649].
+- **Verdict: DESCRIPTIVE ONLY**, on the registered rule, for two independent reasons.
+
+**What it means for your objection.** Not "the null holds for capable agents", and not
+"retired". On a capable agent there was no selector: no instrument in the study separates its
+failures from its successes well enough to construct the critic-selected set the design needs.
+The objection is re-posed as a question about selectors, which is a sharper and more
+interesting question than the one we started with.
+
+**What it cost and what broke.** OpenRouter $8.77, gpt-5 judge $13.50, Modal pending from the
+dashboard. Three mid-run deviations and two addenda, all recorded before each resume: a
+sandbox leak and a 50-second tunnel timeout in the scaffold's dependencies (DEFECTS #21, #22),
+two instances declared endpoint failures after two full attempts each, six trajectories lost
+to the operator machine's DNS during sleep and regenerated, one ambiguous RepeatedFormatError
+kept as a failure. About forty hours of wall clock, most of it the laptop asleep. None of it
+touched c, u or gold. The comparator function double-counted evaluated empty patches on its
+first run (0.675) and was corrected to the set union (0.579 = 66/114) before the record was
+written; the readout file in the repository is the corrected one.

@@ -12,7 +12,7 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: draft v0.9.18 (2026-10-01) — the registered endpoint, computed four
+> **Status: draft v0.9.19 (2026-10-01) — the registered endpoint, computed four
 > ways, puts disagreement's incremental value over the selector's own score at
 > indistinguishable from zero, loosest pooled upper bound +0.12 over 47 failures
 > and 46 repositories.** A SWE-bench Verified pilot (41 instances, 12 positives)
@@ -29,14 +29,15 @@ about are exactly where its blind spots collect. **A null result is publishable*
 > establishing it, since its upper bound still exceeds the +0.05 this project
 > declared actionable. Newer judges sharpen the dissociation: `gpt-6-sol` is the
 > best single detector in the study at 0.776–0.826 while the disagreement of that
-> newer pair is the worst at 0.41. **The agent axis is the one open question**
-> Amendment 10 moves that axis to mentor-requested open-weight agents. DeepSeek
-> V4.1 Flash gets a corrected 41-instance capability rerun after the 1 October
-> credit reset; GLM-5.3 is currently non-viable in this scaffold (13/41
-> submissions). See
-> [`CLAUDE_HANDOFF_OCT1.md`](CLAUDE_HANDOFF_OCT1.md) and Amendment 10 in the
-> preregistration. The old Amendment 7 runbook is retained only for downstream
-> stages after an open agent passes its capability gates.
+> newer pair is the worst at 0.41. **The agent axis ran** (Amendment 13, 1–3 October):
+> DeepSeek V4.1 Flash, 456 attempts over the registered 114 Multilingual instances at
+> 100 steps, all graded. The capability gate passed (failure rate 0.200 against 0.579
+> for gpt-5-mini at the same budget), but the registered selector gate failed: the gpt-5
+> judge's pool AUROC for detecting this agent's failures is 0.552 against a bar of 0.65
+> and the reward models sit at 0.419–0.523, so the cell is reported as descriptive only.
+> On a capable agent the premise of critic selection fails first. The registered readout is
+> `silentfail_bench/data/agent_axis_deepseek/readout_amendment7_deepseek.json`; the
+> deviations are in the Amendment 13 section of the preregistration.
 > Twenty-one numbered defects (including seven critic/instrument failures) are recorded in
 > [`silentfail_bench/DEFECTS.md`](silentfail_bench/DEFECTS.md), including one that
 > manufactured a result large enough to reverse the paper. Paper:
@@ -59,6 +60,9 @@ and `silentfail_bench/scripts/preflight_pre_oct1.sh`.
 | `paper/main_short.pdf` | Nine-page submission version; body within seven pages, then references |
 | `paper/main_agentverify.pdf` | Anonymous IEEE version, 8 pages including references; **generated** by `paper/make_agentverify.py` from `main_short.tex` |
 | `paper/main_symposium.pdf` | Two-page abstract for the Agent Evaluation Science symposium; not anonymous, numbers pinned by the checker |
+| `silentfail_bench/data/agent_axis_deepseek/readout_amendment7_deepseek.json` | Amendment 13 registered readout: A7-P1 PASS, selector gate FAIL, descriptive only; every input it reads is tracked |
+| `silentfail_bench/data/agent_axis_deepseek/readout_amendment13_panel.json` | Pool AUROC of every critic on the DeepSeek attempts, both signs; **generated** by `scripts/readout_amendment13_panel.py` |
+| `silentfail_bench/data/agent_axis_deepseek/ENDPOINT_FAILURES.json` | The two declared endpoint failures with their evidence and the rule (Amendment 13, third deviation) |
 | [`archive/drafts/`](archive/drafts/) | Earlier drafts and write-ups, kept for the record |
 
 ## Where this is being submitted

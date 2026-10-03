@@ -30,6 +30,7 @@ TARGETS = {
     "readout_pi_batch2":            "data/readout_pi_batch2.json",
     "readout_tier15":               "data/readout_tier15.json",
     "readout_amendment5_corrected": "data/selector_axis/readout_amendment5_corrected.json",
+    "readout_amendment13_panel": "data/agent_axis_deepseek/readout_amendment13_panel.json",
 }
 
 

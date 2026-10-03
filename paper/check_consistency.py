@@ -92,7 +92,7 @@ for f in ("paper/main.tex", "paper/main_short.tex"):
         word, noun, after = m.group(1).lower(), m.group(2).lower(), m.group(3)
         want = {"chat-preference": n_chat}.get(noun, len(allc))
         if WORD.get(want) == word: continue
-        if re.search(r"all three lengths|complete ladder|no 4k pass|auditing|as auditors|audit panel", after): continue   # a stated subset: the m=4 audit panel, or the models with a full ladder
+        if re.search(r"all three lengths|complete ladder|no 4k pass|auditing|as auditors|audit panel|scored on this axis", after): continue   # a stated subset: the m=4 audit panel, or the Amendment 13 axis panel   # a stated subset: the m=4 audit panel, or the models with a full ladder
         bad.append(f"{word} {noun}")
     print(f"  {'ok  ' if not bad else 'FAIL'}  {f}: {bad or 'all counts agree with the code'}")
     if bad: fail.append(f"{f} model count")
@@ -930,5 +930,48 @@ ok = _a7_real.returncode == 2 and "no partial result was written" in (_a7_real.s
 print(f"  {'ok  ' if ok else 'FAIL'}  incomplete A7 production inputs fail closed (exit {_a7_real.returncode})")
 if not ok: fail.append("A7 partial-input gate")
 
+# ---------------------------------------------------------------------------------------------
+print("\nAmendment 13 (agent axis on DeepSeek) vs its readouts:")
+_a13 = json.loads((D / "agent_axis_deepseek/readout_amendment7_deepseek.json").read_text())
+_a13p = json.loads((D / "agent_axis_deepseek/readout_amendment13_panel.json").read_text())
+_cap = _a13["capability_A7_P1"]; _gate = _a13["selector_gate_A7a_2"]; _arms = _a13["arms"]
+_new_rate = _cap["new_agent"]["unconditional_failure_rate_band"][0]
+_old_rate = _cap["old_agent"]["failure_rate_B_agent_crashes_as_failures"]
+check("A13 capability branch is PASS", _cap["branch"] == "PASS", True)
+check("A13 comparator both ways agree", _old_rate, _cap["old_agent"]["failure_rate_A_amendment_10b_exclusion"])
+check("A13 selector gate fails", _gate["passes"], False)
+check("A13 verdict is DESCRIPTIVE ONLY", _a13["confirmatory_verdict"]["branch"] == "DESCRIPTIVE ONLY", True)
+check("A13 axis panel is five reward models (score files)", _a13p["reward_models"]["n"], 5)
+check("A13 no critic above the bar", _a13p["any_critic_above_bar"], False)
+check("A13 judge pool AUROC equals the gate's", _a13p["critics"]["gpt5_judge_J1"]["AUROC_detect"], _gate["pool_AUROC_detect"])
+_gap = round(_old_rate - _new_rate, 3)
+_rm_lo, _rm_hi = _a13p["reward_models"]["min_AUROC_detect"], _a13p["reward_models"]["max_AUROC_detect"]
+_sj, _s4 = _arms["S_judge"], _arms["S_4b"]
+_ej, _e4 = _sj["estimators"]["fixed_unit_weights_PRIMARY"], _s4["estimators"]["fixed_unit_weights_PRIMARY"]
+_prose_main = Path("paper/main.tex").read_text(); _prose_short = Path("paper/main_short.tex").read_text(); _prose_av = Path("paper/main_agentverify.tex").read_text()
+_prose_symp = Path("paper/main_symposium.tex").read_text(); _readme13 = Path("README.md").read_text(); _mentor13 = Path("silentfail_bench/MENTOR_NOTE.md").read_text()
+_prereg13 = Path("silentfail_bench/PREREGISTRATION_SWEBENCH_PILOT.md").read_text()
+def _fmt3(x): return f"{x:.3f}"
+def _signed(x): return ("+" if x >= 0 else "-") + f"{abs(x):.3f}"
+_s_rates = f"{_fmt3(_new_rate)} against {_fmt3(_old_rate)}"
+for name, txt in (("main.tex", _prose_main), ("main_short.tex", _prose_short), ("main_agentverify.tex", _prose_av), ("main_symposium.tex", _prose_symp), ("README.md", _readme13), ("MENTOR_NOTE.md", _mentor13)):
+    check(f"A13 rates sentence in {name}", _s_rates in txt, True)
+    check(f"A13 judge pool AUROC in {name}", _fmt3(_gate["pool_AUROC_detect"]) in txt, True)
+for name, txt in (("main.tex", _prose_main), ("main_short.tex", _prose_short), ("main_agentverify.tex", _prose_av), ("main_symposium.tex", _prose_symp), ("README.md", _readme13), ("MENTOR_NOTE.md", _mentor13), ("PREREGISTRATION", _prereg13)):
+    check(f"A13 reward-model range in {name}", (_fmt3(_rm_lo) in txt) and (_fmt3(_rm_hi) in txt), True)
+check("A13 gap in main.tex", f"a gap of {_fmt3(_gap)}" in _prose_main, True)
+check("A13 gap in PREREGISTRATION", f"gap is **{_fmt3(_gap)}**" in _prereg13, True)
+_s_floor = f"{_sj['failures']} failures (judge arm, $n={_sj['n']}$) and {_s4['failures']} (4B arm, $n={_s4['n']}$)"
+check("A13 floor sentence in main.tex", _s_floor in _prose_main, True)
+check("A13 floor pair in main_short/agentverify", (f"{_sj['failures']} and {_s4['failures']} failures" in _prose_short) and (f"{_sj['failures']} and {_s4['failures']} failures" in _prose_av), True)
+def _delta_tex(e): return f"${_signed(e['delta'])}$ [${_signed(e['CI95'][0])}$, ${_signed(e['CI95'][1])}$]"
+check("A13 judge-arm primary delta in main.tex", _delta_tex(_ej) in _prose_main, True)
+check("A13 4B-arm primary delta in main.tex", _delta_tex(_e4) in _prose_main, True)
+check("A13 judge-arm primary delta in main_short", _delta_tex(_ej) in _prose_short, True)
+check("A13 descriptive-only wording, both cuts", ("descriptive only" in _prose_short) and ("descriptive only" in _prose_av) and ("descriptive only" in _prose_symp), True)
+check("A13: no artifact still calls the axis unanswered", any(("registered and unanswered" in t) or ("registered and \\emph{unanswered}" in t) for t in (_prose_short, _prose_av, _prose_symp)), False)
+check("A13 upper bounds exceed +0.05 (so 'descriptive only' is not an equivalence claim)", (_ej["CI95"][1] > 0.05) and (_e4["CI95"][1] > 0.05), True)
+
 print("\n" + ("ALL CONSISTENT" if not fail else f"{len(fail)} MISMATCH(ES): " + "; ".join(fail)))
 sys.exit(1 if fail else 0)
+

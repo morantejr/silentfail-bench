@@ -1,0 +1,46 @@
+{
+  "amendment": 13,
+  "pool_n_graded_non_empty": 436,
+  "pool_failures": 71,
+  "sign_convention": "detection score: higher = more likely to fail; reward models are negated, the judge is 100 - p_resolved",
+  "critics": {
+    "ray2333_grm_gemma2_2b_rewardmodel_ft": {
+      "kind": "reward_model",
+      "AUROC_detect": 0.464,
+      "AUROC_sign_flipped": 0.536
+    },
+    "ray2333_grm_llama3_2_3b_rewardmodel_ft": {
+      "kind": "reward_model",
+      "AUROC_detect": 0.487,
+      "AUROC_sign_flipped": 0.513
+    },
+    "skywork_skywork_reward_v2_llama_3_2_1b": {
+      "kind": "reward_model",
+      "AUROC_detect": 0.517,
+      "AUROC_sign_flipped": 0.483
+    },
+    "skywork_skywork_reward_v2_qwen3_1_7b": {
+      "kind": "reward_model",
+      "AUROC_detect": 0.419,
+      "AUROC_sign_flipped": 0.581
+    },
+    "skywork_skywork_reward_v2_qwen3_4b": {
+      "kind": "reward_model",
+      "AUROC_detect": 0.523,
+      "AUROC_sign_flipped": 0.477
+    },
+    "gpt5_judge_J1": {
+      "kind": "llm_judge",
+      "n": 436,
+      "AUROC_detect": 0.552,
+      "AUROC_sign_flipped": 0.448
+    }
+  },
+  "reward_models": {
+    "n": 5,
+    "min_AUROC_detect": 0.419,
+    "max_AUROC_detect": 0.523
+  },
+  "selector_gate_bar": 0.65,
+  "any_critic_above_bar": false
+}
