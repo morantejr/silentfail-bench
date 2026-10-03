@@ -993,3 +993,24 @@ containers for 2 workers. The launcher now calls the imported module's CLI, and
 `main.__globals__['process_instance']` is checked to be the wrapper. Lesson: a finalizer is a
 promise about *eventually*; when the resource bills by the minute, force the collection — and
 verify the forcing reaches the code that runs, not a copy of it.
+
+### #23 — The learned-combiner check scored a pass-direction sum as a failure detector; the paper read "the panel is not carrying much at all" off an inverted number *(sign convention)*
+
+Found 3 October 2026 by Cursor's review of the critic-demeaning analysis, reproduced before it
+was accepted. `scripts/readout_pi_batch1.py`'s fixed-weight combination sums standardised
+columns as given. Raw reward-model scores and `c` are higher-is-better, so for the "4 raw panel
+scores" and "c alone" rows the sum is a *pass* score, and `auroc_fast(y_fail, sum)` returned
+`1 - AUROC`: 0.428 and 0.412 where the detection-direction values are
+0.572 and 0.588 (and `c alone` 0.386 / 0.439 where it is 0.614 / 0.561, matching the raw AUROC of $-c$).
+`u` is already a detection score, so its row was right; the logistic rows learn the sign and were
+right. `paper/main.tex` line 266 compared the inverted panel sum (0.428, 0.412) with `u`
+(0.504, 0.565) and concluded the panel "is not carrying much at all". Corrected, the unit-weight
+panel sum ranks failures *slightly above* disagreement (0.572 vs 0.504; 0.588 vs 0.565) and
+below what single critics reach at length; the sentence is rewritten and pinned to the JSON.
+
+**Why it slipped.** Working rule 5 in this project is exactly this (two sign conventions coexist;
+a detection AUROC below 0.5 is the fingerprint). The exploratory script was written in a batch
+with E2 and CD, its output printed one table, and nobody applied the fingerprint to the 0.43 and
+0.41 — numbers below 0.5 that should have been questioned the moment they were read. The
+published key is kept unchanged in the JSON for traceability; `fixed_weights_oof_detect` is the
+corrected one and the only one the paper uses now.

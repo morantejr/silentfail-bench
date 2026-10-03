@@ -12,7 +12,7 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: draft v0.9.19 (2026-10-01) — the registered endpoint, computed four
+> **Status: draft v0.9.20 (2026-10-01) — the registered endpoint, computed four
 > ways, puts disagreement's incremental value over the selector's own score at
 > indistinguishable from zero, loosest pooled upper bound +0.12 over 47 failures
 > and 46 repositories.** A SWE-bench Verified pilot (41 instances, 12 positives)
@@ -32,13 +32,13 @@ about are exactly where its blind spots collect. **A null result is publishable*
 > newer pair is the worst at 0.41. **The agent axis ran** (Amendment 13, 1–3 October):
 > DeepSeek V4.1 Flash, 456 attempts over the registered 114 Multilingual instances at
 > 100 steps, all graded. The capability gate passed (failure rate 0.200 against 0.579
-> for gpt-5-mini at the same budget), but the registered selector gate failed: the gpt-5
+> for gpt-5-mini at the same per-attempt budget), but the registered selector gate failed: the gpt-5
 > judge's pool AUROC for detecting this agent's failures is 0.552 against a bar of 0.65
 > and the reward models sit at 0.419–0.523, so the cell is reported as descriptive only.
 > No critic cleared the registered selector bar on that agent. The registered readout is
 > `silentfail_bench/data/agent_axis_deepseek/readout_amendment7_deepseek.json`; the
 > deviations are in the Amendment 13 section of the preregistration.
-> Twenty-one numbered defects (including seven critic/instrument failures) are recorded in
+> Twenty-two numbered defects (including seven critic/instrument failures) are recorded in
 > [`silentfail_bench/DEFECTS.md`](silentfail_bench/DEFECTS.md), including one that
 > manufactured a result large enough to reverse the paper. Paper:
 > [`paper/main.pdf`](paper/main.pdf), 9-page submission version (body within seven)

@@ -1376,8 +1376,8 @@ candidates per instance at 100 steps, every candidate graded: 365/456 resolved (
 harness errors, 6/6 oracle checks (candidate 0's gold run carried the oracle pairs).
 
 - **A7-P1 passed.** Unconditional failure rate 0.200 against 0.579 for gpt-5-mini (0.196
-  excluding the two declared endpoint failures) at the same 100-step budget on the same
-  instances (merged after a two-worker rerun of 17 rate-limited instances, one worker for any that
+  excluding the two declared endpoint failures) at the same 100-step budget per attempt on the same
+  instances (four attempts per instance for DeepSeek, one for the comparator) (merged after a two-worker rerun of 17 rate-limited instances, one worker for any that
   rate-limited again; both
   classification ways coincide, no crashes, no infrastructure errors). Gap 0.379 on a bar of 0.10.
 - **The 7a selector gate failed.** The gpt-5 judge's pool AUROC for detecting failure over the
@@ -1405,3 +1405,19 @@ kept as a failure. About forty hours of wall clock, most of it the laptop asleep
 touched c, u or gold. The comparator function double-counted evaluated empty patches on its
 first run (0.675) and was corrected to the set union (0.579 = 66/114) before the record was
 written; the readout file in the repository is the corrected one.
+
+## 30. Cursor's second review, applied (3 October)
+
+A post-hoc critic-demeaning analysis (`for_claude/algorithmic_to_7`, not adopted: the published
+u is already critic-demeaned on the rank scale) was reviewed and the review surfaced a real
+defect, #23: the learned-combiner sentence compared a pass-direction panel sum (0.43, 0.41) with
+disagreement and concluded the panel carried little; in the failure direction the sum is 0.57 and
+0.59, slightly above disagreement. Fixed and pinned. Also applied: the mechanism sentence now
+quotes the two-way decomposition of the rank-normalised matrix (critic-by-trajectory interaction
+56-71%, shared level 29-44%, critic location under 1%); the 0.71-0.89 error-correlation band
+carries its independence floor (0.71-0.75) and the fact that its upper edge survives a label
+permutation; the Amendment 4f item shows selection operated over materially different patches
+(mean changed-line overlap 0.18 / 0.22; near-identical pairs in 6% / 3% of instances); "at
+chance" became failure to reject where intervals permit effects; Amendment 13's comparison is
+stated per attempt (four attempts vs one); the closest work (Afrin & Shihab; SWE-RM; Scout) is
+positioned in one sentence. Every number is pinned from a tracked readout.

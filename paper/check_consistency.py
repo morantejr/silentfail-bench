@@ -931,6 +931,47 @@ print(f"  {'ok  ' if ok else 'FAIL'}  incomplete A7 production inputs fail close
 if not ok: fail.append("A7 partial-input gate")
 
 # ---------------------------------------------------------------------------------------------
+print("\ncandidate diversity, per-attempt wording, positioning, failure-to-reject:")
+_b1 = json.loads((D / "readout_pi_batch1.json").read_text())
+_u2 = lambda x: r2(x).lstrip("+")
+_cv, _cm = _b1["verified"]["CD_candidate_diversity"], _b1["multilingual"]["CD_candidate_diversity"]
+check("candidate-diversity overlap sentence derives", f"mean pairwise overlap of changed lines was {_u2(_cv['mean_pairwise_patch_overlap'])} on Verified and {_u2(_cm['mean_pairwise_patch_overlap'])} on Multilingual" in tex, True)
+check("candidate-diversity near-identical sentence derives", f"occurred in {int(round(_cv['frac_instances_with_near_identical_patches_overlap_gt_0.9']*100))}\\% and {int(round(_cm['frac_instances_with_near_identical_patches_overlap_gt_0.9']*100))}\\% of instances" in tex, True)
+check("candidate-diversity selector-spread sentence derives", f"mean standard deviation of {_u2(_cv['mean_selector_score_spread'])} and {_u2(_cm['mean_selector_score_spread'])}" in tex, True)
+check("conclusion no longer says the replication estimates 'are at chance'", "and they are at chance." in tex, False)
+for _n, _t in (("main.tex", tex), ("main_short.tex", Path("paper/main_short.tex").read_text()), ("main_agentverify.tex", Path("paper/main_agentverify.tex").read_text()), ("main_symposium.tex", Path("paper/main_symposium.tex").read_text()), ("README.md", Path("README.md").read_text())):
+    check(f"Amendment 13 comparison stated per attempt in {_n}", ("per-attempt budget" in _t) or ("budget per attempt" in _t), True)
+check("positioning sentence present", "measures the residual value of a second signal on the trajectory a selector commits" in tex, True)
+check("abstract denominators explicit, both cuts", ("of the committed population (visible-pass, non-empty, gradable)" in tex) and ("of the committed population (visible-pass, non-empty, gradable)" in Path("paper/main_short.tex").read_text()), True)
+
+print("\nmechanism sentences (critic-by-trajectory interaction; E2 floor) vs data/readout_critic_demeaning.json:")
+_cd = json.loads((D / "readout_critic_demeaning.json").read_text())["benchmarks"]
+_res = [p["rank_scale"]["share_residual"] for b in _cd.values() for p in b["panels"].values()]
+_trj = [p["rank_scale"]["share_trajectory"] for b in _cd.values() for p in b["panels"].values()]
+_crt = [p["rank_scale"]["share_critic"] for b in _cd.values() for p in b["panels"].values()]
+check("rank-scale critic share under 1% everywhere", max(_crt) < 0.01, True)
+check("interaction-share sentence derives", f"the remaining {int(round(min(_res)*100))}--{int(round(max(_res)*100))}\\% is critic-by-trajectory interaction" in tex, True)
+check("trajectory-share sentence derives", f"a shared trajectory level accounts for {int(round(min(_trj)*100))}--{int(round(max(_trj)*100))}\\%" in tex, True)
+_ev, _em = _cd["verified"]["E2_error_correlation"], _cd["multilingual"]["E2_error_correlation"]
+check("E2 observed band still reproduces the printed 0.71-0.89 / 0.74-0.84", (r2(_ev["observed_range"][0]), r2(_ev["observed_range"][1]), r2(_em["observed_range"][0]), r2(_em["observed_range"][1])) == ("+0.71", "+0.89", "+0.74", "+0.84"), True)
+check("E2 floor sentence derives", f"{_ev['independence_floor_range'][0]:.2f}--{_ev['independence_floor_range'][1]:.2f} (Verified) and {_em['independence_floor_range'][0]:.2f}--{_em['independence_floor_range'][1]:.2f} (Multilingual)" in tex, True)
+check("E2 permutation sentence derives", f"({_ev['label_permutation_range_mean'][1]:.2f} and {_em['label_permutation_range_mean'][1]:.2f} on average over 200 permutations)" in tex, True)
+check("E2 floor is below the observed upper edge (the band is not all floor)", _ev["independence_floor_range"][1] < _ev["observed_range"][1] - 0.1, True)
+check("'between-critic heterogeneity' mechanism sentence is gone", "dominated by that between-critic heterogeneity" in tex, False)
+
+print("\nlearned-combiner sentence (DEFECTS #23) vs data/readout_pi_batch1.json:")
+_b1 = json.loads((D / "readout_pi_batch1.json").read_text())
+_V, _M = _b1["verified"]["LC_learned_combiner"], _b1["multilingual"]["LC_learned_combiner"]
+_u2 = lambda x: r2(x).lstrip("+")   # unsigned two decimals, half away from zero
+check("DEFECTS #23: published fixed-weight raw-panel row is the pass direction (1 - detect)", _V["4 raw panel scores"]["fixed_weights_oof"] + _V["4 raw panel scores"]["fixed_weights_oof_detect"], 1.0)
+check("DEFECTS #23: c-alone detect matches raw AUROC(-c) within 0.01", abs(_V["c alone"]["fixed_weights_oof_detect"] - 0.621) < 0.01, True)
+_lc_sent = (f"ranks failures at {_u2(_V['4 raw panel scores']['fixed_weights_oof_detect'])} on Verified and {_u2(_M['4 raw panel scores']['fixed_weights_oof_detect'])} on Multilingual "
+            f"against {_u2(_V['u alone (published)']['fixed_weights_oof'])} and {_u2(_M['u alone (published)']['fixed_weights_oof'])} for disagreement")
+check("learned-combiner sentence derives from the JSON", _lc_sent in tex, True)
+check("learned-combiner logistic figures derive", f"({_u2(_V['4 raw panel scores']['logistic_oof'])} and {_u2(_M['4 raw panel scores']['logistic_oof'])} out of fold)" in tex, True)
+check("learned-combiner: the inverted figures are named as the error", f"in the pass direction ({_u2(_V['4 raw panel scores']['fixed_weights_oof'])} and {_u2(_M['4 raw panel scores']['fixed_weights_oof'])})" in tex, True)
+check("learned-combiner: 'not carrying much at all' is gone", "not carrying much at all" in tex, False)
+
 print("\nAmendment 13 (agent axis on DeepSeek) vs its readouts:")
 _a13 = json.loads((D / "agent_axis_deepseek/readout_amendment7_deepseek.json").read_text())
 _a13p = json.loads((D / "agent_axis_deepseek/readout_amendment13_panel.json").read_text())

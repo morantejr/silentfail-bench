@@ -91,13 +91,21 @@ for tag in BENCH:
     X4 = np.column_stack([M[m] for m in reg])
     u_reg = np.array([r["u"] for r in (rows[i] for i in pop)])
     c = np.array([rows[i]["c"] for i in pop], float)
+    # DEFECTS #23 (3 Oct 2026): the fixed-weight sum of RAW reward-model scores (and of c) is higher-is-better, i.e. a
+    # PASS score, but it was scored as a failure detector without negation, so the published fixed_weights_oof for the
+    # raw-panel and c rows are 1 - AUROC. The logistic rows are sign-free (the fit learns the direction). The published
+    # key is kept, unchanged, for traceability; fixed_weights_oof_detect is the same combination in the detection
+    # direction (reward-model columns and c negated; u is already a detection score) and is what the paper now reports.
     lc = {}
-    for name, X in (("u alone (published)", u_reg[:, None]), ("4 raw panel scores", X4),
-                    ("c alone", c[:, None]), ("c + u", np.column_stack([c, u_reg])),
-                    ("c + 4 raw panel scores", np.column_stack([c, X4]))):
-        p_l, p_f = loro_oof(X, y, grp), fixed_oof(X, y, grp)
+    for name, X, Xd in (("u alone (published)", u_reg[:, None], u_reg[:, None]), ("4 raw panel scores", X4, -X4),
+                        ("c alone", c[:, None], -c[:, None]), ("c + u", np.column_stack([c, u_reg]), np.column_stack([-c, u_reg])),
+                        ("c + 4 raw panel scores", np.column_stack([c, X4]), np.column_stack([-c, -X4]))):
+        p_l, p_f, p_d = loro_oof(X, y, grp), fixed_oof(X, y, grp), fixed_oof(Xd, y, grp)
         ok = ~np.isnan(p_l)
-        lc[name] = {"logistic_oof": round(auroc_fast(y[ok], p_l[ok]), 3), "fixed_weights_oof": round(auroc_fast(y, p_f), 3)}
+        lc[name] = {"logistic_oof": round(auroc_fast(y[ok], p_l[ok]), 3), "fixed_weights_oof": round(auroc_fast(y, p_f), 3),
+                    "fixed_weights_oof_detect": round(auroc_fast(y, p_d), 3)}
+    lc["_note"] = ("fixed_weights_oof sums standardized columns as given (raw reward-model scores and c are pass-direction; "
+                   "DEFECTS #23); fixed_weights_oof_detect negates them so every row is a failure detector. Use _detect.")
     out["LC_learned_combiner"] = lc
 
     # ---------- CD: candidate diversity ----------
@@ -128,7 +136,8 @@ for tag, o in rep.items():
     print(f"      proposal predicted NEGATIVE (less correlated errors -> better u)")
     print(f"  LC  learned combiner vs disagreement (out-of-fold):")
     for k, v in o["LC_learned_combiner"].items():
-        print(f"      {k:26s} logistic {v['logistic_oof']:.3f}   fixed-weights {v['fixed_weights_oof']:.3f}")
+        if k.startswith("_"): continue
+        print(f"      {k:26s} logistic {v['logistic_oof']:.3f}   fixed-weights (as published, pass-direction for raw/c) {v['fixed_weights_oof']:.3f}   fixed-weights detect {v['fixed_weights_oof_detect']:.3f}")
     d = o["CD_candidate_diversity"]
     print(f"  CD  mean pairwise patch overlap {d['mean_pairwise_patch_overlap']:.3f} (median {d['median_pairwise_patch_overlap']:.3f});"
           f" near-identical in {d['frac_instances_with_near_identical_patches_overlap_gt_0.9']:.0%} of instances")

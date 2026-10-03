@@ -31,6 +31,8 @@ TARGETS = {
     "readout_tier15":               "data/readout_tier15.json",
     "readout_amendment5_corrected": "data/selector_axis/readout_amendment5_corrected.json",
     "readout_amendment13_panel": "data/agent_axis_deepseek/readout_amendment13_panel.json",
+    "readout_pi_batch1": "data/readout_pi_batch1.json",
+    "readout_critic_demeaning": "data/readout_critic_demeaning.json",
 }
 
 

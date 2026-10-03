@@ -54,24 +54,30 @@
   "LC_learned_combiner": {
    "u alone (published)": {
     "logistic_oof": 0.307,
-    "fixed_weights_oof": 0.504
+    "fixed_weights_oof": 0.504,
+    "fixed_weights_oof_detect": 0.504
    },
    "4 raw panel scores": {
     "logistic_oof": 0.636,
-    "fixed_weights_oof": 0.428
+    "fixed_weights_oof": 0.428,
+    "fixed_weights_oof_detect": 0.572
    },
    "c alone": {
     "logistic_oof": 0.527,
-    "fixed_weights_oof": 0.386
+    "fixed_weights_oof": 0.386,
+    "fixed_weights_oof_detect": 0.614
    },
    "c + u": {
     "logistic_oof": 0.451,
-    "fixed_weights_oof": 0.439
+    "fixed_weights_oof": 0.439,
+    "fixed_weights_oof_detect": 0.583
    },
    "c + 4 raw panel scores": {
     "logistic_oof": 0.625,
-    "fixed_weights_oof": 0.367
-   }
+    "fixed_weights_oof": 0.367,
+    "fixed_weights_oof_detect": 0.633
+   },
+   "_note": "fixed_weights_oof sums standardized columns as given (raw reward-model scores and c are pass-direction; DEFECTS #23); fixed_weights_oof_detect negates them so every row is a failure detector. Use _detect."
   },
   "CD_candidate_diversity": {
    "instances_with_2plus_patches": 34,
@@ -137,24 +143,30 @@
   "LC_learned_combiner": {
    "u alone (published)": {
     "logistic_oof": 0.443,
-    "fixed_weights_oof": 0.565
+    "fixed_weights_oof": 0.565,
+    "fixed_weights_oof_detect": 0.565
    },
    "4 raw panel scores": {
     "logistic_oof": 0.375,
-    "fixed_weights_oof": 0.412
+    "fixed_weights_oof": 0.412,
+    "fixed_weights_oof_detect": 0.588
    },
    "c alone": {
     "logistic_oof": 0.459,
-    "fixed_weights_oof": 0.439
+    "fixed_weights_oof": 0.439,
+    "fixed_weights_oof_detect": 0.561
    },
    "c + u": {
     "logistic_oof": 0.436,
-    "fixed_weights_oof": 0.484
+    "fixed_weights_oof": 0.484,
+    "fixed_weights_oof_detect": 0.61
    },
    "c + 4 raw panel scores": {
     "logistic_oof": 0.428,
-    "fixed_weights_oof": 0.403
-   }
+    "fixed_weights_oof": 0.403,
+    "fixed_weights_oof_detect": 0.597
+   },
+   "_note": "fixed_weights_oof sums standardized columns as given (raw reward-model scores and c are pass-direction; DEFECTS #23); fixed_weights_oof_detect negates them so every row is a failure detector. Use _detect."
   },
   "CD_candidate_diversity": {
    "instances_with_2plus_patches": 76,
