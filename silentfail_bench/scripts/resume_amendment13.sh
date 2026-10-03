@@ -33,19 +33,32 @@ from pathlib import Path
 O = Path(sys.argv[1]); stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 ef_path = O / "ENDPOINT_FAILURES.json"
 EF = {k: set(v) for k, v in json.loads(ef_path.read_text()).items() if k.startswith("cand")} if ef_path.exists() else {}
+NETWORK_MARKERS = ("Failed to resolve", "nodename nor servname", "NameResolutionError", "Connection refused", "Network is unreachable")
 for c in range(4):
     p = O / f"traj/cand{c}/preds.json"
     if not p.exists(): print(f"   cand{c}: no preds.json yet"); continue
-    d = json.loads(p.read_text()); traj = {q.split("/")[-2] for q in glob.glob(f"{O}/traj/cand{c}/*/*.traj.json")}
+    d = json.loads(p.read_text())
+    # A trajectory that ended in a network-level failure of the operator's machine (DNS gone while
+    # the Mac slept) is no attempt: quarantine it so the instance regenerates (Amendment 13, 3rd deviation).
+    q = 0
+    for tf in glob.glob(f"{O}/traj/cand{c}/*/*.traj.json"):
+        info = json.loads(Path(tf).read_text()).get("info", {})
+        err = (info.get("exception_str") or "") + (info.get("traceback") or "")
+        if info.get("exit_status") in ("OpenRouterAPIError", "ConnectionError", "NameResolutionError") and any(m in err for m in NETWORK_MARKERS):
+            iid = Path(tf).parent.name; dest = O / f"quarantine/cand{c}/{stamp.replace(' ', '_').replace(':', '')}/{iid}"
+            dest.parent.mkdir(parents=True, exist_ok=True); shutil.move(str(Path(tf).parent), str(dest)); d.pop(iid, None); q += 1
+            with open(O / f"traj/cand{c}/RESUME_NOTE.md", "a") as f:
+                f.write(f"\n- {stamp}: quarantined {iid} (exit {info.get('exit_status')}: network failure on the operator's machine, {len([m for m in info.get('traceback','') if m])} chars of traceback) -> regenerates\n")
+    traj = {qq.split("/")[-2] for qq in glob.glob(f"{O}/traj/cand{c}/*/*.traj.json")}
     ph = sorted(i for i, r in d.items() if not (r.get("model_patch") or "").strip() and i not in traj and i not in EF.get(f"cand{c}", set()))
-    if ph:
+    if ph or q:
         shutil.copy(p, p.with_name(f"preds.json.{stamp.replace(' ', '_').replace(':', '')}_with_{len(ph)}_empty_entries"))
         for i in ph: del d[i]
         p.write_text(json.dumps(d, indent=2))
         with open(O / f"traj/cand{c}/RESUME_NOTE.md", "a") as f:
             f.write(f"\n## Resume {stamp}\n\n{len(ph)} placeholder entries (empty patch, no trajectory) removed so they regenerate:\n"
                     + "\n".join(ph) + "\n")
-    print(f"   cand{c}: {len(traj)} trajectories on disk, {len(ph)} placeholders removed, {len(d)} entries kept")
+    print(f"   cand{c}: {len(traj)} trajectories on disk, {len(ph)} placeholders removed, {q} network-failure trajectories quarantined, {len(d)} entries kept")
 PY
 
 echo "== preflight (resume mode) =="

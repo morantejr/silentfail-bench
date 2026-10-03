@@ -2021,3 +2021,13 @@ the recovery script will not regenerate anything on it; any later instance meeti
 rule is added to that file with its evidence before the run continues.
 
 No prediction, gate, cap or stop rule changes. Trajectories written so far are untouched.
+
+**Addendum to the third deviation, 3 October 2026, 00:25 EDT.** Six candidate-2 trajectories
+(apache__druid-15402, axios__axios-4731, -5085, -6539, astral-sh__ruff-15356, -15626) ended
+with `exit_status: OpenRouterAPIError` whose cause is `Failed to resolve 'openrouter.ai'` — the
+operator's laptop lost DNS while asleep on 2 October between 10:38 and 11:06, mid-trajectory.
+These are not endpoint failures (the endpoint was never reached) and not agent failures; they
+are no attempt. Rule: a trajectory whose terminal error is a network failure on the operator's
+machine is quarantined (`data/agent_axis_deepseek/quarantine/`) and the instance regenerates
+under the same seed. `scripts/resume_amendment13.sh` applies this automatically. The six
+quarantined files are kept for inspection and are not in the bundle.
