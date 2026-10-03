@@ -15,3 +15,9 @@ openrouter_resume 23.115873
 workers_raised_6_to_18 2026-10-02T21:44:53Z  # execution setting only; endpoint latency bound the 6-worker pool to ~0.2 traj/min
 openrouter_resume 23.439258
 paused_lid_closed 2026-10-03T01:56:35Z  # Mac in deep sleep since 18:12 EDT on battery; generator killed and app stopped so idle sandboxes do not bill; resume with scripts/resume_amendment13.sh when awake
+openrouter_resume 23.446842
+openrouter_at_pause7 2026-10-03T05:50:49Z  # cand2 straggler projectlombok__lombok-2792 wedged 86 min at ~step 95 with no retries (hung model call); killed; regenerates
+openrouter_resume 25.110532
+openrouter_after_generate 26.935666
+generation_complete 2026-10-03T08:52:10Z  # 454 trajectories + 2 declared endpoint failures; external spend 8.7742 of 20.00
+comparator_launched 2026-10-03T09:05:49Z  # gpt-5-mini k=1, 100 steps, 114 instances; OpenAI balance confirmed >$20 by operator 1 Oct

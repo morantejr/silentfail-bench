@@ -125,7 +125,7 @@ INNERPY
   ;;
 gold)
   echo "== prepare gold inputs and the frozen random arm =="
-  $V scripts/prepare_amendment7.py --bundle $O/rescoring_bundle.jsonl --instances $I --out $O/gold_inputs
+  $V scripts/prepare_amendment7.py --bundle $O/rescoring_bundle.jsonl --instances $I --out $O/gold_inputs --agent-label deepseek_v4_1_flash
   for C in 0 1 2 3; do
     echo "== gold: a7_agent_axis_cand$C =="
     $V modal/gold_modal.py --dataset swe-bench/SWE-Bench_Multilingual \

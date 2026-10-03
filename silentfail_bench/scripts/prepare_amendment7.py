@@ -32,6 +32,8 @@ def main() -> None:
     ap.add_argument("--bundle", type=Path, default=ROOT / "data/agent_axis/rescoring_bundle.jsonl")
     ap.add_argument("--instances", type=Path, default=ROOT / "configs/agent_axis_instances_multilingual.txt")
     ap.add_argument("--out", type=Path, default=ROOT / "data/agent_axis/gold_inputs")
+    ap.add_argument("--agent-label", default="gpt6luna",
+                    help="label written into model_name_or_path (a7_<label>_cand{N}); cosmetic for the readout, which keys gold by (instance, candidate)")
     args = ap.parse_args()
 
     expected = [line.strip() for line in args.instances.read_text().splitlines()
@@ -61,7 +63,7 @@ def main() -> None:
             if patch.strip():
                 preds.append({
                     "instance_id": instance_id,
-                    "model_name_or_path": f"a7_gpt6luna_cand{candidate}",
+                    "model_name_or_path": f"a7_{args.agent_label}_cand{candidate}",
                     "model_patch": patch,
                 })
         (args.out / f"cand{candidate}_predictions.jsonl").write_text(
