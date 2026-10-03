@@ -20,7 +20,7 @@ echo "== stopping stray Modal apps =="
 for a in $($MODAL app list 2>/dev/null | grep -E "deployed|running" | grep -oE "ap-[A-Za-z0-9]+"); do
   $MODAL app stop --yes "$a" >/dev/null 2>&1 && echo "   stopped $a"; done
 for i in $(seq 1 18); do
-  live=$($MODAL app list 2>/dev/null | grep -cE "deployed|running|stopping")
+  live=$($MODAL app list 2>/dev/null | grep -cE "deployed|running|stopping" || true)   # grep -c exits 1 on zero under pipefail
   [ "$live" = 0 ] && break
   echo "   waiting for $live app(s) to finish stopping..."; sleep 10
 done
