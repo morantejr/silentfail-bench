@@ -17,7 +17,9 @@ IDS=$($V - <<'PY'
 import json, glob
 ids = []
 for f in glob.glob("data/agent_axis_gpt5mini_100/traj/cand0/*/*.traj.json"):
-    if json.load(open(f))["info"].get("exit_status") == "RateLimitError": ids.append(f.split("/")[-2])
+    if json.load(open(f))["info"].get("exit_status") in ("RateLimitError", "KeyboardInterrupt"): ids.append(f.split("/")[-2])
+import os
+ids += [i for i in os.environ.get("EXTRA_IDS", "").split() if i not in ids]   # operator-declared, e.g. a kill after a reaped sandbox
 print(" ".join(sorted(ids)))
 PY
 )
