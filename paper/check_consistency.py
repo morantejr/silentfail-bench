@@ -970,6 +970,13 @@ check("A13 4B-arm primary delta in main.tex", _delta_tex(_e4) in _prose_main, Tr
 check("A13 judge-arm primary delta in main_short", _delta_tex(_ej) in _prose_short, True)
 check("A13 descriptive-only wording, both cuts", ("descriptive only" in _prose_short) and ("descriptive only" in _prose_av) and ("descriptive only" in _prose_symp), True)
 check("A13: no artifact still calls the axis unanswered", any(("registered and unanswered" in t) or ("registered and \\emph{unanswered}" in t) for t in (_prose_short, _prose_av, _prose_symp)), False)
+def _abstract(txt):
+    m = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", txt, re.S); return m.group(1) if m else ""
+for name, txt in (("main.tex", _prose_main), ("main_short.tex", _prose_short), ("main_agentverify.tex", _prose_av)):
+    _ab = _abstract(txt)
+    check(f"A13 critic collapse stated in the abstract of {name} (rates)", _s_rates.replace(" against ", " of 456 attempts against ") in _ab, True)
+    check(f"A13 critic collapse stated in the abstract of {name} (judge AUROC)", _fmt3(_gate["pool_AUROC_detect"]) in _ab, True)
+    check(f"A13 critic collapse stated in the abstract of {name} (RM range)", (_fmt3(_rm_lo) in _ab) and (_fmt3(_rm_hi) in _ab), True)
 check("A13 upper bounds exceed +0.05 (so 'descriptive only' is not an equivalence claim)", (_ej["CI95"][1] > 0.05) and (_e4["CI95"][1] > 0.05), True)
 
 print("\n" + ("ALL CONSISTENT" if not fail else f"{len(fail)} MISMATCH(ES): " + "; ".join(fail)))
