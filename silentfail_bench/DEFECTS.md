@@ -977,3 +977,14 @@ seven minutes to start and then ran normally.
 timeout that binds. Read which call fails and what *its* default is. And "transient" is a
 hypothesis that needs a count, not a label — the smoke that failed once was the first
 sample of a 58% failure rate.
+
+**Addendum to #21 (3 October 2026).** The closing environment's finalizer is tied to the
+environment object being collected. On the text-based model path that happens by reference
+count the moment `process_instance` returns, and sandboxes closed within seconds. On the litellm
+(native tool-call) path the environment sits in a reference cycle, so the finalizer waited for
+Python's cyclic collector and sandboxes closed late and in bursts: the gpt-5-mini comparator
+showed 15–19 live containers for 6 workers, with the oldest idle 20–30 minutes. A one-shot reap
+of containers idle ≥20 min found only one, and the count settled at workers+1, which is how the
+GC timing was told apart from a true leak. `envs/run_swebench_closing.py` now calls
+`gc.collect()` after every instance. Lesson: a finalizer is a promise about *eventually*; when
+the resource bills by the minute, force the collection.

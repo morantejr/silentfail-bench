@@ -26,10 +26,30 @@ echo "== $N comparator instances exited RateLimitError: $IDS =="
 [ "$N" -gt 0 ] || { echo "nothing to rerun"; exit 0; }
 FLT="^($(echo $IDS | sed 's/ /|/g'))$"
 mkdir -p $RR/traj/cand0
-echo "== rerun at 1 worker (same config, same seed) =="
+echo "== rerun at 2 workers, then any that rate-limit again at 1 worker (same config, same seed) =="
 env -u OPENAI_API_BASE -u OPENAI_BASE_URL PYTHONPATH=$PWD $V -m envs.run_swebench_closing --subset multilingual --split test \
-    --filter "$FLT" -o $RR/traj/cand0 -w 1 -c swebench.yaml -c configs/mini_swe_openai_axis.yaml \
+    --filter "$FLT" -o $RR/traj/cand0 -w 2 -c swebench.yaml -c configs/mini_swe_openai_axis.yaml \
     -c model.model_kwargs.seed=1000 -c agent.step_limit=100 > $RR/gen.log 2>&1 || true
+AGAIN=$($V - <<'PY2'
+import json, glob
+print(" ".join(sorted(f.split("/")[-2] for f in glob.glob("data/agent_axis_gpt5mini_100_rerun_w1/traj/cand0/*/*.traj.json")
+                       if json.load(open(f))["info"].get("exit_status") == "RateLimitError")))
+PY2
+)
+if [ -n "$AGAIN" ]; then
+  echo "== $(echo $AGAIN | wc -w | tr -d ' ') rate-limited again at 2 workers; rerunning at 1: $AGAIN =="
+  $V - "$AGAIN" <<'PY3'
+import json, sys
+from pathlib import Path
+ids = sys.argv[1].split(); p = Path("data/agent_axis_gpt5mini_100_rerun_w1/traj/cand0/preds.json"); d = json.loads(p.read_text())
+for i in ids: d.pop(i, None); 
+p.write_text(json.dumps(d, indent=2))
+PY3
+  FLT2="^($(echo $AGAIN | sed 's/ /|/g'))$"
+  env -u OPENAI_API_BASE -u OPENAI_BASE_URL PYTHONPATH=$PWD $V -m envs.run_swebench_closing --subset multilingual --split test \
+      --filter "$FLT2" -o $RR/traj/cand0 -w 1 --redo-existing -c swebench.yaml -c configs/mini_swe_openai_axis.yaml \
+      -c model.model_kwargs.seed=1000 -c agent.step_limit=100 >> $RR/gen.log 2>&1 || true
+fi
 $V - "$IDS" <<'PY'
 import json, sys, glob, collections
 from pathlib import Path
@@ -49,7 +69,7 @@ for i in ids:
 (OC / "MERGE_NOTE.md").write_text(f"""# predictions_merged.jsonl
 
 {len(merged)} rows. {len(merged) - len(ids)} from this directory's own run (6 workers); {len(ids)} regenerated at a
-single worker in `../agent_axis_gpt5mini_100_rerun_w1` because they exited `RateLimitError` on
+two workers (then one for any that rate-limited again) in `../agent_axis_gpt5mini_100_rerun_w1` because they exited `RateLimitError` on
 OpenAI's TPM ceiling rather than on the model's own behaviour:
 {', '.join(ids)}.
 
