@@ -986,5 +986,10 @@ Python's cyclic collector and sandboxes closed late and in bursts: the gpt-5-min
 showed 15–19 live containers for 6 workers, with the oldest idle 20–30 minutes. A one-shot reap
 of containers idle ≥20 min found only one, and the count settled at workers+1, which is how the
 GC timing was told apart from a true leak. `envs/run_swebench_closing.py` now calls
-`gc.collect()` after every instance. Lesson: a finalizer is a promise about *eventually*; when
-the resource bills by the minute, force the collection.
+`gc.collect()` after every instance. **Correction, same morning:** the first version of that fix was
+inert — the launcher re-executed the batch module through `runpy` as a fresh `__main__`, whose
+`process_instance` was the unwrapped original, and the comparator rerun still showed 6 live
+containers for 2 workers. The launcher now calls the imported module's CLI, and
+`main.__globals__['process_instance']` is checked to be the wrapper. Lesson: a finalizer is a
+promise about *eventually*; when the resource bills by the minute, force the collection — and
+verify the forcing reaches the code that runs, not a copy of it.
