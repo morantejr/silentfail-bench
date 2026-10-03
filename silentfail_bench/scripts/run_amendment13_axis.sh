@@ -162,7 +162,7 @@ readout)
       --comparator-gold data/gold_modal/a13_gpt5mini_100_merged/report.json --comparator-preds $OC/predictions_merged.jsonl
   echo "== stop the swe-rex deployment =="
   for a in $($MODAL app list 2>/dev/null | grep -E "deployed|running" | grep -oE "ap-[A-Za-z0-9]+"); do $MODAL app stop --yes "$a" >/dev/null 2>&1 || true; done
-  $MODAL app list 2>/dev/null | grep -cE "deployed|running|stopping" | xargs echo "   Modal apps still live:"
+  { $MODAL app list 2>/dev/null | grep -cE "deployed|running|stopping" || true; } | xargs echo "   Modal apps still live:"
   ;;
 *)
   echo "usage: $0 {smoke|generate|score|gold|comparator|readout}"; exit 2 ;;

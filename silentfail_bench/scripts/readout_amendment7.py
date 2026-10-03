@@ -292,11 +292,16 @@ def equal_budget_comparator(report_path: Path, preds_path: Path, instances: list
     graded = res | unres | agent | infra
     missing = set(instances) - empty - graded
     n = len(instances)
-    fail_b = len(empty) + len(unres) + len(agent)
+    # The gold wrapper evaluates empty-patch rows too (they grade unresolved), so an empty
+    # instance may already be in `unres`; take the union rather than adding the counts.
+    fail_set_b = (unres | empty | agent) - infra
+    fail_set_a = (unres | empty) - agent - infra
+    fail_b = len(fail_set_b)
     rate_b = fail_b / (n - len(infra))
-    rate_a = (len(empty) + len(unres)) / (n - len(agent) - len(infra))
+    rate_a = len(fail_set_a) / (n - len(agent) - len(infra))
     return {"agent": "gpt-5-mini, k=1, 100 steps (Amendment 13 comparator)", "attempts": n,
             "empty_patch": len(empty), "resolved": len(res), "unresolved_graded": len(unres),
+            "unresolved_graded_includes_empties": len(unres & empty),
             "agent_caused_crashes": sorted(agent), "infrastructure_errors": sorted(infra),
             "ungraded_non_empty": sorted(missing),
             "failure_rate_B_agent_crashes_as_failures": round(rate_b, 3),

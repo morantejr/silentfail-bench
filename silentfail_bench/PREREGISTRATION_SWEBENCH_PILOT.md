@@ -2038,3 +2038,68 @@ agent's own `RepeatedFormatError` exit at step 45. Whether the hang influenced t
 be established. It is **kept as a failure** — regenerating a failure would be a favourable
 re-roll — and disclosed in the outcome as ambiguous. The quarantine rule above applies only to
 network-level errors on the operator's machine, never to an exit the agent itself produced.
+
+## Amendment 13 outcome, recorded 3 October 2026, 09:45 EDT
+
+**Generation.** 454 trajectories plus 2 declared endpoint failures = 456 slots over 114
+Multilingual instances, k=4, 100 steps, cost_limit $1.00, 16k max tokens. External OpenRouter
+spend $8.77 (cap $20). Exits over the 454: 436 Submitted, 16 RepeatedFormatError, 2 LimitsExceeded; plus the 2
+declared EndpointFailure slots = 20 empty slots, all counted as failures. Submit rate 0.956
+(436/456). Median 31 assistant turns. The two LimitsExceeded exits are at 91 and 99 turns with
+costs $0.11 and $0.04: the **step** budget bound them, not the $1.00 cost cap, which bound
+nothing. The budget therefore shaped 2 of 456 attempts (0.4%); the two step-limited attempts are cand2 hashicorp__terraform-34900 and
+cand3 sharkdp__bat-1892. Wall clock ~40 h across 1–3 October, dominated by
+the operator machine sleeping (three deviations and two addenda above); none touched c, u or gold.
+
+**Gold.** All four candidates fully graded: 365/456 resolved (80.0% per attempt), 0 harness
+errors, 24/24 oracle checks pass. Unconditional failure rate 0.200 (empties as failures).
+102/114 instances have at least one resolved candidate. Reports carry the stale label
+`a7_gpt6luna_cand{N}` (cosmetic; the readout keys by instance and candidate).
+
+**A7-P1 (capability): PASS.** The equal-budget comparator (gpt-5-mini, k=1, 100 steps, the
+same 114 instances, `data/agent_axis_gpt5mini_100`): 114 attempts, 11 empty patches, 48
+resolved, 66 unresolved by gold (the wrapper evaluates empty patches too; the 11 are among the
+66), 0 agent-caused crashes, 0 infrastructure errors — so the two classification ways coincide:
+unconditional failure rate **0.579**. Seventeen instances were regenerated at two workers
+(16 `RateLimitError` exits on OpenAI's TPM ceiling at six workers, plus lombok-3009, whose
+sandbox the idle-reaper stopped during a retry loop; `MERGE_NOTE.md`): 15 submitted, 2 hit
+the step limit. One gold was run on the merged predictions (`a13_gpt5mini_100_merged`, 0
+errors, oracles clean). DeepSeek's unconditional failure rate is 0.200 counting the two
+declared endpoint failures as failures (way B) and 0.196 excluding them (way A, 89/454); the
+gap is **0.379** (way B) against the registered bar of 0.10. For reference the September
+40-step comparator band was 0.476–0.752; the 100-step budget made gpt-5-mini *worse*
+(0.579 within that band's upper half), which is consistent with Amendment 11's reading that
+the budget was not what separated the agents.
+
+**A7a §2 selector gate: FAIL.** The registered selector is the gpt-5 judge (J1). Its pool
+AUROC for detecting failure over the 436 graded non-empty attempts is **0.552** (bar 0.65),
+reproduced independently with the detection sign checked (0.448 with the sign flipped). The
+selected set does fail less than the frozen random picks (0.158 vs 0.175), so the second
+half of the gate holds, but the gate is conjunctive. For completeness the five reward
+models' pool AUROCs on the same attempts are 0.464, 0.487, 0.517, 0.419, 0.523 (registered
+sign): every critic is at chance on this agent.
+
+**Inference floor.** Committed failures: 17 (judge arm, n=113) and 19 (4B arm, n=109),
+both below the registered floor of 20.
+
+**Endpoint (descriptive only).** Primary fixed-unit-weights ΔAUROC: judge arm +0.020
+[−0.120, +0.149]; 4B arm +0.032 [−0.079, +0.140]. AUROC(u): 0.544 [0.400, 0.697] and
+0.502 [0.356, 0.649]. Upper bounds far above +0.05: had the gate passed, the reading would
+have been INCONCLUSIVE, as declared likely in advance. The readout's `sign_warning` on the
+within-selected detection AUROCs (0.468/0.481) is the post-selection truncation the
+heuristic cannot distinguish from a sign error; the pool-level check above settles the sign.
+
+**Verdict: DESCRIPTIVE ONLY**, on the registered rule, for two independent reasons: the
+selector gate fails and the committed set is under the floor. Reading: on the capable agent,
+no available critic — five reward models or the gpt-5 judge — separates failures from
+successes well enough to *be* a selector, so the strong-agent, strong-selector cell the
+mentor's objection names could not be constructed with these instruments. The objection is
+not retired and not narrowed by an equivalence bound; it is re-posed: the premise of
+critic-selected trajectories is what fails first on a capable agent.
+
+**Costs.** OpenRouter (DeepSeek generation, measured externally) $8.77; OpenAI: gpt-5 judge
+$13.50 (scaffold estimate), gpt-5-mini comparator and reruns on the scaffold estimate; Modal
+(sandboxes, GPU panel, six gold runs): dashboard reading pending from the operator. Registered
+readout: `data/agent_axis_deepseek/readout_amendment7_deepseek.json`; the comparator function
+double-counted evaluated empty patches in its first run (0.675) and was corrected to the set
+union before this record was written (0.579, equal to the raw 66/114).

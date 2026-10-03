@@ -1,0 +1,229 @@
+{
+ "analysis": "Amendment 7/7a agent-axis readout",
+ "registered_instances": 114,
+ "candidate_slots": 456,
+ "capability_A7_P1": {
+  "new_agent": {
+   "agent": "deepseek-v4.1-flash",
+   "attempts": 456,
+   "empty_patch": 20,
+   "graded": 436,
+   "graded_failures": 71,
+   "ungraded_non_empty": 0,
+   "unconditional_failure_rate_band": [
+    0.2,
+    0.2
+   ],
+   "determinate": true,
+   "empty_patch_rate": 0.044
+  },
+  "old_agent": {
+   "agent": "gpt-5-mini, k=1, 100 steps (Amendment 13 comparator)",
+   "attempts": 114,
+   "empty_patch": 11,
+   "resolved": 48,
+   "unresolved_graded": 66,
+   "unresolved_graded_includes_empties": 11,
+   "agent_caused_crashes": [],
+   "infrastructure_errors": [],
+   "ungraded_non_empty": [],
+   "failure_rate_B_agent_crashes_as_failures": 0.579,
+   "failure_rate_A_amendment_10b_exclusion": 0.579,
+   "unconditional_failure_rate_band": [
+    0.579,
+    0.579
+   ],
+   "determinate": true,
+   "classification_post_hoc": true,
+   "september_40_step_band_for_reference": {
+    "agent": "gpt-5-mini comparator",
+    "attempts": 456,
+    "empty_patch": 117,
+    "graded": 213,
+    "graded_failures": 100,
+    "ungraded_non_empty": 126,
+    "unconditional_failure_rate_band": [
+     0.476,
+     0.752
+    ],
+    "determinate": false,
+    "empty_patch_rate": 0.257
+   }
+  },
+  "required_gap": 0.1,
+  "branch": "PASS",
+  "rule": "PASS iff new upper <= old lower - 0.10; FAIL iff new lower >= old upper - 0.10; otherwise indeterminate"
+ },
+ "selector_gate_A7a_2": {
+  "pool_n_graded": 436,
+  "pool_failures": 71,
+  "pool_AUROC_detect": 0.552,
+  "pool_AUROC_gt_0p65": false,
+  "paired_instances": 114,
+  "committed_failure_rate_unconditional": 0.158,
+  "random_failure_rate_unconditional": 0.175,
+  "committed_below_random": true,
+  "passes": false
+ },
+ "arms": {
+  "S_4b": {
+   "n": 109,
+   "failures": 19,
+   "raw_AUROC_detect": 0.468,
+   "raw_AUROC_u": 0.502,
+   "AUROC_u_CI": [
+    0.356,
+    0.649
+   ],
+   "estimators": {
+    "logistic_LORO": {
+     "baseline_AUROC": 0.07,
+     "delta": -0.033,
+     "CI95": [
+      -0.07,
+      -0.008
+     ],
+     "baseline_degenerate_vs_raw": true
+    },
+    "logistic_5fold": {
+     "baseline_AUROC": 0.284,
+     "delta": -0.038,
+     "CI95": [
+      -0.126,
+      0.031
+     ],
+     "baseline_degenerate_vs_raw": true
+    },
+    "fixed_unit_weights_PRIMARY": {
+     "baseline_AUROC": 0.466,
+     "delta": 0.032,
+     "CI95": [
+      -0.079,
+      0.14
+     ],
+     "baseline_degenerate_vs_raw": false
+    }
+   },
+   "sign_warning": "raw detection AUROC is 0.468, below chance. This almost always means `c` was passed higher-is-better; pass -c.",
+   "label": "S_4b",
+   "repositories": 41,
+   "population_rule": "selected + visible_pass + non-empty + gold + all panel scores"
+  },
+  "S_judge": {
+   "n": 113,
+   "failures": 17,
+   "raw_AUROC_detect": 0.481,
+   "raw_AUROC_u": 0.544,
+   "AUROC_u_CI": [
+    0.4,
+    0.697
+   ],
+   "estimators": {
+    "logistic_LORO": {
+     "baseline_AUROC": 0.402,
+     "delta": 0.013,
+     "CI95": [
+      -0.081,
+      0.105
+     ],
+     "baseline_degenerate_vs_raw": false
+    },
+    "logistic_5fold": {
+     "baseline_AUROC": 0.438,
+     "delta": -0.066,
+     "CI95": [
+      -0.149,
+      0.017
+     ],
+     "baseline_degenerate_vs_raw": false
+    },
+    "fixed_unit_weights_PRIMARY": {
+     "baseline_AUROC": 0.485,
+     "delta": 0.02,
+     "CI95": [
+      -0.12,
+      0.149
+     ],
+     "baseline_degenerate_vs_raw": false
+    }
+   },
+   "sign_warning": "raw detection AUROC is 0.481, below chance. This almost always means `c` was passed higher-is-better; pass -c.",
+   "label": "S_judge_gpt5",
+   "repositories": 41,
+   "population_rule": "selected + visible_pass + non-empty + gold + all panel scores"
+  }
+ },
+ "comparison_to_gpt5_mini": {
+  "note": "Descriptive new-minus-gpt-5-mini differences on the same fixed 114-instance frame. Registered visible-pass filters create different analysed subsets; no comparison threshold was registered.",
+  "arms": {
+   "S_4b": {
+    "failure_rate": {
+     "deepseek_v4_1_flash": 0.174,
+     "gpt5_mini": 0.455,
+     "difference": -0.28
+    },
+    "raw_AUROC_detect": {
+     "deepseek_v4_1_flash": 0.468,
+     "gpt5_mini": 0.56,
+     "difference": -0.092
+    },
+    "raw_AUROC_u": {
+     "deepseek_v4_1_flash": 0.502,
+     "gpt5_mini": 0.565,
+     "difference": -0.063
+    },
+    "logistic_LORO_delta": {
+     "deepseek_v4_1_flash": -0.033,
+     "gpt5_mini": -0.022,
+     "difference": -0.011
+    },
+    "logistic_5fold_delta": {
+     "deepseek_v4_1_flash": -0.038,
+     "gpt5_mini": -0.018,
+     "difference": -0.02
+    },
+    "fixed_unit_weights_PRIMARY_delta": {
+     "deepseek_v4_1_flash": 0.032,
+     "gpt5_mini": 0.048,
+     "difference": -0.016
+    }
+   },
+   "S_judge": {
+    "failure_rate": {
+     "deepseek_v4_1_flash": 0.15,
+     "gpt5_mini": 0.436,
+     "difference": -0.285
+    },
+    "raw_AUROC_detect": {
+     "deepseek_v4_1_flash": 0.481,
+     "gpt5_mini": 0.671,
+     "difference": -0.19
+    },
+    "raw_AUROC_u": {
+     "deepseek_v4_1_flash": 0.544,
+     "gpt5_mini": 0.591,
+     "difference": -0.047
+    },
+    "logistic_LORO_delta": {
+     "deepseek_v4_1_flash": 0.013,
+     "gpt5_mini": 0.012,
+     "difference": 0.001
+    },
+    "logistic_5fold_delta": {
+     "deepseek_v4_1_flash": -0.066,
+     "gpt5_mini": -0.024,
+     "difference": -0.042
+    },
+    "fixed_unit_weights_PRIMARY_delta": {
+     "deepseek_v4_1_flash": 0.02,
+     "gpt5_mini": -0.018,
+     "difference": 0.038
+    }
+   }
+  }
+ },
+ "confirmatory_verdict": {
+  "branch": "DESCRIPTIVE ONLY",
+  "reason": "A7a strong-selector gate failed"
+ }
+}

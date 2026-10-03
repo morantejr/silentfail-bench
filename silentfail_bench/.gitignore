@@ -60,3 +60,17 @@ silentfail_l4_package*
 
 # per-run spend ledgers are evidence
 !data/*/spend_ledger.txt
+
+# Amendment 13 results
+!data/agent_axis_deepseek/readout_amendment7_deepseek.json
+!data/agent_axis_deepseek/ENDPOINT_FAILURES.json
+!data/*/RESUME_NOTE.md
+!data/*/traj/cand*/RESUME_NOTE.md
+!data/agent_axis_deepseek/gold_inputs/
+!data/agent_axis_deepseek/gold_inputs/*
+!data/agent_axis_deepseek/judge_gpt5.jsonl
+!data/agent_axis_deepseek/modal/
+!data/agent_axis_deepseek/modal/prefix4k/
+!data/agent_axis_deepseek/modal/prefix4k/*.json
+!data/agent_axis_gpt5mini_100/predictions.jsonl
+!data/agent_axis_gpt5mini_100_rerun_w1/traj/cand0/preds.json
