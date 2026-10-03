@@ -263,6 +263,48 @@ def old_agent_capability():
     return capability(bundle, gold, "gpt-5-mini comparator")
 
 
+AGENT_CAUSED = ("patch apply failed", "KeyError: 'tests_status'")
+
+
+def equal_budget_comparator(report_path: Path, preds_path: Path, instances: list[str]):
+    """Amendment 13 comparator: gpt-5-mini, k=1, the SAME 100-step budget, fully graded.
+
+    Unconditional over all instances (Amendment 7a section 3): an empty patch is a failure.
+    Gold rows the wrapper filed as 'error' are classified both ways, as in Amendment 11:
+    way A excludes every error row (Amendment 10b as written); way B counts agent-caused
+    crashes as failures and excludes only infrastructure errors. The reported point is way B
+    (the stricter one for the comparator); way A is carried alongside.
+    """
+    preds = {r["instance_id"]: r for r in jsonl(preds_path)}
+    report = json.loads(report_path.read_text())
+    res, unres, agent, infra = set(), set(), set(), set()
+    for d in report["details"]:
+        if d.get("model_name_or_path", "").startswith("ORACLE") or d["instance_id"] not in instances:
+            continue
+        err = d.get("error")
+        if err is None:
+            (res if d.get("resolved") else unres).add(d["instance_id"])
+        elif any(err.startswith(a) for a in AGENT_CAUSED):
+            agent.add(d["instance_id"])
+        else:
+            infra.add(d["instance_id"])
+    empty = {i for i in instances if not (preds.get(i, {}).get("model_patch") or "").strip()}
+    graded = res | unres | agent | infra
+    missing = set(instances) - empty - graded
+    n = len(instances)
+    fail_b = len(empty) + len(unres) + len(agent)
+    rate_b = fail_b / (n - len(infra))
+    rate_a = (len(empty) + len(unres)) / (n - len(agent) - len(infra))
+    return {"agent": "gpt-5-mini, k=1, 100 steps (Amendment 13 comparator)", "attempts": n,
+            "empty_patch": len(empty), "resolved": len(res), "unresolved_graded": len(unres),
+            "agent_caused_crashes": sorted(agent), "infrastructure_errors": sorted(infra),
+            "ungraded_non_empty": sorted(missing),
+            "failure_rate_B_agent_crashes_as_failures": round(rate_b, 3),
+            "failure_rate_A_amendment_10b_exclusion": round(rate_a, 3),
+            "unconditional_failure_rate_band": [round(rate_b, 3), round(max(rate_b, (fail_b + len(missing)) / (n - len(infra))), 3)],
+            "determinate": bool(not missing), "classification_post_hoc": True}
+
+
 def compare_to_old(arm_4b, arm_judge):
     """Registered descriptive differences on the same 114-instance frame."""
     robust = json.loads((ROOT / "data/verify_and_robustify.json").read_text())
@@ -402,7 +444,12 @@ def production_readout(args):
     gate["passes"] = gate["pool_AUROC_gt_0p65"] and gate["committed_below_random"]
 
     new_cap = capability(bundle, gold, args.agent_label)
-    old_cap = old_agent_capability()
+    september_cap = old_agent_capability()
+    if args.comparator_gold:
+        old_cap = equal_budget_comparator(args.comparator_gold, args.comparator_preds, expected)
+        old_cap["september_40_step_band_for_reference"] = september_cap
+    else:
+        old_cap = september_cap
     new_lo, new_hi = new_cap["unconditional_failure_rate_band"]
     old_lo, old_hi = old_cap["unconditional_failure_rate_band"]
     if new_hi <= old_lo - CAPABILITY_GAP:
@@ -462,6 +509,10 @@ def main():
     ap.add_argument("--gold-root", type=Path, default=ROOT / "data/gold_modal")
     ap.add_argument("--random-picks", type=Path, default=ROOT / "data/agent_axis/gold_inputs/random_picks.jsonl")
     ap.add_argument("--out", type=Path, default=ROOT / "data/agent_axis/readout_amendment7.json")
+    ap.add_argument("--comparator-gold", type=Path, default=None,
+                    help="Amendment 13: gold report of the equal-budget gpt-5-mini comparator (data/gold_modal/a13_gpt5mini_100/report.json)")
+    ap.add_argument("--comparator-preds", type=Path, default=None,
+                    help="Amendment 13: the comparator's predictions.jsonl (empty patches are failures)")
     a = ap.parse_args()
     global AGENT_KEY
     # The default label must reproduce the original key byte-for-byte ("gpt6_luna", not

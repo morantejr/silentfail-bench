@@ -158,7 +158,8 @@ readout)
   $V scripts/readout_amendment7.py --bundle $O/rescoring_bundle.jsonl --instances $I \
       --scores-dir $O/modal/prefix4k --judge-cache $O/judge_gpt5.jsonl \
       --random-picks $O/gold_inputs/random_picks.jsonl --out $O/readout_amendment7_deepseek.json \
-      --agent-label deepseek-v4.1-flash
+      --agent-label deepseek-v4.1-flash \
+      --comparator-gold data/gold_modal/a13_gpt5mini_100/report.json --comparator-preds $OC/predictions.jsonl
   echo "== stop the swe-rex deployment =="
   for a in $($MODAL app list 2>/dev/null | grep -E "deployed|running" | grep -oE "ap-[A-Za-z0-9]+"); do $MODAL app stop --yes "$a" >/dev/null 2>&1 || true; done
   $MODAL app list 2>/dev/null | grep -cE "deployed|running|stopping" | xargs echo "   Modal apps still live:"
