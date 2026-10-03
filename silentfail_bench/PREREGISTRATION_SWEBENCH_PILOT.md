@@ -2031,3 +2031,10 @@ are no attempt. Rule: a trajectory whose terminal error is a network failure on 
 machine is quarantined (`data/agent_axis_deepseek/quarantine/`) and the instance regenerates
 under the same seed. `scripts/resume_amendment13.sh` applies this automatically. The six
 quarantined files are kept for inspection and are not in the bundle.
+
+**Addendum, 3 October 2026, 01:55 EDT.** One candidate-2 trajectory (projectlombok__lombok-2792)
+was written at the moment the generator was killed after an 86-minute hang, carrying the
+agent's own `RepeatedFormatError` exit at step 45. Whether the hang influenced the exit cannot
+be established. It is **kept as a failure** — regenerating a failure would be a favourable
+re-roll — and disclosed in the outcome as ambiguous. The quarantine rule above applies only to
+network-level errors on the operator's machine, never to an exit the agent itself produced.
