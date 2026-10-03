@@ -8,7 +8,6 @@ every sandbox is terminated when its trajectory releases the environment.
     python -m envs.run_swebench_closing --subset multilingual --split test ...
 """
 import gc
-import runpy
 
 from minisweagent.environments import _ENVIRONMENT_MAPPING
 import minisweagent.run.benchmarks.swebench as _swebench
@@ -33,4 +32,9 @@ def _process_instance_then_collect(*args, **kwargs):
 _swebench.process_instance = _process_instance_then_collect
 
 if __name__ == "__main__":
-    runpy.run_module("minisweagent.run.benchmarks.swebench", run_name="__main__", alter_sys=True)
+    # Call the CLI object on the imported module rather than re-executing the module as __main__:
+    # runpy would build a fresh module whose process_instance is the unwrapped original (the first
+    # version of this launcher did that, and the gc.collect() wrapper silently never ran).
+    import sys
+    sys.argv[0] = "mini-extra swebench"
+    _swebench.app()
