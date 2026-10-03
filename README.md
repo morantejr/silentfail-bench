@@ -32,7 +32,7 @@ about are exactly where its blind spots collect. **A null result is publishable*
 > newer pair is the worst at 0.41. **The agent axis ran** (Amendment 13, 1–3 October):
 > DeepSeek V4.1 Flash, 456 attempts over the registered 114 Multilingual instances at
 > 100 steps, all graded. The capability gate passed (failure rate 0.200 against 0.579
-> for gpt-5-mini at the same per-attempt budget), but the registered selector gate failed: the gpt-5
+> for gpt-5-mini at the same 100-step cap, four attempts per instance versus one), but the registered selector gate failed: the gpt-5
 > judge's pool AUROC for detecting this agent's failures is 0.552 against a bar of 0.65
 > and the reward models sit at 0.419–0.523, so the cell is reported as descriptive only.
 > No critic cleared the registered selector bar on that agent. The registered readout is

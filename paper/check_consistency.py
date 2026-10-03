@@ -940,7 +940,7 @@ check("candidate-diversity near-identical sentence derives", f"occurred in {int(
 check("candidate-diversity selector-spread sentence derives", f"mean standard deviation of {_u2(_cv['mean_selector_score_spread'])} and {_u2(_cm['mean_selector_score_spread'])}" in tex, True)
 check("conclusion no longer says the replication estimates 'are at chance'", "and they are at chance." in tex, False)
 for _n, _t in (("main.tex", tex), ("main_short.tex", Path("paper/main_short.tex").read_text()), ("main_agentverify.tex", Path("paper/main_agentverify.tex").read_text()), ("main_symposium.tex", Path("paper/main_symposium.tex").read_text()), ("README.md", Path("README.md").read_text())):
-    check(f"Amendment 13 comparison stated per attempt in {_n}", ("per-attempt budget" in _t) or ("budget per attempt" in _t), True)
+    check(f"Amendment 13 comparison stated per attempt in {_n}", ("four attempts per instance" in _t) or ("budget per attempt" in _t), True)
 check("positioning sentence present", "measures the residual value of a second signal on the trajectory a selector commits" in tex, True)
 check("abstract denominators explicit, both cuts", ("of the committed population (visible-pass, non-empty, gradable)" in tex) and ("of the committed population (visible-pass, non-empty, gradable)" in Path("paper/main_short.tex").read_text()), True)
 
@@ -956,14 +956,19 @@ for _bn, _b in _cd.items():
     for _pn, _p in _b["panels"].items():
         _rs = _p["rank_scale"]
         check(f"rank-scale shares sum to one ({_bn}/{_pn})", _rs["share_critic"] + _rs["share_trajectory"] + _rs["share_residual"], 1.0, tol=0.002)
-check("interaction-share sentence derives", f"the remaining {int(round(min(_res)*100))}--{int(round(max(_res)*100))}\\% is critic-by-trajectory interaction" in tex, True)
-check("trajectory-share sentence derives", f"a shared trajectory level accounts for {int(round(min(_trj)*100))}--{int(round(max(_trj)*100))}\\%" in tex, True)
+_pct = lambda x: int(Decimal(str(x * 100)).quantize(Decimal("1"), rounding=ROUND_HALF_UP))   # half away from zero, not banker's
+_short_tex = Path("paper/main_short.tex").read_text(); _av_tex = Path("paper/main_agentverify.tex").read_text()
+check("interaction-share sentence derives (long)", f"the remaining {_pct(min(_res))}--{_pct(max(_res))}\\% is residual critic-by-trajectory variation" in tex, True)
+check("trajectory-share sentence derives (long)", f"a shared trajectory level accounts for {_pct(min(_trj))}--{_pct(max(_trj))}\\%" in tex, True)
+check("mechanism shares derive (short and AGENTVERIFY)", all(f"{_pct(min(_trj))}--{_pct(max(_trj))}\\% is shared trajectory level and {_pct(min(_res))}--{_pct(max(_res))}\\% is residual critic-by-trajectory variation" in t for t in (_short_tex, _av_tex)), True)
+check("'dominated by between-critic heterogeneity' gone from every cut", any("dominated by between-critic heterogeneity" in t for t in (tex, _short_tex, _av_tex)), False)
+check("'no decorrelated panel to be had' gone", "no decorrelated panel to be had" in tex, False)
+check("'the axis was not launched' is qualified everywhere", any(re.search(r"so the axis was not launched", t) for t in (tex, _short_tex, _av_tex, Path("paper/main_symposium.tex").read_text())), False)
 _ev, _em = _cd["verified"]["E2_error_correlation"], _cd["multilingual"]["E2_error_correlation"]
 check("E2 observed band still reproduces the printed 0.71-0.89 / 0.74-0.84", (r2(_ev["observed_range"][0]), r2(_ev["observed_range"][1]), r2(_em["observed_range"][0]), r2(_em["observed_range"][1])) == ("+0.71", "+0.89", "+0.74", "+0.84"), True)
 check("E2 floor sentence derives", f"{_ev['independence_floor_range'][0]:.2f}--{_ev['independence_floor_range'][1]:.2f} (Verified) and {_em['independence_floor_range'][0]:.2f}--{_em['independence_floor_range'][1]:.2f} (Multilingual)" in tex, True)
 check("E2 permutation sentence derives", f"({_ev['label_permutation_range_mean'][1]:.2f} and {_em['label_permutation_range_mean'][1]:.2f} on average over 200 permutations)" in tex, True)
 check("E2 floor is below the observed upper edge (the band is not all floor)", _ev["independence_floor_range"][1] < _ev["observed_range"][1] - 0.1, True)
-check("'between-critic heterogeneity' mechanism sentence is gone", "dominated by that between-critic heterogeneity" in tex, False)
 
 print("\nlearned-combiner sentence (DEFECTS #23) vs data/readout_pi_batch1.json:")
 _b1 = json.loads((D / "readout_pi_batch1.json").read_text())
