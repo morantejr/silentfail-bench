@@ -2099,7 +2099,9 @@ critic-selected trajectories is what fails first on a capable agent.
 
 **Costs.** OpenRouter (DeepSeek generation, measured externally) $8.77; OpenAI: gpt-5 judge
 $13.50 (scaffold estimate), gpt-5-mini comparator and reruns on the scaffold estimate; Modal
-(sandboxes, GPU panel, six gold runs): dashboard reading pending from the operator. Registered
+(sandboxes, GPU panel, six gold runs): the dashboard read $27.10 before Amendment 12 and $14.30 after
+Amendment 13 (operator reading, 3 October), so Amendments 12 and 13 together cost **$12.80** against the
+registered $22 cap. OpenAI balance after the run: $23.23 (operator reading). Registered
 readout: `data/agent_axis_deepseek/readout_amendment7_deepseek.json`; the comparator function
 double-counted evaluated empty patches in its first run (0.675) and was corrected to the set
 union before this record was written (0.579, equal to the raw 66/114).

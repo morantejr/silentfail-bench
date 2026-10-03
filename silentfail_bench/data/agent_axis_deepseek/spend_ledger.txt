@@ -23,3 +23,4 @@ generation_complete 2026-10-03T08:52:10Z  # 454 trajectories + 2 declared endpoi
 comparator_launched 2026-10-03T09:05:49Z  # gpt-5-mini k=1, 100 steps, 114 instances; OpenAI balance confirmed >$20 by operator 1 Oct
 comparator_lombok3009_killed 2026-10-03T11:52:05Z  # its sandbox was reaped after 20 min idle during an OpenAI retry loop; TERM sent; no trajectory; regenerates in the rerun pass (EXTRA_IDS)
 axis_complete 2026-10-03T13:34:12+00:00  openrouter_total 8.7742  judge_est 13.50  modal dashboard pending  # readout: A7-P1 PASS (0.200 vs 0.579), selector gate FAIL (0.552), DESCRIPTIVE ONLY
+operator_readings 2026-10-03  modal_balance_after 14.30 (27.10 before Amendment 12 -> A12+A13 = 12.80, cap 22)  openai_balance_after 23.23

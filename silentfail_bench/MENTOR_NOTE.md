@@ -1394,8 +1394,8 @@ failures from its successes well enough to construct the critic-selected set the
 The objection is re-posed as a question about selectors, which is a sharper and more
 interesting question than the one we started with.
 
-**What it cost and what broke.** OpenRouter $8.77, gpt-5 judge $13.50, Modal pending from the
-dashboard. Three mid-run deviations and two addenda, all recorded before each resume: a
+**What it cost and what broke.** OpenRouter $8.77, gpt-5 judge $13.50, Modal $12.80 for Amendments 12 and 13
+together ($27.10 → $14.30 on the dashboard), under the $22 cap; OpenAI closes at $23.23. Three mid-run deviations and two addenda, all recorded before each resume: a
 sandbox leak and a 50-second tunnel timeout in the scaffold's dependencies (DEFECTS #21, #22),
 two instances declared endpoint failures after two full attempts each, six trajectories lost
 to the operator machine's DNS during sleep and regenerated, one ambiguous RepeatedFormatError
