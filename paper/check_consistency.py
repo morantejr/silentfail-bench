@@ -942,6 +942,10 @@ check("conclusion no longer says the replication estimates 'are at chance'", "an
 for _n, _t in (("main.tex", tex), ("main_short.tex", Path("paper/main_short.tex").read_text()), ("main_agentverify.tex", Path("paper/main_agentverify.tex").read_text()), ("main_symposium.tex", Path("paper/main_symposium.tex").read_text()), ("README.md", Path("README.md").read_text())):
     check(f"Amendment 13 comparison stated per attempt in {_n}", ("four attempts per instance" in _t) or ("budget per attempt" in _t), True)
 check("positioning sentence present", "measures the residual value of a second signal on the trajectory a selector commits" in tex, True)
+def _abstract(txt):
+    m = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", txt, re.S); return m.group(1) if m else ""
+check("the long paper's abstract keeps the three numbers the mentor asked for", all(x in _abstract(tex) for x in ("35\\% and 45\\%", "0.51 and 0.57", "$+0.12$")), True)
+check("the long paper's abstract is short (under 220 words)", len(_abstract(tex).split()) < 220, True)
 check("abstract denominators explicit, both cuts", ("of the committed population (visible-pass, non-empty, gradable)" in tex) and ("of the committed population (visible-pass, non-empty, gradable)" in Path("paper/main_short.tex").read_text()), True)
 
 print("\nmechanism sentences (critic-by-trajectory interaction; E2 floor) vs data/readout_critic_demeaning.json:")
@@ -1024,8 +1028,12 @@ check("A13 descriptive-only wording, both cuts", ("descriptive only" in _prose_s
 check("A13: no artifact still calls the axis unanswered", any(("registered and unanswered" in t) or ("registered and \\emph{unanswered}" in t) for t in (_prose_short, _prose_av, _prose_symp)), False)
 def _abstract(txt):
     m = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", txt, re.S); return m.group(1) if m else ""
-for name, txt in (("main.tex", _prose_main), ("main_short.tex", _prose_short), ("main_agentverify.tex", _prose_av)):
-    _ab = _abstract(txt)
+def _summary(txt):
+    """The long paper's former abstract now opens Section 4 as 'Summary of results' (mentor review, 6 Oct); its
+    abstract keeps three numbers. The A13 figures are therefore pinned in that paragraph for main.tex."""
+    i = txt.find("\\paragraph{Summary of results.}")
+    return txt[i: txt.find("\\subsection", i)] if i >= 0 else ""
+for name, txt, _ab in (("main.tex (summary paragraph)", _prose_main, _summary(_prose_main)), ("main_short.tex", _prose_short, _abstract(_prose_short)), ("main_agentverify.tex", _prose_av, _abstract(_prose_av))):
     check(f"A13 critic collapse stated in the abstract of {name} (rates)", _s_rates.replace(" against ", " of 456 attempts against ") in _ab, True)
     check(f"A13 critic collapse stated in the abstract of {name} (judge AUROC)", _fmt3(_gate["pool_AUROC_detect"]) in _ab, True)
     check(f"A13 critic collapse stated in the abstract of {name} (RM range)", (_fmt3(_rm_lo) in _ab) and (_fmt3(_rm_hi) in _ab), True)
