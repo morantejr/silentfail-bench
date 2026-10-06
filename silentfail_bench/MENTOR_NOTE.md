@@ -1421,3 +1421,12 @@ permutation; the Amendment 4f item shows selection operated over materially diff
 chance" became failure to reject where intervals permit effects; Amendment 13's comparison is
 stated per attempt (four attempts vs one); the closest work (Afrin & Shihab; SWE-RM; Scout) is
 positioned in one sentence. Every number is pinned from a tracked readout.
+
+## 31. Amendment 14: the gpt-6 judges as selectors (6 October)
+
+Your question answered with a run, for $3.97: on the Amendment 13 pool, gpt-6-sol reaches a pool AUROC of
+0.619 and gpt-6-luna 0.569 as selectors (bar 0.65; gpt-5 was 0.552), and both sets of picks fail more
+often than random (0.193 and 0.211 against 0.175). Their selected arms hold 21 and 23 failures — above
+the floor of 20 — so the floor was never the binding constraint; the selector bar is. Amendment 15 (the
+remaining 186 instances) was registered as conditional on a selector clearing the bar and is not launched.
+What would move this is a selector with information the panel does not share, not more instances.

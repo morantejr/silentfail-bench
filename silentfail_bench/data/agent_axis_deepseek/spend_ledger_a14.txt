@@ -1,0 +1,6 @@
+openai_balance_operator_reading_3oct 23.23  (Amendment 14 projected ~16 scaffold-estimated; top-up recommended)
+== gpt-6-sol judges all 456 candidates, J1 ==
+   gpt-6-sol: 456 judgments, scaffold-estimated $3.64 (cap $40.00 for both)
+== gpt-6-luna judges all 456 candidates, J1 ==
+   gpt-6-luna: 456 judgments, scaffold-estimated $0.33 (cap $40.00 for both)
+a14_judges_complete 2026-10-06T17:59:11Z sol 3.64 luna 0.33 scaffold-estimated; both readouts written

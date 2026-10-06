@@ -74,3 +74,10 @@ silentfail_l4_package*
 !data/agent_axis_deepseek/modal/prefix4k/*.json
 !data/agent_axis_gpt5mini_100/predictions.jsonl
 !data/agent_axis_gpt5mini_100_rerun_w1/traj/cand0/preds.json
+
+# Amendment 14
+!data/agent_axis_deepseek/judge_gpt-6-sol.jsonl
+!data/agent_axis_deepseek/judge_gpt-6-luna.jsonl
+!data/agent_axis_deepseek/readout_amendment14_gpt-6-sol.json
+!data/agent_axis_deepseek/readout_amendment14_gpt-6-luna.json
+!data/agent_axis_deepseek/spend_ledger_a14.txt

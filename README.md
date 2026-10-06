@@ -34,7 +34,7 @@ about are exactly where its blind spots collect. **A null result is publishable*
 > 100 steps, all graded. The capability gate passed (failure rate 0.200 against 0.579
 > for gpt-5-mini at the same 100-step cap, four attempts per instance versus one), but the registered selector gate failed: the gpt-5
 > judge's pool AUROC for detecting this agent's failures is 0.552 against a bar of 0.65
-> and the reward models sit at 0.419–0.523, so the cell is reported as descriptive only.
+> and the reward models sit at 0.419–0.523, so the cell is reported as descriptive only; a stronger judge as selector (gpt-6-sol 0.619, gpt-6-luna 0.569, Amendment 14) does not change that.
 > No critic cleared the registered selector bar on that agent. The registered readout is
 > `silentfail_bench/data/agent_axis_deepseek/readout_amendment7_deepseek.json`; the
 > deviations are in the Amendment 13 section of the preregistration.

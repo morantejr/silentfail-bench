@@ -2179,3 +2179,19 @@ Caps: OpenRouter $25 (projected ~$14 for 744 attempts at the measured $0.019), M
 (gold and panel), OpenAI $30 (judge and comparator). Stop rules as Amendment 13: a cap exceeded
 stops the pipeline before the next paid stage; the stage order and the resume script are those
 of Amendment 13. Wall clock: about one day with the machine awake and plugged in.
+
+## Amendment 14 outcome, recorded 6 October 2026, 14:05 EDT
+
+Both judges judged all 456 candidates (J1): gpt-6-sol $3.64, gpt-6-luna $0.33 on the scaffold
+estimate, against the $40 cap. **A14-P1 fails for both.** Pool AUROC for detecting failure over the 436
+graded non-empty attempts: **gpt-6-sol 0.619**, **gpt-6-luna 0.569** (bar 0.65; gpt-5 was 0.552),
+each reproduced independently with the detection sign checked. The second half of the gate also fails for
+both: the selected sets fail more often than the frozen random picks (0.193 and
+0.211 against 0.175). The selected arms hold 21 and 23 failures, above the
+floor of 20, which shows the floor was not the binding constraint: the selector bar was. Descriptive
+only, both arms: AUROC(u) 0.421 and 0.39; primary ΔAUROC -0.117 and
+-0.141, intervals including zero. Readouts: `data/agent_axis_deepseek/readout_amendment14_<judge>.json`.
+
+**Amendment 15 is not launched.** Its condition — a judge above the selector bar — is not met, and the
+registration stands as the reason: more instances raise the failure count but cannot make a cell
+inferential whose selector cannot select.

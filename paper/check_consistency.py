@@ -989,6 +989,20 @@ check("learned-combiner logistic figures derive", f"({_u2(_V['4 raw panel scores
 check("learned-combiner: the inverted figures are named as the error", f"in the pass direction ({_u2(_V['4 raw panel scores']['fixed_weights_oof'])} and {_u2(_M['4 raw panel scores']['fixed_weights_oof'])})" in tex, True)
 check("learned-combiner: 'not carrying much at all' is gone", "not carrying much at all" in tex, False)
 
+print("\nAmendment 14 (gpt-6 judges as selectors) vs its readouts:")
+_a14 = {J: json.loads((D / f"agent_axis_deepseek/readout_amendment14_{J}.json").read_text()) for J in ("gpt-6-sol", "gpt-6-luna")}
+_g14 = {J: _a14[J]["selector_gate_A7a_2"] for J in _a14}
+for J in _a14:
+    check(f"A14 {J} gate fails", _g14[J]["passes"], False)
+    check(f"A14 {J} pool AUROC below the bar", _g14[J]["pool_AUROC_detect"] < 0.65, True)
+    check(f"A14 {J} verdict descriptive only", _a14[J]["confirmatory_verdict"]["branch"] == "DESCRIPTIVE ONLY", True)
+_s14 = f"\\texttt{{gpt-6-sol}} reaches {_g14['gpt-6-sol']['pool_AUROC_detect']:.3f} and \\texttt{{gpt-6-luna}} {_g14['gpt-6-luna']['pool_AUROC_detect']:.3f} (Amendment 14)"
+_r14 = f"({_g14['gpt-6-sol']['committed_failure_rate_unconditional']:.3f} and {_g14['gpt-6-luna']['committed_failure_rate_unconditional']:.3f} against {_g14['gpt-6-sol']['random_failure_rate_unconditional']:.3f})"
+for _n, _t in (("main.tex", tex), ("main_short.tex", Path("paper/main_short.tex").read_text()), ("main_agentverify.tex", Path("paper/main_agentverify.tex").read_text())):
+    check(f"A14 sentence derives in {_n}", (_s14 in _t) and (_r14 in _t), True)
+check("A14 symposium figure derives", f"\\texttt{{gpt-6-sol}}, reaches {_g14['gpt-6-sol']['pool_AUROC_detect']:.3f} as a selector" in Path("paper/main_symposium.tex").read_text(), True)
+check("A14 README figures derive", f"gpt-6-sol {_g14['gpt-6-sol']['pool_AUROC_detect']:.3f}, gpt-6-luna {_g14['gpt-6-luna']['pool_AUROC_detect']:.3f}" in Path("README.md").read_text(), True)
+
 print("\nAmendment 13 (agent axis on DeepSeek) vs its readouts:")
 _a13 = json.loads((D / "agent_axis_deepseek/readout_amendment7_deepseek.json").read_text())
 _a13p = json.loads((D / "agent_axis_deepseek/readout_amendment13_panel.json").read_text())
