@@ -409,8 +409,8 @@ def production_readout(args):
         selected_4b[i] = pick_4b(choices)
 
     judge = {}
-    for d in jsonl(require(args.judge_cache, "gpt-5 all-candidate cache")):
-        if d.get("judge") == "gpt-5" and d.get("cond") == "J1" and d.get("p_resolved") is not None:
+    for d in jsonl(require(args.judge_cache, f"{args.judge} all-candidate cache")):
+        if d.get("judge") == args.judge and d.get("cond") == "J1" and d.get("p_resolved") is not None:
             judge[(d["instance_id"], int(d["candidate"]))] = float(d["p_resolved"])
     missing_judge = sorted(expected_keys - set(judge))
     if missing_judge:
@@ -472,7 +472,7 @@ def production_readout(args):
     }
 
     arm_4b = selected_endpoint(bundle, selected_4b, detect_4b, gold, panel, "S_4b")
-    arm_judge = selected_endpoint(bundle, selected_judge, detect_judge, gold, panel, "S_judge_gpt5")
+    arm_judge = selected_endpoint(bundle, selected_judge, detect_judge, gold, panel, "S_judge_" + args.judge.replace("-", "").replace(".", ""))
     if cap_branch != "PASS":
         final = {"branch": "DESCRIPTIVE ONLY", "reason": f"A7-P1 capability branch is {cap_branch}"}
     elif not gate["passes"]:
@@ -514,6 +514,8 @@ def main():
     ap.add_argument("--gold-root", type=Path, default=ROOT / "data/gold_modal")
     ap.add_argument("--random-picks", type=Path, default=ROOT / "data/agent_axis/gold_inputs/random_picks.jsonl")
     ap.add_argument("--out", type=Path, default=ROOT / "data/agent_axis/readout_amendment7.json")
+    ap.add_argument("--judge", default="gpt-5",
+                    help="judge name in the cache used as the registered selector arm (Amendment 7a: gpt-5; Amendment 14: gpt-6-sol / gpt-6-luna)")
     ap.add_argument("--comparator-gold", type=Path, default=None,
                     help="Amendment 13: gold report of the equal-budget gpt-5-mini comparator (data/gold_modal/a13_gpt5mini_100/report.json)")
     ap.add_argument("--comparator-preds", type=Path, default=None,

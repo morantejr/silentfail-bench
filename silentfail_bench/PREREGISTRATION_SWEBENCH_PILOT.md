@@ -2120,3 +2120,62 @@ resumed at 18 workers at 17:58 EDT on 2 October (ledger line `workers_raised_6_t
 ledger at the time but omitted from this section until the review. (iv) "24 of 24 oracle checks" in the outcome above was **wrong**: only candidate 0's gold run
 carried the oracle pairs (`--oracle 3`), so the four reports hold six oracle rows, all clean.
 The artifacts now say 6 of 6 and the checker derives the count from the reports.
+
+# Amendment 14, 6 October 2026 — a stronger judge as the selector on the Amendment 13 pool
+
+**Written before any judge call on this pool by a gpt-6 model.** Amendment 13's selector gate
+failed because no critic in the panel or the gpt-5 judge separated DeepSeek V4.1 Flash's
+failures from its successes above the registered bar (pool AUROC 0.552; reward models
+0.419–0.523; bar 0.65). The mentor asked the obvious question: the gpt-6 judges rank failures
+at 0.71–0.82 on the gpt-5-mini trajectories (`readout_judges_gpt6.json`: gpt-6-luna 0.824 on
+Verified, 0.707 on Multilingual; gpt-6-sol 0.776–0.826 in the paper). Were they tried here? They
+were not. This amendment tries them, as selectors, on the pool that already exists.
+
+## What runs
+Two judges, gpt-6-sol and gpt-6-luna, condition J1 (the registered condition), every one of the
+456 Amendment 13 candidates, through `scripts/llm_judges.py` as for the gpt-5 arm. No new
+trajectories, no new gold, no Modal: the readout reuses the four candidate gold reports and the
+frozen random picks. One smoke of 3 instances (12 candidates) per judge projects the cost first.
+
+## Predictions, read under Amendment 7a exactly as for the gpt-5 arm
+- **A14-P1 (a selector exists):** at least one of the two judges has pool AUROC for detecting
+  failure over the 436 graded non-empty attempts **above 0.65**, and its selected set fails less
+  often than the frozen random picks. If both fail the gate, the Amendment 13 reading stands
+  and this amendment reports two more critics at or near chance on this agent.
+- **A14-P2 / A14-P3:** for a judge that clears the gate, A7-P2 and A7-P3 as registered,
+  including the floor of 20 committed failures and the +0.05 margin. Declared in advance: a
+  judge that clears the gate commits *fewer* failures, so the floor is the likely obstacle, and
+  the expected reading is INCONCLUSIVE or descriptive only; Amendment 15 exists for that case.
+- Each judge is reported separately; no pooling of judges; no best-of-two selection after the
+  fact. Both arms are reported whatever they show.
+
+## Caps and stop rules
+Price table in `llm_judges.py`: gpt-6-sol $2/$10 per million tokens, gpt-6-luna $0.10/$0.50.
+Projected from the gpt-5 arm ($0.025 per judgment): about $15 for sol and $1 for luna. Cap
+**$40 for both** on the scaffold estimate; a smoke projecting over $30 for one judge aborts.
+OpenAI balance before the run is read by the operator and recorded in
+`data/agent_axis_deepseek/spend_ledger_a14.txt`. No Modal spend. Output:
+`data/agent_axis_deepseek/readout_amendment14_<judge>.json`, produced by
+`scripts/readout_amendment7.py --judge <judge>` (the flag added for this amendment; default
+unchanged, dry run and fixture test still pass).
+
+# Amendment 15, 6 October 2026 — the remaining 186 Multilingual instances, conditional
+
+**Written before Amendment 14's outcome is known. Runs only if Amendment 14 finds a judge above
+the selector bar; otherwise it is not launched and this section stands as the reason.**
+
+Amendment 13's committed sets held 17 and 19 failures against a floor of 20, and a selector
+that clears the gate commits fewer failures still. SWE-bench Multilingual has 300 instances;
+114 were registered for Amendment 13. This amendment extends the same run to the other 186
+under identical settings: DeepSeek V4.1 Flash, k=4, 100 steps, cost_limit $1.00, 16k tokens,
+`configs/mini_swe_deepseek_axis.yaml`, the closing sandbox environment, 18 workers (recorded as
+an execution setting). Every candidate graded by the harness; the panel scored on Modal GPU;
+the gate-clearing judge from Amendment 14 judges every candidate; the equal-budget gpt-5-mini
+comparator extended to the same 186 at k=1. Predictions are A7-P1, A7-P2, A7-P3 as registered,
+read on the union of 300 instances with the Amendment 14 selector; the floor of 20 and the
++0.05 margin unchanged; the readout reports the 114 and the 186 separately as well as pooled.
+
+Caps: OpenRouter $25 (projected ~$14 for 744 attempts at the measured $0.019), Modal $15
+(gold and panel), OpenAI $30 (judge and comparator). Stop rules as Amendment 13: a cap exceeded
+stops the pipeline before the next paid stage; the stage order and the resume script are those
+of Amendment 13. Wall clock: about one day with the machine awake and plugged in.
