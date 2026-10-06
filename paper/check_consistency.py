@@ -946,7 +946,9 @@ def _abstract(txt):
     m = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", txt, re.S); return m.group(1) if m else ""
 check("the long paper's abstract keeps the three numbers the mentor asked for", all(x in _abstract(tex) for x in ("35\\% and 45\\%", "0.51 and 0.57", "$+0.12$")), True)
 check("the long paper's abstract is short (under 220 words)", len(_abstract(tex).split()) < 220, True)
-check("abstract denominators explicit, both cuts", ("of the committed population (visible-pass, non-empty, gradable)" in tex) and ("of the committed population (visible-pass, non-empty, gradable)" in Path("paper/main_short.tex").read_text()), True)
+check("denominators explicit: long paper's summary paragraph; the cuts' abstracts say 'of the committed trajectories'", ("of the committed population (visible-pass, non-empty, gradable)" in tex) and all("of the committed trajectories were silent failures" in _abstract(t) for t in (tex, Path("paper/main_short.tex").read_text(), Path("paper/main_agentverify.tex").read_text())), True)
+check("every cut's abstract keeps the three numbers", all(all(x in _abstract(t) for x in ("35\\% and 45\\%", "0.51 and 0.57", "$+0.12$")) for t in (tex, Path("paper/main_short.tex").read_text(), Path("paper/main_agentverify.tex").read_text())), True)
+check("the title states the bound, not an absence", ("An Upper Bound on What Critic Disagreement Adds" in tex) and ("Adds No Detectable" not in tex), True)
 
 print("\nmechanism sentences (critic-by-trajectory interaction; E2 floor) vs data/readout_critic_demeaning.json:")
 _cd = json.loads((D / "readout_critic_demeaning.json").read_text())["benchmarks"]
@@ -1033,8 +1035,12 @@ def _summary(txt):
     abstract keeps three numbers. The A13 figures are therefore pinned in that paragraph for main.tex."""
     i = txt.find("\\paragraph{Summary of results.}")
     return txt[i: txt.find("\\subsection", i)] if i >= 0 else ""
-for name, txt, _ab in (("main.tex (summary paragraph)", _prose_main, _summary(_prose_main)), ("main_short.tex", _prose_short, _abstract(_prose_short)), ("main_agentverify.tex", _prose_av, _abstract(_prose_av))):
-    check(f"A13 critic collapse stated in the abstract of {name} (rates)", _s_rates.replace(" against ", " of 456 attempts against ") in _ab, True)
+def _a13_item(txt):
+    """The cuts now carry the short abstract too (6 Oct); their A13 figures are pinned in the agent-axis limitations item."""
+    i = txt.find("A capable open-weight agent: the axis ran")
+    return txt[i: txt.find("\\item", i + 10)] if i >= 0 else ""
+for name, txt, _ab in (("main.tex (summary paragraph)", _prose_main, _summary(_prose_main)), ("main_short.tex (agent-axis item)", _prose_short, _a13_item(_prose_short)), ("main_agentverify.tex (agent-axis item)", _prose_av, _a13_item(_prose_av))):
+    check(f"A13 critic collapse stated in the abstract of {name} (rates)", (_s_rates.replace(" against ", " of 456 attempts against ") in _ab) or (_s_rates in _ab and "attempts" in _ab), True)
     check(f"A13 critic collapse stated in the abstract of {name} (judge AUROC)", _fmt3(_gate["pool_AUROC_detect"]) in _ab, True)
     check(f"A13 critic collapse stated in the abstract of {name} (RM range)", (_fmt3(_rm_lo) in _ab) and (_fmt3(_rm_hi) in _ab), True)
 _orc_n = 0; _orc_bad = 0
