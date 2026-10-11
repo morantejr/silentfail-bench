@@ -12,7 +12,7 @@ Theory in one line: under best-of-$n$, selection concentrates critic mistakes
 about are exactly where its blind spots collect. **A null result is publishable**
 — provided the study is powered well enough for a null to mean something.
 
-> **Status: draft v0.9.20 (2026-10-01) — the registered endpoint, computed four
+> **Status: draft v0.9.21 (2026-10-11) — the registered endpoint, computed four
 > ways, puts disagreement's incremental value over the selector's own score at
 > indistinguishable from zero, loosest pooled upper bound +0.12 over 47 failures
 > and 46 repositories.** A SWE-bench Verified pilot (41 instances, 12 positives)
@@ -63,6 +63,7 @@ and `silentfail_bench/scripts/preflight_pre_oct1.sh`.
 | `paper/frontier_main.pdf` | The long paper with its contribution framed at the strongest level the data carry (measurement, bound, critic collapse, follow-up); **generated** by `paper/make_frontier.py` from `main.tex`, no new numbers; not a submission artifact |
 | `silentfail_bench/data/agent_axis_deepseek/readout_amendment7_deepseek.json` | Amendment 13 registered readout: A7-P1 PASS, selector gate FAIL, descriptive only; every input it reads is tracked |
 | `silentfail_bench/data/agent_axis_deepseek/readout_amendment13_panel.json` | Pool AUROC of every critic on the DeepSeek attempts, both signs; **generated** by `scripts/readout_amendment13_panel.py` |
+| `paper/audits/independent_recompute_2026-10-11/` | Independent recomputation of every abstract number from the raw files with code that imports nothing from this repository (`recompute.py`, `RESULTS.md`); all reproduce; surfaced defect #24 |
 | `silentfail_bench/data/agent_axis_deepseek/ENDPOINT_FAILURES.json` | The two declared endpoint failures with their evidence and the rule (Amendment 13, third deviation) |
 | [`archive/drafts/`](archive/drafts/) | Earlier drafts and write-ups, kept for the record |
 

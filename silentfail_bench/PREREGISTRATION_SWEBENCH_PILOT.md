@@ -2195,3 +2195,10 @@ only, both arms: AUROC(u) 0.421 and 0.39; primary ΔAUROC -0.117 and
 **Amendment 15 is not launched.** Its condition — a judge above the selector bar — is not met, and the
 registration stands as the reason: more instances raise the failure count but cannot make a cell
 inferential whose selector cannot select.
+
+**Addendum, 11 October 2026 (defect #24).** The "fail more often than the frozen random picks"
+sentence above depends on how a tied top score is broken. The judges' scores are integers and
+tie at the top on 41 (gpt-6-sol) and 38 (gpt-6-luna) of 114 instances; the readout keeps the
+first attempt. Under the last-attempt rule gpt-6-sol's picks fail at 0.175, the random rate
+exactly, and gpt-6-luna's at 0.202. The gate's first half, the pool AUROC, involves no picks and
+is unchanged, so A14-P1 still fails for both and Amendment 15 stays unlaunched.

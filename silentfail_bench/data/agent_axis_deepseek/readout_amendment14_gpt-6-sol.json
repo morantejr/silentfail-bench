@@ -63,6 +63,9 @@
   "committed_failure_rate_unconditional": 0.193,
   "random_failure_rate_unconditional": 0.175,
   "committed_below_random": false,
+  "tie_rule": "first attempt wins a tied top score",
+  "tied_top_instances": 41,
+  "committed_failure_rate_unconditional_last_attempt_tie": 0.175,
   "passes": false
  },
  "arms": {

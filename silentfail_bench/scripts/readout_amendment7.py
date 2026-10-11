@@ -415,9 +415,18 @@ def production_readout(args):
     missing_judge = sorted(expected_keys - set(judge))
     if missing_judge:
         raise ValueError(f"gpt-5 cache incomplete: {len(missing_judge)} candidate scores missing; first={missing_judge[:5]}")
+    # Judges return integer-valued p_resolved, so several candidates often share
+    # the top score. max() over range(4) keeps the FIRST attempt on a tie; the
+    # alternative (last attempt) is reported alongside so the pick rate's
+    # dependence on the rule is visible (independent recomputation, 11 Oct).
     selected_judge = {
         i: max(range(4), key=lambda c: judge[(i, c)]) for i in expected
     }
+    selected_judge_last = {
+        i: max(reversed(range(4)), key=lambda c: judge[(i, c)]) for i in expected
+    }
+    tied_top = sum(1 for i in expected
+                   if sum(judge[(i, c)] == judge[(i, selected_judge[i])] for c in range(4)) > 1)
     detect_judge = {key: 100.0 - value for key, value in judge.items()}
 
     # A7a selector gate, first half: only candidates actually graded by the
@@ -445,6 +454,10 @@ def production_readout(args):
         "committed_failure_rate_unconditional": round(float(committed_fail.mean()), 3),
         "random_failure_rate_unconditional": round(float(random_fail.mean()), 3),
         "committed_below_random": bool(committed_fail.mean() < random_fail.mean()),
+        "tie_rule": "first attempt wins a tied top score",
+        "tied_top_instances": int(tied_top),
+        "committed_failure_rate_unconditional_last_attempt_tie": round(float(np.mean(
+            [1 - gold[(i, selected_judge_last[i])] for i in expected])), 3),
     }
     gate["passes"] = gate["pool_AUROC_gt_0p65"] and gate["committed_below_random"]
 

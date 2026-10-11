@@ -1430,3 +1430,23 @@ often than random (0.193 and 0.211 against 0.175). Their selected arms hold 21 a
 the floor of 20 — so the floor was never the binding constraint; the selector bar is. Amendment 15 (the
 remaining 186 instances) was registered as conditional on a selector clearing the bar and is not launched.
 What would move this is a selector with information the panel does not share, not more instances.
+
+## 32. An independent recomputation of the headline numbers (11 October)
+
+Before anything goes to arXiv I had every number in the abstract recomputed from the raw score
+and gold files by code that imports nothing from this repository: the two silent-failure rates,
+AUROC(u) on both benchmarks, the selector's 0.621, the pool-versus-committed 0.81 and 0.61, the
+four pooled point estimates behind the +0.12 bound, and the Amendment 13 and 14 figures. All
+reproduced; the bound's upper edge landed at +0.120 to +0.122 across three bootstrap seeds. The
+same pass regenerated the fourteen readouts (byte-identical) and ran the full bite sweep (276
+numeric pins, every one bites).
+
+Three presentation gaps came out of it and are fixed as defect #24. The abstract's "0.57" for
+the Multilingual AUROC was a double rounding of 0.5646; it now reads 0.565 alongside 0.508. The
+judges' tie rule was unstated: their integer scores tie at the top on 41 and 38 instances, the
+readout keeps the first attempt, and under the last-attempt rule gpt-6-sol's picks fail at
+exactly the random rate, so "worse than random" holds for gpt-6-luna under either rule and for
+gpt-6-sol under only one. The gate verdict does not move, because its first half is the pool
+AUROC and involves no picks. And the long paper's changelog table had been printing the word
+"bottomrule" in place of its closing rule since the 6 October edit. No result in the paper
+changed.

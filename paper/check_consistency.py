@@ -944,10 +944,13 @@ for _n, _t in (("main.tex", tex), ("main_short.tex", Path("paper/main_short.tex"
 check("positioning sentence present", "measures the residual value of a second signal on the trajectory a selector commits" in tex, True)
 def _abstract(txt):
     m = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", txt, re.S); return m.group(1) if m else ""
-check("the long paper's abstract keeps the three numbers the mentor asked for", all(x in _abstract(tex) for x in ("35\\% and 45\\%", "0.51 and 0.57", "$+0.12$")), True)
+# The abstract quotes AUROC(u) at three decimals, the stored precision. A two-decimal
+# rendering was a double rounding (0.5646 -> 0.565 -> 0.57; independent recomputation, 11 Oct).
+_u_pair = f"{pr['registered_m4']['M1_AUROC_u']:.3f} and {rep['primary_prefix_u']['M1_AUROC_u']:.3f}"
+check("the long paper's abstract keeps the three numbers the mentor asked for", all(x in _abstract(tex) for x in ("35\\% and 45\\%", _u_pair, "$+0.12$")), True)
 check("the long paper's abstract is short (under 220 words)", len(_abstract(tex).split()) < 220, True)
 check("denominators explicit: long paper's summary paragraph; the cuts' abstracts say 'of the committed trajectories'", ("of the committed population (visible-pass, non-empty, gradable)" in tex) and all("of the committed trajectories were silent failures" in _abstract(t) for t in (tex, Path("paper/main_short.tex").read_text(), Path("paper/main_agentverify.tex").read_text())), True)
-check("every cut's abstract keeps the three numbers", all(all(x in _abstract(t) for x in ("35\\% and 45\\%", "0.51 and 0.57", "$+0.12$")) for t in (tex, Path("paper/main_short.tex").read_text(), Path("paper/main_agentverify.tex").read_text())), True)
+check("every cut's abstract keeps the three numbers", all(all(x in _abstract(t) for x in ("35\\% and 45\\%", _u_pair, "$+0.12$")) for t in (tex, Path("paper/main_short.tex").read_text(), Path("paper/main_agentverify.tex").read_text())), True)
 check("the title states the bound, not an absence", ("An Upper Bound on What Critic Disagreement Adds" in tex) and ("Adds No Detectable" not in tex), True)
 
 print("\nmechanism sentences (critic-by-trajectory interaction; E2 floor) vs data/readout_critic_demeaning.json:")
@@ -1001,6 +1004,23 @@ _r14 = f"({_g14['gpt-6-sol']['committed_failure_rate_unconditional']:.3f} and {_
 for _n, _t in (("main.tex", tex), ("main_short.tex", Path("paper/main_short.tex").read_text()), ("main_agentverify.tex", Path("paper/main_agentverify.tex").read_text())):
     check(f"A14 sentence derives in {_n}", (_s14 in _t) and (_r14 in _t), True)
 check("A14 symposium figure derives", f"\\texttt{{gpt-6-sol}}, reaches {_g14['gpt-6-sol']['pool_AUROC_detect']:.3f} as a selector" in Path("paper/main_symposium.tex").read_text(), True)
+# Judges return integer scores and tie at the top; the readout keeps the first attempt.
+# The paper states the rule and the pick rate under the other one (independent recomputation, 11 Oct).
+_tie = f"tie at the top on {_g14['gpt-6-sol']['tied_top_instances']} and {_g14['gpt-6-luna']['tied_top_instances']} instances"
+_tie2 = f"fail at the random rate ({_g14['gpt-6-sol']['committed_failure_rate_unconditional_last_attempt_tie']:.3f}) and \\texttt{{gpt-6-luna}}'s at {_g14['gpt-6-luna']['committed_failure_rate_unconditional_last_attempt_tie']:.3f}"
+for _n, _t in (("main.tex", tex), ("main_short.tex", Path("paper/main_short.tex").read_text())):
+    check(f"A14 tie-rule clause derives in {_n}", (_tie in _t) and (_tie2 in _t), True)
+check("A14 gpt-6-sol last-attempt tie rate equals the random rate (so 'worse than random' is rule-dependent)", _g14['gpt-6-sol']['committed_failure_rate_unconditional_last_attempt_tie'], _g14['gpt-6-sol']['random_failure_rate_unconditional'])
+check("A14 gpt-6-luna stays above random under the last-attempt rule", _g14['gpt-6-luna']['committed_failure_rate_unconditional_last_attempt_tie'] > _g14['gpt-6-luna']['random_failure_rate_unconditional'], True)
+check("A14 readouts record the tie rule", all(_g14[J]['tie_rule'] == "first attempt wins a tied top score" for J in _g14), True)
+# A table row that ends in "\\bottomrule" (two backslashes) prints the word instead of the rule; it shipped in
+# main.pdf from 6 to 11 Oct. Scan every built PDF's text for leaked rule commands.
+for _pdfn in ("main.pdf", "main_short.pdf", "main_symposium.pdf", "main_agentverify.pdf"):
+    try:
+        _leak = [w for w in ("bottomrule", "midrule", "toprule") if any(w in t_ for t_ in _pdf_pages(Path("paper") / _pdfn))]
+    except Exception as _e:
+        _leak = [f"unreadable: {type(_e).__name__}"]
+    check(f"no leaked rule command printed in {_pdfn}", _leak == [], True)
 check("A14 README figures derive", f"gpt-6-sol {_g14['gpt-6-sol']['pool_AUROC_detect']:.3f}, gpt-6-luna {_g14['gpt-6-luna']['pool_AUROC_detect']:.3f}" in Path("README.md").read_text(), True)
 
 print("\nAmendment 13 (agent axis on DeepSeek) vs its readouts:")

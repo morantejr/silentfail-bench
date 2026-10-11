@@ -1014,3 +1014,33 @@ with E2 and CD, its output printed one table, and nobody applied the fingerprint
 0.41 — numbers below 0.5 that should have been questioned the moment they were read. The
 published key is kept unchanged in the JSON for traceability; `fixed_weights_oof_detect` is the
 corrected one and the only one the paper uses now.
+
+### #24 — Three presentation gaps found by an independent recomputation of the headline numbers: a double-rounded abstract AUROC, an unstated tie rule in the judges' picks, and a table rule that printed as a word *(presentation)*
+
+Found 11 October 2026 by a from-scratch recomputation of every number in the abstract and
+summary from the raw score and gold files, using code that imports nothing from this
+repository, followed by a margin and text audit of the built PDFs. Every number reproduced;
+three ways of presenting them did not survive scrutiny.
+
+(a) The abstract and summary paragraph quoted the Multilingual AUROC(u) as 0.57. The stored
+value is 0.565 and the raw value is 0.5646; a two-decimal rendering is 0.56, and 0.57 came from
+rounding the already-rounded 0.565 a second time. The checker had pinned the literal string
+"0.51 and 0.57", so it enforced the error. The abstract now quotes the stored three-decimal
+values, 0.508 and 0.565, and the pin is derived from the readouts.
+
+(b) `scripts/readout_amendment7.py` picks each judge's committed attempt with `max(range(4),
+key=...)`, which keeps the first attempt on a tie. The judges return integer p_resolved
+scores, so ties at the top are common: 41 of 114 instances for gpt-6-sol, 38 for gpt-6-luna,
+23 for gpt-5. The rule was never stated. Under the last-attempt rule gpt-6-sol's picks fail on
+20 of 114 (0.175), exactly the frozen random rate, so the sentence "their picks fail more often
+than the frozen random picks" is tie-rule dependent for gpt-6-sol (gpt-6-luna stays above
+random under both rules, 0.202). The selector-gate verdict is unaffected: the gate's first half
+is the pool AUROC, which involves no picks, and both judges fail it. The readout now records
+the rule, the tied count and the last-attempt rate; the paper states all three and the checker
+pins them.
+
+(c) The ten-row changelog table in `paper/main.tex` ended its last row with `\\bottomrule`
+(two backslashes), which TeX reads as a row break followed by the literal word. `main.pdf`
+printed "bottomrule" under the table, with no closing rule, from the 6 October mentor-pass
+commit (aa0b289) until 11 October. Fixed to `\\\bottomrule`; the checker now scans every built
+PDF's text for leaked rule commands.
