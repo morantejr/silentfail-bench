@@ -11,8 +11,8 @@ s = (H / "main.tex").read_text()
 def sub(old, new):
     global s
     assert s.count(old) == 1, old[:80]; s = s.replace(old, new)
-sub("Working draft v0.9.21 --- SilentFail-Bench; two benchmarks, 46 repositories analysed, pre-registered throughout",
-    "Frontier framing of v0.9.21 (generated from the working draft; the submission artifacts are the draft and its nine-page cut) --- SilentFail-Bench; two benchmarks, 46 repositories analysed, pre-registered throughout")
+sub("Working draft v0.9.22 --- SilentFail-Bench; two benchmarks, 46 repositories analysed, pre-registered throughout",
+    "Frontier framing of v0.9.22 (generated from the working draft; the submission artifacts are the draft and its nine-page cut) --- SilentFail-Bench; two benchmarks, 46 repositories analysed, pre-registered throughout")
 sub("What had not been done is the measurement: put a disjoint audit panel on the population a critic actually committed, with executed gold, structural baselines and pre-registered bars, and ask what it adds over the selector. Our contributions are:",
     "We found no prior work that measures a second audit signal's incremental value over the selector's own score on critic-committed agent trajectories with executed gold: candidate-pool evaluations~\\citep{shum2025swerm,rahman2026scout} stop before selection, and the identification limit on common-mode error~\\citep{afrin2026ensembles} is proved, not measured. This paper is that measurement, and what it returns is a bound. Our contributions are:")
 sub("\\item \\textbf{A selection-conditional evaluation protocol for audit signals} --- selected population, selector baseline, executed gold, pre-registered bars --- with its first two-benchmark instantiation on SWE-agent trajectories.",

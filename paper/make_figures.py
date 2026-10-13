@@ -6,7 +6,8 @@ import numpy as np
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 D = Path("silentfail_bench/data/swebench_pilot50"); OUT = Path("paper/figures")
-plt.rcParams.update({"font.size": 9, "axes.spines.top": False, "axes.spines.right": False, "figure.dpi": 150})
+plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42,  # TrueType, not Type 3: AAAI forbids Type 3 even in figures
+                     "font.size": 9, "axes.spines.top": False, "axes.spines.right": False, "figure.dpi": 150})
 BLUE, RED, GRAY, GOLD = "#2b6cb0", "#c0392b", "#7f8c8d", "#b7791f"
 # Consistent meaning of colour across every figure in the paper:
 #   BLUE = panel disagreement (the signal under test)   GRAY = a single critic acting alone

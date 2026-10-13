@@ -952,6 +952,11 @@ check("the long paper's abstract is short (under 220 words)", len(_abstract(tex)
 check("denominators explicit: long paper's summary paragraph; the cuts' abstracts say 'of the committed trajectories'", ("of the committed population (visible-pass, non-empty, gradable)" in tex) and all("of the committed trajectories were silent failures" in _abstract(t) for t in (tex, Path("paper/main_short.tex").read_text(), Path("paper/main_agentverify.tex").read_text())), True)
 check("every cut's abstract keeps the three numbers", all(all(x in _abstract(t) for x in ("35\\% and 45\\%", _u_pair, "$+0.12$")) for t in (tex, Path("paper/main_short.tex").read_text(), Path("paper/main_agentverify.tex").read_text())), True)
 check("the title states the bound, not an absence", ("An Upper Bound on What Critic Disagreement Adds" in tex) and ("Adds No Detectable" not in tex), True)
+# The 6 Oct retitle reached only main.tex; the cut and the IEEE version kept the old title
+# for a week (defect #25). The cut must carry the same title and the generators derive it.
+check("the nine-page cut carries the retitled paper", "An Upper Bound on What Critic Disagreement Adds" in Path("paper/main_short.tex").read_text(), True)
+check("the IEEE version carries the retitled paper", "An Upper Bound on What Critic Disagreement Adds" in Path("paper/main_agentverify.tex").read_text(), True)
+check("no version keeps the pre-retitle wording", any("Evaluate Failure Detectors on the" in Path(p).read_text() for p in ("paper/main.tex","paper/main_short.tex","paper/main_agentverify.tex","paper/main_symposium.tex")), False)
 
 print("\nmechanism sentences (critic-by-trajectory interaction; E2 floor) vs data/readout_critic_demeaning.json:")
 _cd = json.loads((D / "readout_critic_demeaning.json").read_text())["benchmarks"]

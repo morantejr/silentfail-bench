@@ -39,12 +39,21 @@ PREAMBLE = r"""% GENERATED FILE -- do not edit.
 \usepackage[hidelinks]{hyperref}
 \newcommand{\gzero}{g{=}0}\newcommand{\DeltaAUROC}{\Delta\mathrm{AUROC}}
 
-\title{Auditing the Winner: Evaluate Failure Detectors on the\\ Population the Selector Actually Commits}
+\title{%(TITLE)s}
 \author{\IEEEauthorblockN{Anonymous submission}\IEEEauthorblockA{Paper under double-blind review}}
 
 \begin{document}\maketitle
 """
 
+
+def source_title(src: str) -> str:
+    """The cut's own title, stripped of \\textbf and the [2pt] line-break spacing the
+    article class uses; IEEEtran sets its own title weight. Hard-coding the title here
+    let the 6 Oct retitle miss this version (defect #25)."""
+    m = re.search(r"\\title\{\\textbf\{(.*?)\}\}", src, re.S)
+    if not m:
+        raise SystemExit("ABORT: could not find \\title{\\textbf{...}} in main_short.tex")
+    return re.sub(r"\\\\(\[[^\]]*\])?\s*", " ", m.group(1)).strip()
 
 def generate() -> str:
     s = SRC.read_text()
@@ -66,7 +75,7 @@ def generate() -> str:
     body = body.replace(r"\bibliographystyle{plainnat}", r"\bibliographystyle{IEEEtran}")
     # \balance was tried here and pushed a stray line onto a ninth column, producing
     # three overfull vboxes for a cosmetic gain; zero overfull boxes wins.
-    out = PREAMBLE + body
+    out = PREAMBLE.replace("%(TITLE)s", source_title(s)) + body
     # The source names the author only in the preamble, which is discarded above;
     # assert that nothing identifying rode along in the body.
     for token in ("Morante", "Algoverse", "morantejr", "github.com"):

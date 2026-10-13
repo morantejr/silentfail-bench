@@ -1044,3 +1044,16 @@ pins them.
 printed "bottomrule" under the table, with no closing rule, from the 6 October mentor-pass
 commit (aa0b289) until 11 October. Fixed to `\\\bottomrule`; the checker now scans every built
 PDF's text for leaked rule commands.
+
+### #25 — The retitle reached one of four versions; the cut, the IEEE build and the symposium abstract kept the old title for a week *(propagation)*
+
+Found 13 October 2026 while generating venue-formatted submissions. The 6 October mentor pass
+changed the title in `paper/main.tex` to "An Upper Bound on What Critic Disagreement Adds
+Beyond the Selector on SWE-Agent Trajectories" and the checker pinned it there. `main_short.tex`
+and `main_symposium.tex` kept the old title, and `paper/make_agentverify.py` hard-coded it, so
+the three versions sent out that week carried a title the long paper had abandoned. The
+generator now reads the title from its source, the symposium abstract and the cut were
+retitled, and the checker requires the new title in every version and the old wording in none.
+The same session found that every figure embedded Type 3 fonts (matplotlib's default), which
+AAAI forbids even in illustrations; `make_figures.py` now emits TrueType and the figures were
+regenerated with no visual change.
