@@ -825,10 +825,17 @@ if not ok: fail.append("symposium author block")
 # and it must stay inside two pages
 try:
     import pypdf as _pp
-    _n = len(_pdf_pages(Path(__file__).resolve().parent / "main_symposium.pdf"))
-    ok = _n <= 2
-    print(f"  {'ok  ' if ok else 'FAIL'}  built PDF is {_n} page(s); the CFP's abstract option allows 2")
+    _sp = _pdf_pages(Path(__file__).resolve().parent / "main_symposium.pdf"); _n = len(_sp)
+    # The call: "Extended abstract: 2 pages, excluding references", on the AES template.
+    # The body must end on page 2 (the References heading appears there or earlier) and the
+    # references may spill onto page 3 at most.
+    _refpg = next((i for i, t_ in enumerate(_sp, 1) if re.search(r"^\s*References\s*$", t_, re.M)), None)
+    ok = _refpg is not None and _refpg <= 2 and _n <= 3
+    print(f"  {'ok  ' if ok else 'FAIL'}  built PDF is {_n} page(s), references begin on page {_refpg}; the CFP allows 2 excluding references")
     if not ok: fail.append("symposium page limit")
+    ok = "\\usepackage{aes}" in _sym and "\\aesauthor" in _sym
+    print(f"  {'ok  ' if ok else 'FAIL'}  symposium abstract is on the venue's AES template")
+    if not ok: fail.append("symposium template")
 except Exception as _e:
     print(f"  FAIL  cannot measure main_symposium.pdf ({type(_e).__name__})")
     fail.append("symposium pdf unmeasurable")

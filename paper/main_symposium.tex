@@ -1,24 +1,25 @@
-% Two-page abstract for the Agent Evaluation Science Fall 2026 symposium (NYC).
-% Non-archival, presentation only, not anonymous; the CFP allows 4-6 pp short paper
-% OR a 2 pp abstract with references excluded. main_short.tex's body is seven pages,
-% so this is the conforming option rather than a cut of it.
+% !TeX program = xelatex
+% Two-page extended abstract for the Agent Evaluation Science Fall 2026 symposium (NYC),
+% on the venue's required AES LaTeX template (paper/aes/, v0.1, XeLaTeX, Open Sans bundled).
+% The call: extended abstract 2 pages excluding references, non-anonymous, author names and
+% affiliations in the PDF, references required, non-archival, presentation only.
+% Build: cd paper/aes && xelatex -output-directory=.. ../main_symposium.tex  (fonts/ and assets/
+% resolve relative to the AES directory), then bibtex in paper/ with BSTINPUTS=aes:.
 % Every number here is asserted against the same source JSON by paper/check_consistency.py.
-\documentclass[10pt]{article}
-\usepackage[margin=0.85in]{geometry}
+\documentclass[11pt,a4paper]{article}
+\usepackage{aes}
 \usepackage{amsmath,amssymb,booktabs,array}
-\usepackage[numbers,sort&compress]{natbib}
-\usepackage[hidelinks]{hyperref}
-% long \texttt names are unbreakable and overflowed the measure
 \sloppy
-\setlength{\parskip}{0.3em}\setlength{\parindent}{0pt}
-\pagestyle{empty}
 \newcommand{\DeltaAUROC}{\Delta\mathrm{AUROC}}
 
-\title{\vspace{-2.5em}\textbf{Auditing the Winner: An Upper Bound on What Critic Disagreement Adds\\ Beyond the Selector on SWE-Agent Trajectories}\vspace{-0.5em}}
-\author{Joseph Morante\\ \small Algoverse AI Research\vspace{-1em}}
-\date{}
+\title[Auditing the Winner]{Auditing the Winner: An Upper Bound on What Critic Disagreement Adds Beyond the Selector on SWE-Agent Trajectories}
+\aesauthor[affil={1},corresponding]{Joseph Morante}
+\aesaffiliation{1}{Algoverse AI Research}
+\aesemails{\aesemail{morantejoseph1@gmail.com}}
+\aeskeywords{Agent evaluation; Best-of-n selection; Silent failure; Reward models; Pre-registration}
 
-\begin{document}\maketitle
+\begin{document}
+\maketitle
 
 \textbf{The question.} When an agent commits the best of $n$ attempts under a learned critic, the committed trajectory is where that critic's confidence and its errors coincide. A common proposal is to audit it with a panel of critics disjoint from the selector and escalate on disagreement. Audit signals are almost always evaluated over \emph{candidate pools}; a deployed auditor runs \emph{after} selection. We evaluate one on the population a selector actually commits, against the selector's own score, with executed gold.
 
@@ -36,6 +37,9 @@
 
 \textbf{The agent axis.} A capable open-weight agent was tested against gates registered before the run. \texttt{DeepSeek-V4.1-Flash} is the \emph{more} capable agent --- 30 of 41 resolved, an unconditional failure rate of 0.268 against \texttt{gpt-5-mini}'s 0.486, at \$0.0135 per trajectory --- but submitted a patch on 32 of 41 against an 80\% bar, failing the functioning gate by one instance; all nine misses exhausted the step budget rather than failing to parse. Raising the budget for one arm would destroy comparability with the agent that passed at 41 of 41, so the 40-step axis was not launched under Amendment 10. Both failed a bar set by our own 40-step budget, so this is in part a finding about \emph{this scaffold} rather than about the models: DeepSeek resolved 30 of the 32 instances where it did submit. We do not generalise it to the models. At a 100-step budget, declared post hoc, DeepSeek submitted on 39 of 41 (0.951) with none reaching the ceiling (longest 79 steps), and its failure rate of 0.098 against \texttt{gpt-5-mini}'s 0.610 at the same budget (0.556 excluding five self-inflicted test-suite crashes) clears every registered gate. The axis then ran under Amendment 13 on 114 Multilingual instances at 100 steps: DeepSeek's failure rate is 0.200 against 0.579 for \texttt{gpt-5-mini} at the same 100-step cap (four attempts per instance versus one), so the capability gate passed, but no critic separated its failures from its successes above chance (\texttt{gpt-5} judge pool AUROC 0.552 against a bar of 0.65; reward models 0.419--0.523; a stronger judge, \texttt{gpt-6-sol}, reaches 0.619 as a selector and still misses the bar), so the registered selector gate failed and the cell is descriptive only. No critic cleared the selector bar on that agent; the objection is re-posed, not retired. \texttt{GLM-5.3}, run under the same 100-step, 16k-token settings for completeness, submitted on 16 of 41 and every one of those resolved, but 23 of 41 runs were cut by a \$0.25 per-trajectory cost cap the amendment had not named --- inert for DeepSeek at \$0.015 a run, binding for GLM at \$0.22 --- so the budget question is unanswered for GLM and it remains disqualified on cost at any budget.
 
+\textbf{Context.} Benchmarks and scaffold \citep{jimenez2024swebench,yang2025multilingual,miniswe2025}; the optimizer's curse \citep{smith2006optimizer} and reward over-optimisation \citep{gao2023scaling}; correlated judge errors \citep{goel2025great,kohli2026nine}; pre-registration \citep{nosek2018preregistration}; clustered ROC \citep{obuchowski1997nonparametric}.
+
 \textbf{What we would like to discuss.} Whether the selection-conditional protocol --- selected population, selector baseline, out-of-sample incremental value, clustering on the real dependence unit, executed gold, oracle controls on the instrument --- is the right default for evaluating audit signals, and what a purpose-built post-selection auditor would have to beat.
 
+\bibliography{refs}
 \end{document}
