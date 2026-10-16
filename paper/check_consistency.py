@@ -554,7 +554,7 @@ _pooled = next(x for x in json.loads((D / "verify_and_robustify.json").read_text
                if x["label"] == "pooled")
 _upper = _pooled["fixed_unit_weights_no_fitting"]["CI95"][1]
 ok = _upper > 0.05 and "An upper bound on what disagreement can be worth, not a demonstration that it is worthless." in tex \
-    and "A replicated lack of detectable gain" in short \
+    and "A replicated failure to detect incremental gain" in short \
     and "lack of detectable gain replicates" in _readme \
     and "carries no information about its hidden failure" not in tex
 print(f"  {'ok  ' if ok else 'FAIL'}  pooled upper bound {_upper:+.3f} above actionable +0.05 is described as non-detection")
@@ -591,7 +591,7 @@ _ub, _lb = r2(_pu[_loose]), r2(_pooled[_loose]["CI95"][0])
 need(f"the loosest pooled upper bound is ${_ub}$", "loosest bound: abstract, body, caption")
 need(f"loosest pooled upper bound of ${_ub}$", "loosest bound: plain terms and contributions")
 need(f"${_ub}$ pooled across the three full-coverage estimators", "loosest bound: limitations")
-need(f"below ${_ub}$ on the pooled population", "loosest bound: conclusion")
+need(f"loosest pooled 95\\% upper bound is ${_ub}$", "loosest bound: conclusion")
 need(f"pooled bound ${_ub}$ AUROC", "loosest bound: summary table")
 need(f"[${_lb}$, ${_ub}$] pooled", "pooled unfitted interval in prose")
 need(f"$\\mathbf{{[{_lb}, {_ub}]}}$", "pooled row of tab:endpoint")
@@ -805,14 +805,31 @@ _sym = (Path(__file__).resolve().parent / "main_symposium.tex").read_text()
 _symchecks = [
     (f"{_pooled['logistic_LORO']['delta']:+.3f}".replace("+", "$+").replace("-", "$-") + "$", "pooled LORO delta"),
     (f"the loosest pooled upper bound is ${r2(_pu[_loose])}$", "loosest pooled bound"),
-    (f"{_g1['submitted']} of {_a10['instances']} against an 80\\% bar", "A10 submit count and bar"),
-    (f"{_a10['instances'] - _g2['failures']} of {_a10['instances']} resolved", "A10 resolved count"),
-    (f"failure rate of {_g2['failure_rate']:.3f} against", "A10 failure rate"),
-    (f"\\${_g3['per_trajectory_usd']:.4f} per trajectory", "A10 cost"),
+    # The Amendment 10-12 detail (submit count, resolved count, failure rate, cost, step-budget
+    # mechanism) left the abstract on 16 Oct at the mentor's request: the agent-axis block was
+    # the longest and drifted from the claim. The abstract keeps Amendment 13 and links the
+    # pre-registration for the rest; those pins stay on the three papers.
     (f"{jg['multilingual']['single_judges']['gpt-6-sol'][0]:.3f}", "best detector, replication"),
     (f"{jg['verified']['single_judges']['gpt-6-sol'][0]:.3f}", "best detector, pilot"),
     ("A bound, not an absence", "bound-not-absence framing"),
-    ("exhausted the step budget", "A10 step-budget mechanism"),
+    ("compares two detectors of silent failure on the committed population", "endpoint stated as a comparison (mentor, 16 Oct)"),
+    ("github.com/morantejr/silentfail-bench/blob/main/silentfail_bench/PREREGISTRATION_SWEBENCH_PILOT.md", "pre-registration link"),
+    ("\\url{https://github.com/morantejr/silentfail-bench}", "code link"),
+]
+# Table of gains with intervals (mentor, 16 Oct): every row derives from the readouts.
+def _r2s(x):
+    from decimal import Decimal, ROUND_HALF_UP
+    d = Decimal(str(x)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP); return ("+" if d >= 0 else "-") + f"{abs(d):.2f}"
+def _r3s(x):
+    from decimal import Decimal, ROUND_HALF_UP
+    d = Decimal(str(x)).quantize(Decimal("0.001"), rounding=ROUND_HALF_UP); return ("+" if d >= 0 else "-") + f"{abs(d):.3f}"
+def _gainrow(d, ci): return f"${_r3s(d)}$ & $[{_r2s(ci[0])}, {_r2s(ci[1])}]$"
+_symchecks += [
+    (_gainrow(pr["registered_m4"]["M3_delta"], pr["registered_m4"]["M3_CI95_repo_clustered"]), "gains table: Verified primary"),
+    (_gainrow(rep["primary_prefix_u"]["M3_delta"], rep["primary_prefix_u"]["M3_CI95"]), "gains table: Multilingual primary"),
+    (_gainrow(pooled["logistic_LORO"]["delta"], pooled["logistic_LORO"]["CI95"]), "gains table: pooled logistic LORO"),
+    (_gainrow(pooled["logistic_5fold_clustered"]["delta"], pooled["logistic_5fold_clustered"]["CI95"]), "gains table: pooled 5-fold"),
+    (_gainrow(pooled["fixed_unit_weights_no_fitting"]["delta"], pooled["fixed_unit_weights_no_fitting"]["CI95"]), "gains table: pooled fixed unit weights"),
 ]
 for _want, _lab in _symchecks:
     ok = _want in _sym
@@ -846,9 +863,10 @@ except Exception as _e:
 # papers reported the gate failure, leaving the obvious objection unanswered in print.
 print("\nscaffold attribution for the Amendment 10 gate failure:")
 _resolved = _a10["instances"] - _g2["failures"]
+# main_symposium.tex left this loop on 16 Oct: its Amendment 10 block was cut at the mentor's
+# request and the attribution now lives behind the pre-registration link it carries.
 for _nm, _src in (("main.tex", tex), ("main_short.tex", short),
-                  ("main_agentverify.tex", _avt),
-                  ("main_symposium.tex", (Path(__file__).resolve().parent / "main_symposium.tex").read_text())):
+                  ("main_agentverify.tex", _avt)):
     ok = "this scaffold" in _src and f"{_resolved} of the {_g1['submitted']}" in _src
     print(f"  {'ok  ' if ok else 'FAIL'}  {_nm} attributes the bar to this scaffold and gives the "
           f"{_resolved}-of-{_g1['submitted']} submitted-and-resolved figure")
@@ -886,7 +904,7 @@ ok = abs(_q2["gap_A_amendment_10b_exclusion"] - _gA) < 1e-9 and abs(_q2["gap_B_a
 print(f"  {'ok  ' if ok else 'FAIL'}  gaps recompute from the rates ({_gA} / {_gB}) and both clear 0.10")
 if not ok: fail.append("A11 gap")
 _sym = (Path(__file__).resolve().parent / "main_symposium.tex").read_text()
-for _nm, _src in (("main.tex", tex), ("main_short.tex", short), ("main_agentverify.tex", _avt), ("main_symposium.tex", _sym)):
+for _nm, _src in (("main.tex", tex), ("main_short.tex", short), ("main_agentverify.tex", _avt)):  # symposium dropped 16 Oct, see A11/A12 note
     for _want, _lab in ((f"{_q1['submitted']} of {_a11['instances']}", "submit count"),
                         (f"({_q1['rate']:.3f}", "submit rate"),
                         (f"longest {_mx} steps", "longest run"),
@@ -915,7 +933,7 @@ ok = _r2["glm"]["resolved"] == _r1["submitted"]
 print(f"  {'ok  ' if ok else 'FAIL'}  every submitted GLM patch resolved ({_r2['glm']['resolved']} of {_r1['submitted']}), as the papers claim")
 if not ok: fail.append("A12 resolved-equals-submitted")
 _sym12 = (Path(__file__).resolve().parent / "main_symposium.tex").read_text()
-for _nm, _src in (("main.tex", tex), ("main_short.tex", short), ("main_agentverify.tex", _avt), ("main_symposium.tex", _sym12)):
+for _nm, _src in (("main.tex", tex), ("main_short.tex", short), ("main_agentverify.tex", _avt)):  # symposium dropped 16 Oct: A10-12 block cut at the mentor's request; it links the pre-registration instead
     for _want, _lab in ((f"submitted on {_r1['submitted']} of {_a12['instances']}", "GLM submit count"),
                         (f"{_cut} of {_a12['instances']} runs were cut by a \\$0.25", "cost-cap cut count"),
                         (f"\\${_r3['per_trajectory_usd']:.2f}", "GLM cost per trajectory"),
