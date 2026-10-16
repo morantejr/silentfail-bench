@@ -13,6 +13,7 @@ about are exactly where its blind spots collect. **A null result is publishable*
 — provided the study is powered well enough for a null to mean something.
 
 > **Status: draft v0.9.22 (2026-10-13) — the registered endpoint, computed four
+> Public mirror of `main`: https://github.com/morantejr/silentfail-bench-public (the links in the papers point there).
 > ways, puts disagreement's incremental value over the selector's own score at
 > indistinguishable from zero, loosest pooled upper bound +0.12 over 47 failures
 > and 46 repositories.** A SWE-bench Verified pilot (41 instances, 12 positives)

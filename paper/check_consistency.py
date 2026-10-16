@@ -813,8 +813,8 @@ _symchecks = [
     (f"{jg['verified']['single_judges']['gpt-6-sol'][0]:.3f}", "best detector, pilot"),
     ("A bound, not an absence", "bound-not-absence framing"),
     ("compares two detectors of silent failure on the committed population", "endpoint stated as a comparison (mentor, 16 Oct)"),
-    ("github.com/morantejr/silentfail-bench/blob/main/silentfail_bench/PREREGISTRATION_SWEBENCH_PILOT.md", "pre-registration link"),
-    ("\\url{https://github.com/morantejr/silentfail-bench}", "code link"),
+    ("github.com/morantejr/silentfail-bench-public/blob/main/silentfail_bench/PREREGISTRATION_SWEBENCH_PILOT.md", "pre-registration link"),
+    ("\\url{https://github.com/morantejr/silentfail-bench-public}", "code link"),
 ]
 # Table of gains with intervals (mentor, 16 Oct): every row derives from the readouts.
 def _r2s(x):
