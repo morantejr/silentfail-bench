@@ -26,7 +26,7 @@ AUTHOR_NAME, AUTHOR_AFFIL, AUTHOR_EMAIL = "Joseph Morante", "Algoverse AI Resear
 SHORT_TITLE = "Auditing-the-Winner"
 VENUES = [
     dict(slug="AAAI27-AgenticSE", style="aaai", anon=True, limit=8, kind="excl_refs",
-         venue="AAAI-27 Workshop on Agentic Software Engineering (anonymity not stated in the call; anonymous is the safe default)"),
+         venue="AAAI-27 Workshop on Agentic Software Engineering (double-blind, non-archival; confirmed on the workshop site 20 Oct)"),
     dict(slug="AAAI27-TrustworthyAgentEvolution", style="aaai", anon=True, limit=8, kind="excl_refs",
          venue="AAAI-27 Workshop on Trustworthy Evolution of AI Agents (double-blind)"),
     dict(slug="AAAI27-WMAC", style="aaai", anon=True, limit=8, kind="excl_refs",
