@@ -76,7 +76,7 @@ Recorded here because the repository that builds the submission did not say, whi
 
 | Target | Artifact | Deadline | Status |
 |---|---|---|---|
-| AGENTVERIFY 2027 @ ICSE | `paper/main_agentverify.pdf` — anonymous IEEE, 8 pp incl. refs | abstract 1 Nov, paper 6 Nov (workshop CFP) **vs** 13 Nov (ICSE umbrella) | the planned archival home; **deadline disputed — ask the chairs**; AGENT 2027 and the SANER track are archival alternatives, not additions; LLM4Code was submitted non-archival |
+| AGENTVERIFY 2027 @ ICSE | `paper/main_agentverify.pdf` — anonymous IEEE, 8 pp incl. refs | **13 Nov AoE** (the CFP was updated; the 1/6 Nov dates are gone) | **the archival home, chosen 20 Oct**; notification 11 Dec, camera-ready 29 Jan, workshop 25 Apr Dublin; the CFP now mentions APC charges for non-abstract papers — amount asked of the chairs; AGENT 2027 and the SANER track are archival alternatives, not additions; LLM4Code was submitted non-archival |
 | Agent Evaluation Science, Fall 2026 NYC | `paper/main_symposium.pdf` — 2 pp abstract on the AES template, named | registration 20 Oct, submission 25 Oct | **submitted 20 Oct** (OpenReview); non-archival; notification 5 Nov; requires attendance |
 | AAAI-27 Workshop on Agentic Software Engineering | `paper/submissions/AAAI27-AgenticSE.pdf` — AAAI kit, anonymous, long paper | 20 Nov | **submitted 20 Oct**; non-archival; notification 2 Dec |
 | AAAI-27 Deployable AI | `paper/submissions/AAAI27-DeployableAI.pdf` — AAAI kit, anonymous, long paper (7 pp) | 20 Nov | **submitted 20 Oct**; non-archival; notification 2 Dec |
@@ -84,9 +84,9 @@ Recorded here because the repository that builds the submission did not say, whi
 | AAAI-27 Trust4RSI-Agent (Trustworthy Evolution of AI Agents) | `paper/submissions/AAAI27-TrustworthyAgentEvolution.pdf` — AAAI kit, anonymous | 20 Nov | **submitted 20 Oct**; archival status not stated in the call — confirm with the organisers; notification 2 Dec |
 | LLM4Code 2027 @ ICSE | `paper/submissions/ICSE27-LLM4Code.pdf` — IEEE, anonymous, 8 pp incl. refs | 13 Nov | **submitted 20 Oct** as HotCRP #8 with the non-archival option, so it does not compete with AGENTVERIFY |
 
-These dates come from the author's venue trackers dated 2026-09-29, not from a CFP
-read by this repository, and the Nov 6 / Nov 13 conflict is unresolved. Treat 6 Nov as
-the conservative planning date until the organisers confirm. `main_short.pdf`'s body is
+The AAAI and symposium dates were read from each call on 20 Oct 2026; the AGENTVERIFY
+date was read from its CFP the same day, which now states 13 Nov and no longer lists the
+earlier 1/6 Nov dates. `main_short.pdf`'s body is
 seven pages and therefore does **not** conform to the symposium's 4–6 page limit; the
 2 pp abstract is the conforming option.
 
