@@ -84,7 +84,7 @@ Recorded here because the repository that builds the submission did not say, whi
 | AAAI-27 Trust4RSI-Agent (Trustworthy Evolution of AI Agents) | `paper/submissions/AAAI27-TrustworthyAgentEvolution.pdf` — AAAI kit, anonymous | 20 Nov | **submitted 20 Oct**; organisers confirmed non-archival by email 20 Oct; notification 2 Dec |
 | LLM4Code 2027 @ ICSE | `paper/submissions/ICSE27-LLM4Code.pdf` — IEEE, anonymous, 8 pp incl. refs | 13 Nov | **submitted 20 Oct** as HotCRP #8 with the non-archival option, so it does not compete with AGENTVERIFY |
 | AAAI-27 Effective and Efficient Evaluation for AI Scientists | `paper/submissions/AAAI27-AgenticSE.pdf` (same AAAI build), anonymous, full paper | 20 Nov | **submitted 20 Oct**; non-archival; scope risk (call targets scientific-discovery agents); notification 2 Dec |
-| PAgE 2027 @ POPL (Principles of Agentic Engineering) | `paper/submissions/POPL27-PAgE.pdf` — SIGPLAN acmart, anonymous, 8 pp excl. bibliography | **31 Oct, 08:00 EDT** | built; non-archival, work published elsewhere welcome; workshop 11 Jan 2027, Mexico City |
+| PAgE 2027 @ POPL (Principles of Agentic Engineering) | `paper/submissions/POPL27-PAgE.pdf` — SIGPLAN acmart, anonymous, 8 pp excl. bibliography | 31 Oct, 08:00 EDT | **submitted 20 Oct** (HotCRP); non-archival, work published elsewhere welcome; workshop 11 Jan 2027, Mexico City |
 
 The AAAI and symposium dates were read from each call on 20 Oct 2026; the AGENTVERIFY
 date was read from its CFP the same day, which now states 13 Nov and no longer lists the
