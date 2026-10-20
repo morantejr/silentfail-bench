@@ -76,8 +76,12 @@ Recorded here because the repository that builds the submission did not say, whi
 
 | Target | Artifact | Deadline | Status |
 |---|---|---|---|
-| AGENTVERIFY 2027 @ ICSE | `paper/main_agentverify.pdf` — anonymous IEEE, 8 pp incl. refs | abstract 1 Nov, paper 6 Nov (workshop CFP) **vs** 13 Nov (ICSE umbrella) | **deadline disputed — ask the chairs** |
-| Agent Evaluation Science, Fall 2026 NYC | 4–6 pp body or 2 pp abstract, refs excluded, not anonymous | registration 20 Oct, submission 25 Oct | non-archival, presentation only; requires attendance |
+| AGENTVERIFY 2027 @ ICSE | `paper/main_agentverify.pdf` — anonymous IEEE, 8 pp incl. refs | abstract 1 Nov, paper 6 Nov (workshop CFP) **vs** 13 Nov (ICSE umbrella) | the planned archival home; **deadline disputed — ask the chairs**; AGENT 2027, LLM4Code and the SANER track are archival alternatives, not additions |
+| Agent Evaluation Science, Fall 2026 NYC | `paper/main_symposium.pdf` — 2 pp abstract on the AES template, named | registration 20 Oct, submission 25 Oct | **submitted 20 Oct** (OpenReview); non-archival; notification 5 Nov; requires attendance |
+| AAAI-27 Workshop on Agentic Software Engineering | `paper/submissions/AAAI27-AgenticSE.pdf` — AAAI kit, anonymous, long paper | 20 Nov | **submitted 20 Oct**; non-archival; notification 2 Dec |
+| AAAI-27 Deployable AI | `paper/submissions/AAAI27-DeployableAI.pdf` — AAAI kit, anonymous, long paper (7 pp) | 20 Nov | **submitted 20 Oct**; non-archival; notification 2 Dec |
+| AAAI-27 WMAC | `paper/submissions/AAAI27-WMAC.pdf` — AAAI kit, anonymous | 20 Nov | **submitted 20 Oct**; non-archival; notification 2 Dec |
+| AAAI-27 Trust4RSI-Agent (Trustworthy Evolution of AI Agents) | `paper/submissions/AAAI27-TrustworthyAgentEvolution.pdf` — AAAI kit, anonymous | 20 Nov | **submitted 20 Oct**; archival status not stated in the call — confirm with the organisers; notification 2 Dec |
 
 These dates come from the author's venue trackers dated 2026-09-29, not from a CFP
 read by this repository, and the Nov 6 / Nov 13 conflict is unresolved. Treat 6 Nov as
