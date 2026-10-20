@@ -81,7 +81,7 @@ Recorded here because the repository that builds the submission did not say, whi
 | AAAI-27 Workshop on Agentic Software Engineering | `paper/submissions/AAAI27-AgenticSE.pdf` — AAAI kit, anonymous, long paper | 20 Nov | **submitted 20 Oct**; non-archival; notification 2 Dec |
 | AAAI-27 Deployable AI | `paper/submissions/AAAI27-DeployableAI.pdf` — AAAI kit, anonymous, long paper (7 pp) | 20 Nov | **submitted 20 Oct**; non-archival; notification 2 Dec |
 | AAAI-27 WMAC | `paper/submissions/AAAI27-WMAC.pdf` — AAAI kit, anonymous | 20 Nov | **submitted 20 Oct**; non-archival; notification 2 Dec |
-| AAAI-27 Trust4RSI-Agent (Trustworthy Evolution of AI Agents) | `paper/submissions/AAAI27-TrustworthyAgentEvolution.pdf` — AAAI kit, anonymous | 20 Nov | **submitted 20 Oct**; archival status not stated in the call — confirm with the organisers; notification 2 Dec |
+| AAAI-27 Trust4RSI-Agent (Trustworthy Evolution of AI Agents) | `paper/submissions/AAAI27-TrustworthyAgentEvolution.pdf` — AAAI kit, anonymous | 20 Nov | **submitted 20 Oct**; organisers confirmed non-archival by email 20 Oct; notification 2 Dec |
 | LLM4Code 2027 @ ICSE | `paper/submissions/ICSE27-LLM4Code.pdf` — IEEE, anonymous, 8 pp incl. refs | 13 Nov | **submitted 20 Oct** as HotCRP #8 with the non-archival option, so it does not compete with AGENTVERIFY |
 
 The AAAI and symposium dates were read from each call on 20 Oct 2026; the AGENTVERIFY
