@@ -76,7 +76,7 @@ Recorded here because the repository that builds the submission did not say, whi
 
 | Target | Artifact | Deadline | Status |
 |---|---|---|---|
-| AGENTVERIFY 2027 @ ICSE | `paper/main_agentverify.pdf` — anonymous IEEE, 8 pp incl. refs | **13 Nov AoE** (the CFP was updated; the 1/6 Nov dates are gone) | **the archival home, chosen 20 Oct**; notification 11 Dec, camera-ready 29 Jan, workshop 25 Apr Dublin; the CFP now mentions APC charges for non-abstract papers — amount asked of the chairs; AGENT 2027 and the SANER track are archival alternatives, not additions; LLM4Code was submitted non-archival |
+| AGENTVERIFY 2027 @ ICSE | `paper/main_agentverify.pdf` — anonymous IEEE, 8 pp incl. refs | **13 Nov AoE** (the CFP was updated; the 1/6 Nov dates are gone) | **the archival home; submitted 20 Oct as HotCRP #8**; notification 11 Dec, camera-ready 29 Jan, workshop 25 Apr Dublin; the CFP now mentions APC charges for non-abstract papers — amount asked of the chairs; AGENT 2027 and the SANER track are archival alternatives, not additions; LLM4Code was submitted non-archival |
 | Agent Evaluation Science, Fall 2026 NYC | `paper/main_symposium.pdf` — 2 pp abstract on the AES template, named | registration 20 Oct, submission 25 Oct | **submitted 20 Oct** (OpenReview); non-archival; notification 5 Nov; requires attendance |
 | AAAI-27 Workshop on Agentic Software Engineering | `paper/submissions/AAAI27-AgenticSE.pdf` — AAAI kit, anonymous, long paper | 20 Nov | **submitted 20 Oct**; non-archival; notification 2 Dec |
 | AAAI-27 Deployable AI | `paper/submissions/AAAI27-DeployableAI.pdf` — AAAI kit, anonymous, long paper (7 pp) | 20 Nov | **submitted 20 Oct**; non-archival; notification 2 Dec |
