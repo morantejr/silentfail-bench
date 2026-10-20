@@ -37,6 +37,8 @@ VENUES = [
          venue="AGENT 2027 at ICSE: Agentic Engineering (single-anonymous, 8 pages including references)"),
     dict(slug="ICSE27-LLM4Code", style="ieee", anon=True, limit=8, kind="incl_refs",
          venue="LLM4Code 2027 at ICSE (double-anonymous, 4-8 pages including references)"),
+    dict(slug="POPL27-PAgE", style="acm", anon=True, limit=8, kind="excl_refs",
+         venue="PAgE 2027 at POPL: Principles of Agentic Engineering (SIGPLAN two-column, anonymised, 8 pages excluding bibliography, non-archival)"),
     dict(slug="SANER27-AgenticAI4SE", style="ieee", anon=True, limit=10, kind="excl_refs",
          venue="SANER 2027 Agentic AI4SE track (double-anonymous, 10 pages + 2 for references)"),
 ]
@@ -48,6 +50,14 @@ IEEE_PRE = r"""\documentclass[10pt,conference]{IEEEtran}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{stfloats}
 \usepackage[hidelinks]{hyperref}
+""" + COMMON + "\n"
+ACM_PRE = r"""\documentclass[sigplan,10pt,anonymous]{acmart}
+\settopmatter{printacmref=false}
+\setcopyright{none}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\acmConference[PAgE 2027]{Workshop on Principles of Agentic Engineering}{January 11, 2027}{Mexico City, Mexico}
+\usepackage{booktabs,enumitem,tabularx,array}
+\emergencystretch=3em  % acmart columns are narrow; long \texttt names and hyphenated compounds overflow otherwise
 """ + COMMON + "\n"
 AAAI_PRE = r"""\documentclass[letterpaper]{article} % DO NOT CHANGE THIS
 \usepackage[@@OPT@@]{aaai2027}  % DO NOT CHANGE THIS
@@ -72,7 +82,7 @@ def source_title(src: str, style: str = "aaai") -> str:
     if not m:
         raise SystemExit("ABORT: no \\title{\\textbf{...}} in main_short.tex")
     t = re.sub(r"\\\\\[[^\]]*\]", r"\\\\", m.group(1))
-    return re.sub(r"\\\\\s*", " ", t).strip() if style == "ieee" else t
+    return re.sub(r"\\\\\s*", " ", t).strip() if style in ("ieee", "acm") else t
 
 
 def body_of(src: str, style: str) -> str:
@@ -84,9 +94,19 @@ def body_of(src: str, style: str) -> str:
     if style == "ieee":
         body = re.sub(r"\\paragraph\{([^}]*?)\.\}", r"\\paragraph{\1}", body)
         body = body.replace(r"\bibliographystyle{plainnat}", r"\bibliographystyle{IEEEtran}")
+    elif style == "acm":
+        body = body.replace(r"\bibliographystyle{plainnat}", r"\bibliographystyle{ACM-Reference-Format}")
     else:
         body = body.replace(r"\bibliographystyle{plainnat}", r"\bibliographystyle{aaai2027}")
     return body
+
+
+def split_abstract(body: str) -> tuple[str, str]:
+    """acmart requires the abstract before \\maketitle; the article source puts it after."""
+    m = re.search(r"\\begin\{abstract\}.*?\\end\{abstract\}\s*", body, re.S)
+    if not m:
+        raise SystemExit("ABORT: no abstract environment in main_short.tex")
+    return m.group(0), body[:m.start()] + body[m.end():]
 
 
 def render(v: dict, src: str) -> str:
@@ -99,13 +119,24 @@ def render(v: dict, src: str) -> str:
             author = (r"\author{\IEEEauthorblockN{" + AUTHOR_NAME + r"}\IEEEauthorblockA{" + AUTHOR_AFFIL +
                       r"\\ " + AUTHOR_EMAIL + "}}")
         pre = IEEE_PRE
+    elif v["style"] == "acm":
+        pre = ACM_PRE
+        if v["anon"]:
+            author = "\\author{Anonymous Author(s)}\n\\affiliation{\\institution{Anonymous Institution}\\country{}}"
+        else:
+            author = ("\\author{" + AUTHOR_NAME + "}\n\\email{" + AUTHOR_EMAIL + "}\n\\affiliation{\\institution{" + AUTHOR_AFFIL + "}\\country{USA}}")
     else:
         pre = AAAI_PRE.replace("@@OPT@@", "submission" if v["anon"] else "")
         if v["anon"]:
             author = "\\author{Anonymous submission}\n\\affiliations{Paper under double-blind review}"
         else:
             author = "\\author{" + AUTHOR_NAME + "}\n\\affiliations{" + AUTHOR_AFFIL + "\\\\ " + AUTHOR_EMAIL + "}"
-    out = head + pre + "\n\\title{" + title + "}\n" + author + "\n\n\\begin{document}\\maketitle\n" + body_of(src, v["style"])
+    body = body_of(src, v["style"])
+    if v["style"] == "acm":
+        abstract, body = split_abstract(body)
+        out = head + pre + "\n\\title{" + title + "}\n" + author + "\n\n\\begin{document}\n" + abstract + "\\maketitle\n" + body
+    else:
+        out = head + pre + "\n\\title{" + title + "}\n" + author + "\n\n\\begin{document}\\maketitle\n" + body
     if v["anon"]:
         for token in ("Morante", "Algoverse", "morantejr", "github.com", AUTHOR_EMAIL):
             if token in out:
@@ -118,7 +149,7 @@ def build(slug: str) -> Path:
     tex = OUTDIR / f"{slug}.tex"
     def latex():
         r = subprocess.run(["pdflatex", "-interaction=nonstopmode", "-halt-on-error",
-                            f"-output-directory={OUTDIR}", str(tex)], cwd=HERE, env=env, capture_output=True, text=True)
+                            f"-output-directory={OUTDIR}", str(tex)], cwd=HERE, env=env, capture_output=True, text=True, errors="replace")
         if r.returncode:
             log = (OUTDIR / f"{slug}.log").read_text(errors="ignore")
             i = log.find("\n!"); raise SystemExit(f"LaTeX failed for {slug}:\n{log[i:i+600]}")
