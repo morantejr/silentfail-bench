@@ -1,0 +1,207 @@
+{
+  "django__django-11206": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-11206",
+    "model_patch": ""
+  },
+  "astropy__astropy-14598": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "astropy__astropy-14598",
+    "model_patch": ""
+  },
+  "django__django-11265": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-11265",
+    "model_patch": ""
+  },
+  "django__django-12406": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-12406",
+    "model_patch": ""
+  },
+  "astropy__astropy-14539": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "astropy__astropy-14539",
+    "model_patch": ""
+  },
+  "django__django-13028": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-13028",
+    "model_patch": "diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py\nindex ce18098fd2..8ab2b44e28 100755\n--- a/django/db/models/sql/query.py\n+++ b/django/db/models/sql/query.py\n@@ -1124,14 +1124,15 @@ class Query(BaseExpression):\n \n     def check_filterable(self, expression):\n         \"\"\"Raise an error if expression cannot be used in a WHERE clause.\"\"\"\n-        if not getattr(expression, 'filterable', True):\n-            raise NotSupportedError(\n-                expression.__class__.__name__ + ' is disallowed in the filter '\n-                'clause.'\n-            )\n-        if hasattr(expression, 'get_source_expressions'):\n-            for expr in expression.get_source_expressions():\n-                self.check_filterable(expr)\n+        if hasattr(expression, 'resolve_expression'):\n+            if not getattr(expression, 'filterable', True):\n+                raise NotSupportedError(\n+                    expression.__class__.__name__ + ' is disallowed in the '\n+                    'filter clause.'\n+                )\n+            if hasattr(expression, 'get_source_expressions'):\n+                for expr in expression.get_source_expressions():\n+                    self.check_filterable(expr)\n \n     def build_lookup(self, lookups, lhs, rhs):\n         \"\"\"\n"
+  },
+  "django__django-10914": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-10914",
+    "model_patch": ""
+  },
+  "django__django-13417": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-13417",
+    "model_patch": ""
+  },
+  "django__django-12754": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-12754",
+    "model_patch": ""
+  },
+  "django__django-13590": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-13590",
+    "model_patch": ""
+  },
+  "django__django-14017": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-14017",
+    "model_patch": "diff --git a/django/db/models/query_utils.py b/django/db/models/query_utils.py\nindex c957ffa564..1e850c56f1 100755\n--- a/django/db/models/query_utils.py\n+++ b/django/db/models/query_utils.py\n@@ -40,7 +40,7 @@ class Q(tree.Node):\n         super().__init__(children=[*args, *sorted(kwargs.items())], connector=_connector, negated=_negated)\n \n     def _combine(self, other, conn):\n-        if not isinstance(other, Q):\n+        if not(isinstance(other, Q) or (hasattr(other, 'conditional') and other.conditional)):\n             raise TypeError(other)\n \n         # If the other Q() is empty, ignore it and just use `self`.\n"
+  },
+  "django__django-14155": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-14155",
+    "model_patch": "diff --git a/django/urls/resolvers.py b/django/urls/resolvers.py\nindex 9b00e24509..871c196893 100755\n--- a/django/urls/resolvers.py\n+++ b/django/urls/resolvers.py\n@@ -45,6 +45,8 @@ class ResolverMatch:\n         self.namespaces = [x for x in namespaces if x] if namespaces else []\n         self.namespace = ':'.join(self.namespaces)\n \n+        if isinstance(func, functools.partial):\n+            func = func.func\n         if not hasattr(func, '__name__'):\n             # A class-based view\n             self._func_path = func.__class__.__module__ + '.' + func.__class__.__name__\n"
+  },
+  "django__django-13513": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-13513",
+    "model_patch": ""
+  },
+  "django__django-14034": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-14034",
+    "model_patch": ""
+  },
+  "django__django-15569": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-15569",
+    "model_patch": "diff --git a/django/db/models/query_utils.py b/django/db/models/query_utils.py\nindex 0caa165e15..6917820604 100644\n--- a/django/db/models/query_utils.py\n+++ b/django/db/models/query_utils.py\n@@ -217,6 +217,7 @@ class RegisterLookupMixin:\n         if lookup_name is None:\n             lookup_name = lookup.lookup_name\n         del cls.class_lookups[lookup_name]\n+        cls._clear_cached_lookups()\n \n \n def select_related_descend(field, restricted, requested, load_fields, reverse=False):\n"
+  },
+  "django__django-15037": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-15037",
+    "model_patch": ""
+  },
+  "django__django-15128": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-15128",
+    "model_patch": ""
+  },
+  "django__django-15278": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-15278",
+    "model_patch": ""
+  },
+  "django__django-15863": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-15863",
+    "model_patch": "diff --git a/django/template/defaultfilters.py b/django/template/defaultfilters.py\nindex 7a5b28d159..23c3a08c67 100644\n--- a/django/template/defaultfilters.py\n+++ b/django/template/defaultfilters.py\n@@ -151,7 +151,7 @@ def floatformat(text, arg=-1):\n             use_l10n = False\n             arg = arg[:-1] or -1\n     try:\n-        input_val = repr(text)\n+        input_val = str(text)\n         d = Decimal(input_val)\n     except InvalidOperation:\n         try:\n"
+  },
+  "django__django-16901": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-16901",
+    "model_patch": ""
+  },
+  "django__django-16899": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-16899",
+    "model_patch": ""
+  },
+  "django__django-9296": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "django__django-9296",
+    "model_patch": "diff --git a/django/core/paginator.py b/django/core/paginator.py\nindex 1f92da5d4f..cc1cd6fe3e 100644\n--- a/django/core/paginator.py\n+++ b/django/core/paginator.py\n@@ -34,6 +34,10 @@ class Paginator:\n         self.orphans = int(orphans)\n         self.allow_empty_first_page = allow_empty_first_page\n \n+    def __iter__(self):\n+        for page_num in self.page_range:\n+            yield self.page(page_num)\n+\n     def validate_number(self, number):\n         \"\"\"Validate the given 1-based page number.\"\"\"\n         try:\ndiff --git a/docs/ref/paginator.txt b/docs/ref/paginator.txt\nindex 9ee6f0104c..fcb4036114 100644\n--- a/docs/ref/paginator.txt\n+++ b/docs/ref/paginator.txt\n@@ -71,6 +71,11 @@ Methods\n     Returns a :class:`Page` object with the given 1-based index. Raises\n     :exc:`InvalidPage` if the given page number doesn't exist.\n \n+.. method:: Paginator.__iter__()\n+\n+    Iterates over all pages in the paginator, yielding\n+    :class:`Page` objects.\n+\n Attributes\n ----------\n \ndiff --git a/docs/releases/3.1.txt b/docs/releases/3.1.txt\nindex da954bab56..4e6042af3c 100644\n--- a/docs/releases/3.1.txt\n+++ b/docs/releases/3.1.txt\n@@ -162,6 +162,12 @@ Models\n \n * ...\n \n+Pagination\n+~~~~~~~~~~\n+\n+* :class:`~django.core.paginator.Paginator` is now iterable, allowing\n+  iteration over :class:`~django.core.paginator.Page` objects.\n+\n Requests and Responses\n ~~~~~~~~~~~~~~~~~~~~~~\n \n"
+  },
+  "matplotlib__matplotlib-20488": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "matplotlib__matplotlib-20488",
+    "model_patch": "diff --git a/lib/matplotlib/image.py b/lib/matplotlib/image.py\nindex 95bb42d75..134343ec4 100644\n--- a/lib/matplotlib/image.py\n+++ b/lib/matplotlib/image.py\n@@ -533,7 +533,7 @@ class _ImageBase(martist.Artist, cm.ScalarMappable):\n                 # that may have moved input values in/out of range\n                 s_vmin, s_vmax = vrange\n                 if isinstance(self.norm, mcolors.LogNorm):\n-                    if s_vmin < 0:\n+                    if s_vmin <= 0:\n                         s_vmin = max(s_vmin, np.finfo(scaled_dtype).eps)\n                 with cbook._setattr_cm(self.norm,\n                                        vmin=s_vmin,\n"
+  },
+  "pylint-dev__pylint-8898": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "pylint-dev__pylint-8898",
+    "model_patch": ""
+  },
+  "matplotlib__matplotlib-25960": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "matplotlib__matplotlib-25960",
+    "model_patch": ""
+  },
+  "matplotlib__matplotlib-26208": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "matplotlib__matplotlib-26208",
+    "model_patch": ""
+  },
+  "pylint-dev__pylint-4661": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "pylint-dev__pylint-4661",
+    "model_patch": "diff --git a/doc/faq.rst b/doc/faq.rst\nindex c817855f..cf08438f 100644\n--- a/doc/faq.rst\n+++ b/doc/faq.rst\n@@ -93,10 +93,11 @@ localized using the following rules:\n \n * value of the PYLINTHOME environment variable if set\n \n-* \".pylint.d\" subdirectory of the user's home directory if it is found\n-\t(not always findable on Windows platforms)\n+* \"pylint\" subdirectory of the directory defined by the XDG_DATA_HOME\n+\tenvironment variable if it is set\n \n-* \".pylint.d\" directory in the current directory\n+* \".local/share/pylint\" subdirectory of the user's home directory if it\n+\tis found (not always findable on Windows platforms)\n \n 3.3 How do I find the option name (for pylintrc) corresponding to a specific command line option?\n --------------------------------------------------------------------------------------------------------\ndiff --git a/pylint/config/__init__.py b/pylint/config/__init__.py\nindex 84774d0e..3c508bbe 100644\n--- a/pylint/config/__init__.py\n+++ b/pylint/config/__init__.py\n@@ -60,10 +60,11 @@ if \"PYLINTHOME\" in os.environ:\n     PYLINT_HOME = os.environ[\"PYLINTHOME\"]\n     if USER_HOME == \"~\":\n         USER_HOME = os.path.dirname(PYLINT_HOME)\n-elif USER_HOME == \"~\":\n-    PYLINT_HOME = \".pylint.d\"\n else:\n-    PYLINT_HOME = os.path.join(USER_HOME, \".pylint.d\")\n+    PYLINT_HOME = os.path.join(\n+        os.environ.get(\"XDG_DATA_HOME\", os.path.join(USER_HOME, \".local\", \"share\")),\n+        \"pylint\",\n+    )\n \n \n def _get_pdata_path(base_name, recurs):\n@@ -83,7 +84,7 @@ def load_results(base):\n def save_results(results, base):\n     if not os.path.exists(PYLINT_HOME):\n         try:\n-            os.mkdir(PYLINT_HOME)\n+            os.makedirs(PYLINT_HOME)\n         except OSError:\n             print(\"Unable to create directory %s\" % PYLINT_HOME, file=sys.stderr)\n     data_file = _get_pdata_path(base, 1)\n@@ -110,8 +111,8 @@ ENV_HELP = (\n The following environment variables are used:\n     * PYLINTHOME\n     Path to the directory where persistent data for the run will be stored. If\n-not found, it defaults to ~/.pylint.d/ or .pylint.d (in the current working\n-directory).\n+not found, it defaults to ~/.local/share/pylint/ (or the pylint subdirectory of\n+the directory specified by XDG_DATA_HOME if it is set).\n     * PYLINTRC\n     Path to the configuration file. See the documentation for the method used\n to search for configuration file.\n"
+  },
+  "scikit-learn__scikit-learn-10844": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "scikit-learn__scikit-learn-10844",
+    "model_patch": "diff --git a/sklearn/metrics/cluster/supervised.py b/sklearn/metrics/cluster/supervised.py\nindex a987778ae..9bcca75a2 100644\n--- a/sklearn/metrics/cluster/supervised.py\n+++ b/sklearn/metrics/cluster/supervised.py\n@@ -856,7 +856,7 @@ def fowlkes_mallows_score(labels_true, labels_pred, sparse=False):\n     tk = np.dot(c.data, c.data) - n_samples\n     pk = np.sum(np.asarray(c.sum(axis=0)).ravel() ** 2) - n_samples\n     qk = np.sum(np.asarray(c.sum(axis=1)).ravel() ** 2) - n_samples\n-    return tk / np.sqrt(pk * qk) if tk != 0. else 0.\n+    return np.sqrt(tk / pk) * np.sqrt(tk / qk) if tk != 0. else 0.\n \n \n def entropy(labels):\n"
+  },
+  "pytest-dev__pytest-5840": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "pytest-dev__pytest-5840",
+    "model_patch": ""
+  },
+  "scikit-learn__scikit-learn-26323": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "scikit-learn__scikit-learn-26323",
+    "model_patch": "diff --git a/sklearn/compose/_column_transformer.py b/sklearn/compose/_column_transformer.py\nindex 4eddd12b1..0d0ce34fa 100644\n--- a/sklearn/compose/_column_transformer.py\n+++ b/sklearn/compose/_column_transformer.py\n@@ -303,6 +303,9 @@ class ColumnTransformer(TransformerMixin, _BaseComposition):\n         for trans in transformers:\n             _safe_set_output(trans, transform=transform)\n \n+        if self.remainder not in {\"drop\", \"passthrough\"}:\n+            _safe_set_output(self.remainder, transform=transform)\n+\n         return self\n \n     def get_params(self, deep=True):\n"
+  },
+  "scikit-learn__scikit-learn-13328": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "scikit-learn__scikit-learn-13328",
+    "model_patch": ""
+  },
+  "sphinx-doc__sphinx-10673": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sphinx-doc__sphinx-10673",
+    "model_patch": ""
+  },
+  "sphinx-doc__sphinx-10449": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sphinx-doc__sphinx-10449",
+    "model_patch": ""
+  },
+  "sphinx-doc__sphinx-8269": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sphinx-doc__sphinx-8269",
+    "model_patch": "diff --git a/CHANGES b/CHANGES\nindex 22876d43b..da2c996e1 100644\n--- a/CHANGES\n+++ b/CHANGES\n@@ -67,6 +67,7 @@ Bugs fixed\n \n * #8188: C, add missing items to internal object types dictionary,\n   e.g., preventing intersphinx from resolving them.\n+* #8268: linkcheck: Report HTTP errors when ``linkcheck_anchors`` is ``True``\n \n \n Testing\ndiff --git a/sphinx/builders/linkcheck.py b/sphinx/builders/linkcheck.py\nindex 9b54afc7c..1083e82ec 100644\n--- a/sphinx/builders/linkcheck.py\n+++ b/sphinx/builders/linkcheck.py\n@@ -166,6 +166,7 @@ class CheckExternalLinksBuilder(Builder):\n                     # Read the whole document and see if #anchor exists\n                     response = requests.get(req_url, stream=True, config=self.app.config,\n                                             auth=auth_info, **kwargs)\n+                    response.raise_for_status()\n                     found = check_anchor(response, unquote(anchor))\n \n                     if not found:\n"
+  },
+  "sympy__sympy-16886": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sympy__sympy-16886",
+    "model_patch": "diff --git a/sympy/crypto/crypto.py b/sympy/crypto/crypto.py\nindex ca552191c..0c556b6ef 100644\n--- a/sympy/crypto/crypto.py\n+++ b/sympy/crypto/crypto.py\n@@ -1520,7 +1520,7 @@ def decipher_kid_rsa(msg, key):\n     \"..-\": \"U\", \"...-\": \"V\",\n     \".--\": \"W\", \"-..-\": \"X\",\n     \"-.--\": \"Y\", \"--..\": \"Z\",\n-    \"-----\": \"0\", \"----\": \"1\",\n+    \"-----\": \"0\", \".----\": \"1\",\n     \"..---\": \"2\", \"...--\": \"3\",\n     \"....-\": \"4\", \".....\": \"5\",\n     \"-....\": \"6\", \"--...\": \"7\",\n"
+  },
+  "pydata__xarray-6744": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "pydata__xarray-6744",
+    "model_patch": ""
+  },
+  "sympy__sympy-24539": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sympy__sympy-24539",
+    "model_patch": "diff --git a/sympy/polys/rings.py b/sympy/polys/rings.py\nindex 12bd2fc920..be6e35d06d 100644\n--- a/sympy/polys/rings.py\n+++ b/sympy/polys/rings.py\n@@ -618,7 +618,7 @@ def set_ring(self, new_ring):\n     def as_expr(self, *symbols):\n         if symbols and len(symbols) != self.ring.ngens:\n             raise ValueError(\"not enough symbols, expected %s got %s\" % (self.ring.ngens, len(symbols)))\n-        else:\n+        elif not symbols:\n             symbols = self.ring.symbols\n \n         return expr_from_dict(self.as_expr_dict(), *symbols)\n"
+  },
+  "sphinx-doc__sphinx-11445": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sphinx-doc__sphinx-11445",
+    "model_patch": ""
+  },
+  "sympy__sympy-13091": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sympy__sympy-13091",
+    "model_patch": ""
+  },
+  "sphinx-doc__sphinx-9591": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sphinx-doc__sphinx-9591",
+    "model_patch": ""
+  },
+  "sympy__sympy-17318": {
+    "model_name_or_path": "z-ai/glm-5.3",
+    "instance_id": "sympy__sympy-17318",
+    "model_patch": ""
+  }
+}

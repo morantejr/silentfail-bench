@@ -1,0 +1,30 @@
+# Amendment 13: the agent axis on DeepSeek V4.1 Flash. Derived from mini_swe_deepseek.yaml.
+# EVERY limit is named here because Amendment 12 was confounded by one that was not:
+#   step_limit 100  -- the budget DeepSeek qualified under (Amendment 11), post hoc w.r.t. A10
+#   max_tokens 16000 -- the pilot's corrected output cap; a 4k cap starves reasoning models
+#   cost_limit 1.00 -- a ceiling that must NOT bind. DeepSeek's most expensive Verified run
+#                      cost $0.123; Multilingual instances run about 2x. Any trajectory that
+#                      reaches this is reported as a cut, never silently scored as a failure.
+# The API key is NOT stored here. Set it yourself: mini-extra config set OPENROUTER_API_KEY ...
+agent:
+  step_limit: 100
+  cost_limit: 1.00
+  mode: yolo
+environment:
+  environment_class: swerex_modal
+  cwd: /testbed
+  timeout: 120
+  startup_timeout: 600
+  runtime_timeout: 7200
+  deployment_timeout: 7200
+model:
+  cost_tracking: ignore_errors
+  model_class: openrouter_textbased
+  model_name: deepseek/deepseek-v4.1-flash
+  model_kwargs:
+    max_tokens: 16000
+    provider:
+      order: [Morph, Sail Research, DeepInfra]
+      allow_fallbacks: false
+    drop_params: true
+    temperature: 0.0

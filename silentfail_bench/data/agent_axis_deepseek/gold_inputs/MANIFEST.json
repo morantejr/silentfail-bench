@@ -1,0 +1,7 @@
+{
+ "registered_instances": 114,
+ "candidate_slots": 456,
+ "random_rule": "sha256('a7-random-v1:' + instance_id), first 8 bytes big-endian mod 4",
+ "instance_file_sha256": "a39e94bc34c4f669d497336e29673c71e91ca0aef3a4fed1596ede19f2cb0440",
+ "bundle_sha256": "66a4a8671bf9d498b7f3d34eaea558cfc7cb8c57fec9ec8033c2a172e2c9ec4c"
+}

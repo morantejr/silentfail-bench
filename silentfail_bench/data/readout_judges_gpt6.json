@@ -1,0 +1,139 @@
+{
+ "analysis": "Exploratory: do newer-generation LLM judges change the judge-disagreement null? Same committed rows, same J1 prompt (problem statement + final diff), two additional judges from a different model generation.",
+ "cost_usd": 0.96,
+ "verified": {
+  "n": 34,
+  "failures": 12,
+  "single_judges": {
+   "gpt-5": [
+    0.72,
+    [
+     0.424,
+     0.854
+    ]
+   ],
+   "gpt-5-mini": [
+    0.752,
+    [
+     0.421,
+     0.853
+    ]
+   ],
+   "gpt-5-nano": [
+    0.58,
+    [
+     0.333,
+     0.775
+    ]
+   ],
+   "gpt-6-luna": [
+    0.824,
+    [
+     0.74,
+     1.0
+    ]
+   ],
+   "gpt-6-sol": [
+    0.826,
+    [
+     0.768,
+     1.0
+    ]
+   ]
+  },
+  "disagreement": {
+   "3 gpt-5 judges (published)": [
+    0.528,
+    [
+     0.358,
+     0.707
+    ]
+   ],
+   "2 gpt-6 judges": [
+    0.415,
+    [
+     0.263,
+     0.571
+    ]
+   ],
+   "all 5 judges": [
+    0.617,
+    [
+     0.442,
+     0.812
+    ]
+   ]
+  }
+ },
+ "multilingual": {
+  "n": 77,
+  "failures": 35,
+  "single_judges": {
+   "gpt-5": [
+    0.662,
+    [
+     0.537,
+     0.778
+    ]
+   ],
+   "gpt-5-mini": [
+    0.604,
+    [
+     0.479,
+     0.725
+    ]
+   ],
+   "gpt-5-nano": [
+    0.576,
+    [
+     0.465,
+     0.693
+    ]
+   ],
+   "gpt-6-luna": [
+    0.707,
+    [
+     0.605,
+     0.805
+    ]
+   ],
+   "gpt-6-sol": [
+    0.776,
+    [
+     0.683,
+     0.869
+    ]
+   ]
+  },
+  "disagreement": {
+   "3 gpt-5 judges (published)": [
+    0.514,
+    [
+     0.392,
+     0.634
+    ]
+   ],
+   "2 gpt-6 judges": [
+    0.409,
+    [
+     0.292,
+     0.524
+    ]
+   ],
+   "all 5 judges": [
+    0.444,
+    [
+     0.312,
+     0.575
+    ]
+   ]
+  }
+ },
+ "reading": "Individual judges improve markedly with model generation: gpt-6-sol reaches 0.776 [0.68, 0.87] on the larger sample, the best single detector anywhere in this study, and gpt-6-luna and gpt-6-sol both beat every gpt-5 judge on both benchmarks. Their disagreement does not improve - it is 0.41 on both benchmarks, below the 0.51-0.53 of the weaker gpt-5 trio. The five-judge panel gives 0.62 on 12 positives and 0.44 on 35. Better critics, no better disagreement.",
+ "caveats": [
+  "The gpt-6 panel has only two members, so its disagreement is a single absolute difference and a weaker statistic than a four-member spread; the five-judge row is the fair panel comparison.",
+  "Exploratory, not pre-registered. Ten quantities per benchmark, no multiplicity correction.",
+  "Single-vendor still: all five judges are OpenAI models, so shared-blind-spot concerns are not retired."
+ ],
+ "why_it_matters": "It retires the objection that the judge-disagreement null reflects weak judges. The dissociation between what critics know individually and what their disagreement conveys now holds across two model generations, and widens as the critics get better."
+}

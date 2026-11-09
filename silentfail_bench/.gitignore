@@ -1,0 +1,83 @@
+data/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.venv/
+
+# Run outputs are ignored above, but the artifacts that make a result
+# reproducible are NOT: readouts, scores, scored rows, candidate pools.
+# (The blanket data/ rule silently dropped the first pilot's results.)
+!data/
+data/*
+!data/*/
+data/*/*
+!data/*/prereg_readout.json
+!data/*/scores*.json
+!data/*/pilot_free_scored*.jsonl
+!data/*/candidates.jsonl
+!data/*/gold_errors.json
+!data/*.json
+# Nested under data/<bench>/gpu_scores/ — data/*/* swallows these unless
+# the directory and the score files are both re-included.
+!data/*/gpu_scores/
+!data/*/gpu_scores/scores*.json
+# pre-outcome, tamper-evident records must be committed:
+!data/*/CHECKPOINT_HASHES.json
+# readouts the paper quotes must be committed:
+!data/*/readout_*.json
+# inputs a committed script reads must be committed too. This allow-list has now
+# been extended five times reactively; preflight_pre_oct1.sh checks the property
+# directly so the next omission is caught by a gate rather than by an audit.
+!data/*/judge_*.jsonl
+!data/*/gold_extra*.jsonl
+# git cannot re-include a file whose parent directory is excluded, so the
+# intermediate directories need negating before the files inside them.
+!data/*/llm_judges/
+!data/*/llm_judges/judgments*.jsonl
+!data/*/traj/
+!data/*/traj/cand*/
+# re-exclude the trajectories themselves; only the skip ledger is wanted,
+# because CHECKPOINT_HASHES.json attests it and preflight_amendment7.py reads it
+data/*/traj/cand*/*
+!data/*/traj/cand*/preds.json
+# capability-pilot inputs. readout_amendment10.py computes its gates from
+# data/<run>/preds.json and data/gold_modal/<run-id>/report.json. Amendment 6's
+# equivalents are tracked only because they predate the blanket rule, so the
+# Amendment 10 pair was silently dropped -- the sixth recurrence of this class.
+# The run dirs also hold a 15 MB logs/ tree, so negate the directory and
+# re-exclude its contents before re-including the one file that is wanted.
+!data/*/preds.json
+!data/gold_modal/*/
+data/gold_modal/*/*
+!data/gold_modal/*/report.json
+# Amendment 11's comparator population is a merged prediction file, with a note beside
+# it recording which rows were regenerated and why. Seventh recurrence of this class.
+!data/*/predictions_merged.jsonl
+!data/*/MERGE_NOTE.md
+!data/*/README.md
+!data/*/rescoring_bundle.jsonl
+silentfail_l4_package*
+
+# per-run spend ledgers are evidence
+!data/*/spend_ledger.txt
+
+# Amendment 13 results
+!data/agent_axis_deepseek/readout_amendment7_deepseek.json
+!data/agent_axis_deepseek/ENDPOINT_FAILURES.json
+!data/*/RESUME_NOTE.md
+!data/*/traj/cand*/RESUME_NOTE.md
+!data/agent_axis_deepseek/gold_inputs/
+!data/agent_axis_deepseek/gold_inputs/*
+!data/agent_axis_deepseek/judge_gpt5.jsonl
+!data/agent_axis_deepseek/modal/
+!data/agent_axis_deepseek/modal/prefix4k/
+!data/agent_axis_deepseek/modal/prefix4k/*.json
+!data/agent_axis_gpt5mini_100/predictions.jsonl
+!data/agent_axis_gpt5mini_100_rerun_w1/traj/cand0/preds.json
+
+# Amendment 14
+!data/agent_axis_deepseek/judge_gpt-6-sol.jsonl
+!data/agent_axis_deepseek/judge_gpt-6-luna.jsonl
+!data/agent_axis_deepseek/readout_amendment14_gpt-6-sol.json
+!data/agent_axis_deepseek/readout_amendment14_gpt-6-luna.json
+!data/agent_axis_deepseek/spend_ledger_a14.txt

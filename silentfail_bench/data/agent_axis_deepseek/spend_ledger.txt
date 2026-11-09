@@ -1,0 +1,26 @@
+openrouter_before 18.161482
+openai_balance_confirmed_over_20_by_operator 2026-10-01T17:09:51Z
+openrouter_at_pause 20.053937 2026-10-01T18:51:54Z  # generation killed at cand0=100/114: 100 idle sandboxes hit the Modal 100-container cap; 14 SandboxTimeoutError with zero model calls
+openrouter_resume 20.066225
+openrouter_at_pause2 21.135381 2026-10-01T20:13:55+00:00  # killed at cand1=46/114: 66 SandboxTimeoutError at ~51s, Modal tunnels() default timeout, zero model calls
+openrouter_resume 21.147969
+openrouter_at_pause3 21.257307 2026-10-02T00:59:44+00:00  # generator wedged after the 16:45 EDT wifi drop; killed at cand1=52/114 after 227 min without progress
+openrouter_resume 21.257307
+openrouter_at_pause4 2026-10-02T07:10:09Z  # wedged after the two cand1 stragglers hit the 7200 s sandbox lifetime; killed at cand1=112/114
+openrouter_resume 22.545487
+openrouter_at_pause5 2026-10-02T11:41:02Z  # two cand1 instances declared endpoint failures after two full attempts each; see ENDPOINT_FAILURES.json
+openrouter_resume 22.631883
+openrouter_at_pause6 2026-10-02T20:42:09Z  # Mac slept 12:56-16:40 on battery with the lid closed; cand2 102 placeholders from the 10:38-11:37 sleep, cand3 frozen at 21
+openrouter_resume 23.115873
+workers_raised_6_to_18 2026-10-02T21:44:53Z  # execution setting only; endpoint latency bound the 6-worker pool to ~0.2 traj/min
+openrouter_resume 23.439258
+paused_lid_closed 2026-10-03T01:56:35Z  # Mac in deep sleep since 18:12 EDT on battery; generator killed and app stopped so idle sandboxes do not bill; resume with scripts/resume_amendment13.sh when awake
+openrouter_resume 23.446842
+openrouter_at_pause7 2026-10-03T05:50:49Z  # cand2 straggler projectlombok__lombok-2792 wedged 86 min at ~step 95 with no retries (hung model call); killed; regenerates
+openrouter_resume 25.110532
+openrouter_after_generate 26.935666
+generation_complete 2026-10-03T08:52:10Z  # 454 trajectories + 2 declared endpoint failures; external spend 8.7742 of 20.00
+comparator_launched 2026-10-03T09:05:49Z  # gpt-5-mini k=1, 100 steps, 114 instances; OpenAI balance confirmed >$20 by operator 1 Oct
+comparator_lombok3009_killed 2026-10-03T11:52:05Z  # its sandbox was reaped after 20 min idle during an OpenAI retry loop; TERM sent; no trajectory; regenerates in the rerun pass (EXTRA_IDS)
+axis_complete 2026-10-03T13:34:12+00:00  openrouter_total 8.7742  judge_est 13.50  modal dashboard pending  # readout: A7-P1 PASS (0.200 vs 0.579), selector gate FAIL (0.552), DESCRIPTIVE ONLY
+operator_readings 2026-10-03  modal_balance_after 14.30 (27.10 before Amendment 12 -> A12+A13 = 12.80, cap 22)  openai_balance_after 23.23

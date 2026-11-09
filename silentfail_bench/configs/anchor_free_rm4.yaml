@@ -1,0 +1,143 @@
+stage: 0
+derives_from: configs/anchor.yaml
+profile: A_local_exec+C_true_rm_panel
+pilot_n_trajectories: 40
+selection:
+  rule: best_of_n
+  n: 4
+  retain: 1
+  temperature: 0.7
+  max_agent_steps: 3
+  per_trajectory_timeout_sec: 300
+gold:
+  blocker: 'Real SWE-bench Verified gold requires per-instance containers (official
+    harness is Docker-based). This host has no container runtime. Until one is installed
+    there is NO honest path to g on SWE-bench, at any model size. Shrinking n or m
+    does not relieve this; it is orthogonal to compute.
+
+    '
+  resolution_for_profile_A: 'Substitute a task family whose gold tests execute locally
+    in-process, so g is REAL (executed unit tests), not mocked. This buys a true failure
+    rate and a true AUROC(M_c) at the cost of the repo-level generalization claim.
+
+    '
+  mock_g_allowed: false
+tasks:
+  family: local_exec_agent
+  dataset: evalplus/humanevalplus
+  n_instances: 40
+  split_unit: problem_id
+  split_note: 'problem_id split is NOT a repo split. It does not test cross-repo generalization.
+    Profile B restores split_unit: repository.
+
+    '
+agent:
+  name: local_exec_agent
+  git_url: null
+  git_commit: PIN_AT_RUN
+  model_backend: ollama
+  base_url: http://127.0.0.1:11434/v1
+  model_name: qwen2.5-coder:7b
+execution_sandbox:
+  runtime: subprocess
+  network: disabled
+  cwd: ephemeral_tmpdir
+  rlimits:
+    cpu_sec: 10
+    address_space_mb: 2048
+    nofile: 64
+  wall_timeout_sec: 15
+  RISK: 'This executes model-generated code on the host. rlimits + tmpdir + no network
+    is mitigation, NOT a sandbox. Do not run profile A on a machine holding synced
+    work data without accepting that. Colima (profile B) is the real fix.
+
+    '
+critic_type: 'mixed: c_sel=llm_judge, audit=reward_model'
+is_true_reward_model: true
+critic_honesty_note: 'These are instruction-tuned chat models prompted for a 0-10
+  scalar, NOT trained reward models. u is therefore judge-prompt disagreement, not
+  RM ensemble disagreement. Every artifact from this profile must say "LLM-as-judge
+  panel". Skywork-Reward-V2 et al. from anchor.yaml are unreachable here: no torch,
+  no CUDA, and Ollama serves chat models, not scalar RM heads.
+
+  '
+selection_critic:
+  id: c_sel_llama31_8b
+  hf_id: null
+  ollama_id: llama3.1:8b
+  role: c_sel
+  backend: ollama
+audit_panel:
+  m: 4
+  u_statistic: std_rank_normalized
+  rank_norm_fit: train_split_only
+  note: 'Same c_sel as pilot 1 (llama3.1:8b judge) so the ONLY change is the panel:
+    m=2 judges -> m=4 true RMs.'
+  members:
+  - id: audit_0
+    backend: rm
+    hf_id: Ray2333/GRM-gemma2-2B-rewardmodel-ft
+    family: gemma2
+  - id: audit_1
+    backend: rm
+    hf_id: Ray2333/GRM-Llama3.2-3B-rewardmodel-ft
+    family: llama3.2
+  - id: audit_2
+    backend: rm
+    hf_id: Skywork/Skywork-Reward-V2-Llama-3.2-1B
+    family: llama3.2
+  - id: audit_3
+    backend: rm
+    hf_id: Skywork/Skywork-Reward-V2-Qwen3-1.7B
+    family: qwen3
+quality_match:
+  metric: SKIPPED_IN_FREE_PILOT
+  reason: 'No RewardBench run and no held-out preference slice locally. Panels are
+    therefore NOT quality-matched, so the anchor.yaml primary contrast (diverse vs
+    seed panel) is out of scope for this profile.
+
+    '
+split:
+  unit: problem_id
+  train_frac: 0.7
+  split_seed: 20260922
+  hash_fn: sha256_stable
+exclusions:
+- empty_candidate_pool
+- critic_score_nan
+- timeout
+- max_steps_exceeded
+- judge_unparseable_score
+- sandbox_error
+controls:
+- length_chars
+- step_count
+paths:
+  instances_file: configs/pilot_instances_free.txt
+  log_dir: data/pilot_free_rm4
+  schema: schema/trajectory_log.schema.json
+compute:
+  preferred: ollama
+  allow_api: false
+  logistic_device: cpu
+budget_estimate:
+  download_gb: 22
+  disk_free_gb: 91
+  pipeline_order: staged_by_model
+  pipeline_order_reason: 'anchor runner interleaves models per instance; on 24 GB
+    that forces repeated model swaps. Staging by model is required, not an optimization.
+
+    '
+  wall_clock_hours_est:
+  - 1.5
+  - 2.5
+  usd: 0
+go_no_go_overrides:
+  min_failures: 12
+  max_mc_auroc: 0.9
+  power_source: observed_failure_rate
+  power_caveat: 'pilot.simulate_power is currently invalid (see report defect #4:
+    ~0.40 false positive rate under the true null). Fix before any power number is
+    reported to mentor.
+
+    '

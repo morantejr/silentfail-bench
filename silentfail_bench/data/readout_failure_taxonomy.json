@@ -1,0 +1,111 @@
+{
+  "analysis": "E5 failure taxonomy, test-derived, exploratory (run after the confirmatory results).",
+  "classes_are": "mutually exclusive and exhaustive over g=0 committed trajectories; read from the executed harness report, not a judge.",
+  "inference_floor": 10,
+  "verified": {
+    "benchmark": "verified",
+    "n_analysed": 34,
+    "n_failures": 12,
+    "classes": {
+      "no progress on the bug, broke nothing": 8,
+      "partial fix": 1,
+      "broke something else, bug unfixed": 2,
+      "patch did not apply": 1
+    },
+    "per_class": {
+      "no progress on the bug, broke nothing": {
+        "n": 8,
+        "vs_passes_n": 30,
+        "below_inference_floor": true,
+        "AUROC_u": 0.438,
+        "AUROC_negc": 0.591
+      },
+      "partial fix": {
+        "n": 1,
+        "vs_passes_n": 23,
+        "below_inference_floor": true,
+        "AUROC_u": 0.591,
+        "AUROC_negc": 0.5
+      },
+      "broke something else, bug unfixed": {
+        "n": 2,
+        "vs_passes_n": 24,
+        "below_inference_floor": true,
+        "AUROC_u": 0.591,
+        "AUROC_negc": 0.614
+      },
+      "patch did not apply": {
+        "n": 1,
+        "vs_passes_n": 23,
+        "below_inference_floor": true,
+        "AUROC_u": 0.818,
+        "AUROC_negc": 1.0
+      }
+    },
+    "guard_tests": {
+      "f2p_n_median_over_pop": 1,
+      "pop_with_single_f2p_test": 22
+    },
+    "AUROC_u_all_failures": 0.508,
+    "AUROC_negc_all_failures": 0.621
+  },
+  "multilingual": {
+    "benchmark": "multilingual",
+    "n_analysed": 77,
+    "n_failures": 35,
+    "classes": {
+      "no progress on the bug, broke nothing": 21,
+      "partial fix": 3,
+      "broke something else, bug unfixed": 6,
+      "fixed the bug, broke something else": 5
+    },
+    "per_class": {
+      "no progress on the bug, broke nothing": {
+        "n": 21,
+        "vs_passes_n": 63,
+        "below_inference_floor": false,
+        "AUROC_u": 0.534,
+        "AUROC_negc": 0.541,
+        "AUROC_u_CI": [
+          0.367,
+          0.697
+        ]
+      },
+      "partial fix": {
+        "n": 3,
+        "vs_passes_n": 45,
+        "below_inference_floor": true,
+        "AUROC_u": 0.651,
+        "AUROC_negc": 0.429
+      },
+      "broke something else, bug unfixed": {
+        "n": 6,
+        "vs_passes_n": 48,
+        "below_inference_floor": true,
+        "AUROC_u": 0.563,
+        "AUROC_negc": 0.575
+      },
+      "fixed the bug, broke something else": {
+        "n": 5,
+        "vs_passes_n": 47,
+        "below_inference_floor": true,
+        "AUROC_u": 0.643,
+        "AUROC_negc": 0.698
+      }
+    },
+    "guard_tests": {
+      "f2p_n_median_over_pop": 1,
+      "pop_with_single_f2p_test": 62
+    },
+    "AUROC_u_all_failures": 0.565,
+    "AUROC_negc_all_failures": 0.56
+  },
+  "pooled_classes": {
+    "no progress on the bug, broke nothing": 29,
+    "partial fix": 4,
+    "broke something else, bug unfixed": 8,
+    "fixed the bug, broke something else": 5,
+    "patch did not apply": 1
+  },
+  "pooled_n_failures": 47
+}

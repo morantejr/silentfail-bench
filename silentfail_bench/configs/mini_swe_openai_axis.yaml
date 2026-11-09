@@ -1,0 +1,21 @@
+# Amendment 13 equal-budget comparator: gpt-5-mini at the SAME 100-step budget the candidate
+# qualified under, k=1, so the capability comparison is not rigged by budget (the Amendment 11
+# lesson). Derived from mini_swe_openai_modal.yaml. cost_limit raised to a non-binding ceiling
+# and named; any trajectory reaching it is reported as a cut. The 40-step, leaderboard-anchored
+# gpt-5-mini figure remains the paper's primary and the registered A7-P1 band still uses it.
+agent:
+  step_limit: 100
+  cost_limit: 1.00
+  mode: yolo
+environment:
+  environment_class: swerex_modal
+  cwd: /testbed
+  timeout: 120
+  startup_timeout: 600
+  runtime_timeout: 7200
+  deployment_timeout: 7200
+model:
+  model_class: litellm
+  model_name: gpt-5-mini
+  model_kwargs:
+    drop_params: true

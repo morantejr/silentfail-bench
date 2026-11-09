@@ -1,0 +1,161 @@
+{
+ "analysis": "critic demeaning / what disagreement measures",
+ "benchmarks": {
+  "multilingual": {
+   "E2_error_correlation": {
+    "definition": "rank_j(score) - (1 - y), rank norms fit on train rows; mean pairwise correlation over every four-member subset of the seven critics",
+    "independence_floor_range": [
+     0.736,
+     0.749
+    ],
+    "label_permutation_range_mean": [
+     0.75,
+     0.849
+    ],
+    "n_permutations": 200,
+    "observed_range": [
+     0.737,
+     0.839
+    ],
+    "reading": "the lower edge of the observed band meets the independence floor; the upper edge survives permuting the label, so it is dependence among the rank scores, which this statistic does not separate into shared error and shared signal",
+    "seed": 0
+   },
+   "failures": 35,
+   "matrix": "data/replication_multilingual/modal/prefix4k",
+   "n": 77,
+   "panels": {
+    "registered_panel4": {
+     "members": [
+      "ray2333_grm_gemma2_2b_rewardmodel_ft",
+      "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+      "skywork_skywork_reward_v2_llama_3_2_1b",
+      "skywork_skywork_reward_v2_qwen3_1_7b"
+     ],
+     "rank_scale": {
+      "ICC_C1": 0.166,
+      "J": 4,
+      "n": 77,
+      "share_critic": 0.001,
+      "share_residual": 0.624,
+      "share_trajectory": 0.374
+     },
+     "raw_scale": {
+      "ICC_C1": 0.075,
+      "J": 4,
+      "n": 77,
+      "share_critic": 0.797,
+      "share_residual": 0.141,
+      "share_trajectory": 0.062
+     }
+    },
+    "zoo7": {
+     "members": [
+      "ray2333_grm_gemma2_2b_rewardmodel_ft",
+      "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+      "skywork_skywork_reward_v2_llama_3_1_8b",
+      "skywork_skywork_reward_v2_llama_3_2_1b",
+      "skywork_skywork_reward_v2_qwen3_1_7b",
+      "skywork_skywork_reward_v2_qwen3_4b",
+      "tiger_lab_acecoderm_7b"
+     ],
+     "rank_scale": {
+      "ICC_C1": 0.173,
+      "J": 7,
+      "n": 77,
+      "share_critic": 0.005,
+      "share_residual": 0.705,
+      "share_trajectory": 0.29
+     },
+     "raw_scale": {
+      "ICC_C1": 0.131,
+      "J": 7,
+      "n": 77,
+      "share_critic": 0.812,
+      "share_residual": 0.14,
+      "share_trajectory": 0.048
+     }
+    }
+   },
+   "repositories": 37
+  },
+  "verified": {
+   "E2_error_correlation": {
+    "definition": "rank_j(score) - (1 - y), rank norms fit on train rows; mean pairwise correlation over every four-member subset of the seven critics",
+    "independence_floor_range": [
+     0.711,
+     0.725
+    ],
+    "label_permutation_range_mean": [
+     0.72,
+     0.898
+    ],
+    "n_permutations": 200,
+    "observed_range": [
+     0.71,
+     0.891
+    ],
+    "reading": "the lower edge of the observed band meets the independence floor; the upper edge survives permuting the label, so it is dependence among the rank scores, which this statistic does not separate into shared error and shared signal",
+    "seed": 0
+   },
+   "failures": 12,
+   "matrix": "data/swebench_pilot50/l4/out/gpu_scores_16k",
+   "n": 34,
+   "panels": {
+    "registered_panel4": {
+     "members": [
+      "ray2333_grm_gemma2_2b_rewardmodel_ft",
+      "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+      "skywork_skywork_reward_v2_llama_3_2_1b",
+      "skywork_skywork_reward_v2_qwen3_1_7b"
+     ],
+     "rank_scale": {
+      "ICC_C1": 0.257,
+      "J": 4,
+      "n": 34,
+      "share_critic": 0.004,
+      "share_residual": 0.555,
+      "share_trajectory": 0.441
+     },
+     "raw_scale": {
+      "ICC_C1": 0.335,
+      "J": 4,
+      "n": 34,
+      "share_critic": 0.934,
+      "share_residual": 0.033,
+      "share_trajectory": 0.033
+     }
+    },
+    "zoo7": {
+     "members": [
+      "ray2333_grm_gemma2_2b_rewardmodel_ft",
+      "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+      "skywork_skywork_reward_v2_llama_3_1_8b",
+      "skywork_skywork_reward_v2_llama_3_2_1b",
+      "skywork_skywork_reward_v2_qwen3_1_7b",
+      "skywork_skywork_reward_v2_qwen3_4b",
+      "tiger_lab_acecoderm_7b"
+     ],
+     "rank_scale": {
+      "ICC_C1": 0.244,
+      "J": 7,
+      "n": 34,
+      "share_critic": 0.003,
+      "share_residual": 0.646,
+      "share_trajectory": 0.351
+     },
+     "raw_scale": {
+      "ICC_C1": 0.318,
+      "J": 7,
+      "n": 34,
+      "share_critic": 0.875,
+      "share_residual": 0.073,
+      "share_trajectory": 0.052
+     }
+    }
+   },
+   "repositories": 9
+  }
+ },
+ "date": "2026-10-03",
+ "post_hoc": true
+}

@@ -1,0 +1,323 @@
+{
+  "analysis": "Classical static-analysis baseline: do non-LLM structural signals rank silent failures?",
+  "why": "the paper's lines-added baseline measures size, not structure, and is trivially gamed. This tests the signals a linter already computes, which is the fair version of the same question.",
+  "exploratory": true,
+  "verified": {
+    "benchmark": "verified",
+    "n": 34,
+    "failures": 12,
+    "repositories": 9,
+    "single_features": {
+      "added_lines": {
+        "AUROC": 0.665,
+        "direction": "higher=worse",
+        "CI": [
+          0.465,
+          1.0
+        ]
+      },
+      "adds_error_handling": {
+        "AUROC": 0.576,
+        "direction": "higher=worse",
+        "CI": [
+          0.417,
+          0.708
+        ]
+      },
+      "ast_calls": {
+        "AUROC": 0.509,
+        "direction": "lower=worse",
+        "CI": [
+          0.214,
+          0.675
+        ]
+      },
+      "ast_func_defs": {
+        "AUROC": 0.523,
+        "direction": "lower=worse",
+        "CI": [
+          0.5,
+          0.54
+        ]
+      },
+      "ast_hunks_failed": {
+        "AUROC": 0.511,
+        "direction": "higher=worse",
+        "CI": [
+          0.25,
+          0.7
+        ]
+      },
+      "ast_hunks_parsed": {
+        "AUROC": 0.562,
+        "direction": "higher=worse",
+        "CI": [
+          0.44,
+          0.85
+        ]
+      },
+      "ast_nodes": {
+        "AUROC": 0.527,
+        "direction": "higher=worse",
+        "CI": [
+          0.353,
+          0.875
+        ]
+      },
+      "ast_parse_fail_rate": {
+        "AUROC": 0.515,
+        "direction": "lower=worse",
+        "CI": [
+          0.382,
+          0.75
+        ]
+      },
+      "comment_ratio": {
+        "AUROC": 0.578,
+        "direction": "higher=worse",
+        "CI": [
+          0.222,
+          0.813
+        ]
+      },
+      "cyclomatic_added": {
+        "AUROC": 0.532,
+        "direction": "higher=worse",
+        "CI": [
+          0.327,
+          0.808
+        ]
+      },
+      "decision_density": {
+        "AUROC": 0.553,
+        "direction": "lower=worse",
+        "CI": [
+          0.356,
+          0.7
+        ]
+      },
+      "decision_points": {
+        "AUROC": 0.532,
+        "direction": "higher=worse",
+        "CI": [
+          0.327,
+          0.808
+        ]
+      },
+      "files_touched": {
+        "AUROC": 0.545,
+        "direction": "lower=worse",
+        "CI": [
+          0.5,
+          0.58
+        ]
+      },
+      "hunks": {
+        "AUROC": 0.617,
+        "direction": "higher=worse",
+        "CI": [
+          0.496,
+          0.9
+        ]
+      },
+      "max_indent": {
+        "AUROC": 0.509,
+        "direction": "lower=worse",
+        "CI": [
+          0.402,
+          0.685
+        ]
+      },
+      "net_lines": {
+        "AUROC": 0.705,
+        "direction": "higher=worse",
+        "CI": [
+          0.513,
+          0.943
+        ]
+      },
+      "no_control_flow": {
+        "AUROC": 0.511,
+        "direction": "lower=worse",
+        "CI": [
+          0.396,
+          0.706
+        ]
+      },
+      "touches_signature": {
+        "AUROC": 0.504,
+        "direction": "lower=worse",
+        "CI": [
+          0.469,
+          0.588
+        ]
+      }
+    },
+    "combined_LORO": {
+      "features": 18,
+      "rows_scored": 34,
+      "AUROC": 0.436,
+      "CI": [
+        0.188,
+        0.6
+      ]
+    },
+    "endpoint_static_adds_to_selector": {
+      "delta": -0.061,
+      "CI95": [
+        -0.408,
+        0.05
+      ],
+      "baseline_AUROC": 0.527,
+      "raw_AUROC_for_comparison": 0.621
+    },
+    "endpoint_unfitted": {
+      "delta": 0.083,
+      "CI95": [
+        -0.24,
+        0.343
+      ],
+      "baseline_AUROC": 0.614
+    },
+    "head_to_head": {
+      "raw_AUROC_selector": 0.621,
+      "raw_AUROC_panel_u": 0.508,
+      "lines_added_alone": 0.665
+    }
+  },
+  "multilingual": {
+    "benchmark": "multilingual",
+    "n": 77,
+    "failures": 35,
+    "repositories": 37,
+    "single_features": {
+      "added_lines": {
+        "AUROC": 0.508,
+        "direction": "higher=worse",
+        "CI": [
+          0.35,
+          0.649
+        ]
+      },
+      "adds_error_handling": {
+        "AUROC": 0.519,
+        "direction": "higher=worse",
+        "CI": [
+          0.45,
+          0.583
+        ]
+      },
+      "comment_ratio": {
+        "AUROC": 0.615,
+        "direction": "higher=worse",
+        "CI": [
+          0.493,
+          0.736
+        ]
+      },
+      "cyclomatic_added": {
+        "AUROC": 0.519,
+        "direction": "higher=worse",
+        "CI": [
+          0.389,
+          0.642
+        ]
+      },
+      "decision_density": {
+        "AUROC": 0.546,
+        "direction": "higher=worse",
+        "CI": [
+          0.408,
+          0.675
+        ]
+      },
+      "decision_points": {
+        "AUROC": 0.519,
+        "direction": "higher=worse",
+        "CI": [
+          0.389,
+          0.642
+        ]
+      },
+      "files_touched": {
+        "AUROC": 0.502,
+        "direction": "higher=worse",
+        "CI": [
+          0.456,
+          0.55
+        ]
+      },
+      "hunks": {
+        "AUROC": 0.565,
+        "direction": "lower=worse",
+        "CI": [
+          0.457,
+          0.662
+        ]
+      },
+      "max_indent": {
+        "AUROC": 0.58,
+        "direction": "lower=worse",
+        "CI": [
+          0.431,
+          0.736
+        ]
+      },
+      "net_lines": {
+        "AUROC": 0.536,
+        "direction": "higher=worse",
+        "CI": [
+          0.406,
+          0.655
+        ]
+      },
+      "no_control_flow": {
+        "AUROC": 0.552,
+        "direction": "lower=worse",
+        "CI": [
+          0.447,
+          0.653
+        ]
+      },
+      "touches_signature": {
+        "AUROC": 0.526,
+        "direction": "lower=worse",
+        "CI": [
+          0.457,
+          0.601
+        ]
+      }
+    },
+    "combined_LORO": {
+      "features": 12,
+      "rows_scored": 77,
+      "AUROC": 0.644,
+      "CI": [
+        0.493,
+        0.778
+      ]
+    },
+    "endpoint_static_adds_to_selector": {
+      "delta": 0.169,
+      "CI95": [
+        -0.012,
+        0.344
+      ],
+      "baseline_AUROC": 0.459,
+      "raw_AUROC_for_comparison": 0.56
+    },
+    "endpoint_unfitted": {
+      "delta": -0.086,
+      "CI95": [
+        -0.257,
+        0.078
+      ],
+      "baseline_AUROC": 0.561
+    },
+    "head_to_head": {
+      "raw_AUROC_selector": 0.56,
+      "raw_AUROC_panel_u": 0.565,
+      "lines_added_alone": 0.508
+    }
+  }
+}

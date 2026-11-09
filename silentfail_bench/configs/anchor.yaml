@@ -1,0 +1,76 @@
+# SilentFail-Bench Stage-0 Anchor Config
+# Freeze hashes: fill agent.git_commit after `pip show` / clone.
+# Mentor may replace model IDs before first pilot run.
+
+stage: 0
+pilot_n_trajectories: 200
+selection:
+  rule: best_of_n
+  n: 16
+  retain: 1
+  temperature: 0.7
+  max_agent_steps: 50
+  per_trajectory_timeout_sec: 1800
+
+score_rule: >
+  c is the selection critic scalar score of the full committed trajectory
+  text (messages + final patch). BoN ranks full candidate trajectories by
+  this score and commits argmax. No per-step mean aggregation.
+
+agent:
+  name: mini-swe-agent
+  git_url: https://github.com/SWE-agent/mini-swe-agent
+  git_commit: "PIN_AFTER_CLONE"
+  model_backend: vllm   # vllm | openai_compatible
+  model_name: Qwen/Qwen2.5-Coder-7B-Instruct
+
+selection_critic:
+  id: skywork_reward_v2_qwen3_8b
+  hf_id: Skywork/Skywork-Reward-V2-Qwen3-8B
+  role: c_sel
+  backend: vllm   # vllm | transformers | openai_compatible
+
+# Disjoint: none of these may equal selection_critic.hf_id
+audit_panel:
+  m: 4
+  u_statistic: std_rank_normalized
+  rank_norm_fit: train_split_only
+  members:
+    - id: audit_0
+      hf_id: Skywork/Skywork-Reward-Llama-3.1-8B
+    - id: audit_1
+      hf_id: allenai/Llama-3.1-Tulu-3-8B-RM
+    - id: audit_2
+      hf_id: Ray2333/GRM-llama3.2-3B-rewardmodel-ft
+    - id: audit_3
+      hf_id: sfairXC/FsfairX-LLaMA3-RM-v0.1
+
+quality_match:
+  metric: rewardbench_or_pairwise_rank_acc
+  tolerance_pp: 2.0
+
+split:
+  unit: repository
+  train_frac: 0.7
+  split_seed: 20260922
+
+exclusions:
+  - empty_candidate_pool
+  - critic_score_nan
+  - timeout
+  - max_steps_exceeded
+
+controls:
+  - length_chars
+  - step_count
+  - mean_agent_entropy
+
+paths:
+  instances_file: configs/pilot_instances.txt
+  log_dir: data/pilot
+  schema: schema/trajectory_log.schema.json
+
+compute:
+  preferred: vllm
+  allow_api: true
+  logistic_device: cpu

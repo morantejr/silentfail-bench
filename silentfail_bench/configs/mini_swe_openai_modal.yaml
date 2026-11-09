@@ -1,0 +1,19 @@
+# mini-swe-agent overlay: GPT-5-mini via OpenAI, agent environment in a Modal sandbox (no local Docker).
+# Merge on top of benchmarks/swebench.yaml. The batch runner sets `environment.image` per instance.
+# Key: OPENAI_API_KEY in mini-swe-agent's global .env; Modal token in ~/.modal.toml. Nothing in the repo.
+agent:
+  step_limit: 40
+  cost_limit: 0.25
+  mode: yolo
+environment:
+  environment_class: swerex_modal
+  cwd: /testbed
+  timeout: 120
+  startup_timeout: 600
+  runtime_timeout: 7200
+  deployment_timeout: 7200
+model:
+  model_class: litellm
+  model_name: gpt-5-mini
+  model_kwargs:
+    drop_params: true

@@ -1,0 +1,14 @@
+{"instance_id": "django__django-10914", "candidate": 0, "g": 1}
+{"instance_id": "django__django-12754", "candidate": 0, "g": 1}
+{"instance_id": "django__django-14017", "candidate": 0, "g": 1}
+{"instance_id": "django__django-16899", "candidate": 0, "g": 1}
+{"instance_id": "scikit-learn__scikit-learn-13328", "candidate": 0, "g": 1}
+{"instance_id": "scikit-learn__scikit-learn-26323", "candidate": 1, "g": 1}
+{"instance_id": "django__django-11265", "candidate": 1, "g": 0}
+{"instance_id": "django__django-14155", "candidate": 3, "g": 0}
+{"instance_id": "django__django-15128", "candidate": 1, "g": 0}
+{"instance_id": "pylint-dev__pylint-4661", "candidate": 3, "g": 0}
+{"instance_id": "pytest-dev__pytest-5840", "candidate": 1, "g": 0}
+{"instance_id": "sympy__sympy-13091", "candidate": 0, "g": 0}
+{"instance_id": "pylint-dev__pylint-8898", "candidate": 3, "g": -1}
+{"instance_id": "sympy__sympy-17318", "candidate": 1, "g": -1}

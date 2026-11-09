@@ -1,0 +1,148 @@
+{
+ "status": "POST HOC, not pre-registered; computed 2026-11-09 at two symposium reviewers' request",
+ "protocol": "committed population; positive class failure; baseline -c; judge enters as -p_resolved (J1); LORO by repository; repository-clustered bootstrap CI (no refit inside draws, as registered)",
+ "judges": {
+  "gpt-6-sol": {
+   "verified": {
+    "n": 34,
+    "failures": 12,
+    "repositories": 9,
+    "AUROC_selector_alone": 0.621,
+    "AUROC_judge_alone": 0.826,
+    "fixed_unit_weights_PRIMARY": {
+     "AUROC_selector_plus_judge": 0.765,
+     "delta_vs_selector": 0.144,
+     "CI95": [
+      -0.021,
+      0.283
+     ]
+    },
+    "logistic_LORO": {
+     "AUROC_selector_plus_judge": 0.731,
+     "delta_vs_selector": 0.11,
+     "CI95": [
+      -0.136,
+      0.253
+     ]
+    }
+   },
+   "multilingual": {
+    "n": 77,
+    "failures": 35,
+    "repositories": 37,
+    "AUROC_selector_alone": 0.56,
+    "AUROC_judge_alone": 0.776,
+    "fixed_unit_weights_PRIMARY": {
+     "AUROC_selector_plus_judge": 0.744,
+     "delta_vs_selector": 0.184,
+     "CI95": [
+      0.095,
+      0.277
+     ]
+    },
+    "logistic_LORO": {
+     "AUROC_selector_plus_judge": 0.739,
+     "delta_vs_selector": 0.179,
+     "CI95": [
+      0.057,
+      0.303
+     ]
+    }
+   },
+   "pooled_descriptive": {
+    "n": 111,
+    "failures": 47,
+    "repositories": 46,
+    "AUROC_selector_alone": 0.56,
+    "AUROC_judge_alone": 0.788,
+    "fixed_unit_weights_PRIMARY": {
+     "AUROC_selector_plus_judge": 0.73,
+     "delta_vs_selector": 0.17,
+     "CI95": [
+      0.102,
+      0.247
+     ]
+    },
+    "logistic_LORO": {
+     "AUROC_selector_plus_judge": 0.746,
+     "delta_vs_selector": 0.186,
+     "CI95": [
+      0.1,
+      0.284
+     ]
+    }
+   }
+  },
+  "gpt-6-luna": {
+   "verified": {
+    "n": 34,
+    "failures": 12,
+    "repositories": 9,
+    "AUROC_selector_alone": 0.621,
+    "AUROC_judge_alone": 0.824,
+    "fixed_unit_weights_PRIMARY": {
+     "AUROC_selector_plus_judge": 0.773,
+     "delta_vs_selector": 0.152,
+     "CI95": [
+      0.045,
+      0.328
+     ]
+    },
+    "logistic_LORO": {
+     "AUROC_selector_plus_judge": 0.803,
+     "delta_vs_selector": 0.182,
+     "CI95": [
+      0.009,
+      0.424
+     ]
+    }
+   },
+   "multilingual": {
+    "n": 77,
+    "failures": 35,
+    "repositories": 37,
+    "AUROC_selector_alone": 0.56,
+    "AUROC_judge_alone": 0.707,
+    "fixed_unit_weights_PRIMARY": {
+     "AUROC_selector_plus_judge": 0.674,
+     "delta_vs_selector": 0.114,
+     "CI95": [
+      0.02,
+      0.212
+     ]
+    },
+    "logistic_LORO": {
+     "AUROC_selector_plus_judge": 0.622,
+     "delta_vs_selector": 0.062,
+     "CI95": [
+      -0.053,
+      0.178
+     ]
+    }
+   },
+   "pooled_descriptive": {
+    "n": 111,
+    "failures": 47,
+    "repositories": 46,
+    "AUROC_selector_alone": 0.56,
+    "AUROC_judge_alone": 0.745,
+    "fixed_unit_weights_PRIMARY": {
+     "AUROC_selector_plus_judge": 0.69,
+     "delta_vs_selector": 0.13,
+     "CI95": [
+      0.056,
+      0.209
+     ]
+    },
+    "logistic_LORO": {
+     "AUROC_selector_plus_judge": 0.685,
+     "delta_vs_selector": 0.125,
+     "CI95": [
+      0.024,
+      0.219
+     ]
+    }
+   }
+  }
+ }
+}

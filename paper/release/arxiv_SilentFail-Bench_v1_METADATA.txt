@@ -1,0 +1,12 @@
+Title: Auditing the Winner: An Upper Bound on What Critic Disagreement Adds Beyond the Selector on SWE-Agent Trajectories
+Authors: Joseph Morante (Algoverse AI Research)
+Version: SilentFail-Bench paper v0.9.24 (2026-11-09); arXiv v1
+Primary PDF: Morante_Auditing-the-Winner_LONG.pdf (36 pages)
+Source: arxiv_SilentFail-Bench_v1_source.tar.gz (main.tex with \pdfoutput=1, main.bbl, figures/*.pdf; compiles standalone with pdflatex, no bibtex needed)
+Categories: cs.SE (primary), cs.AI, cs.LG
+Comments: 36 pages. Companion 10-page short cut in Morante_Auditing-the-Winner_SHORT.pdf. Pre-registered; result is failure-to-detect incremental gain (loosest pooled upper bound +0.12 AUROC), not equivalence. One post-hoc analysis (single strong judge, +0.17 AUROC pooled) is marked as such.
+License: (set on arxiv.org at upload — CC-BY-4.0 recommended)
+Do not mention: the archival venue anywhere in the arXiv text or comments (chairs' condition for a preprint during review). Checked: the long paper contains neither word.
+
+Abstract (verbatim from main.tex, LaTeX removed):
+A coding agent tries a task several times and a scoring model picks its best attempt. We checked those picks against the projects' real test suites on two SWE benchmarks: 35% and 45% of the committed trajectories were silent failures — the agent said it was finished, the scorer agreed, and the tests failed. The safeguard we tested, pre-registered throughout, is disagreement among a disjoint panel of critics. On the population the selector actually commits, against the selector's own score, with executed gold, disagreement ranks failures at 0.508 and 0.565. Its pooled incremental estimates range from −0.030 to +0.013 AUROC; every interval includes zero, and the loosest pooled upper bound is +0.12 over 47 failures and 46 repositories. Because that bound exceeds the +0.05 we declared actionable, this is a failure to detect gain, not evidence of absence. The critics are consistent and individually informative; measuring how much they differ discards that information. Promising pilot results vanished on three times as many repositories, seven instrument failures would each have produced a convincing false finding, and on a stronger agent no critic cleared the registered selector bar, so that cell is descriptive only. A single strong judge's own score, added after the fact, does raise detection, by +0.17 AUROC pooled: the critics' judgments carry; their disagreement does not.

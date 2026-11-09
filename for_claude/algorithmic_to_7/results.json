@@ -1,0 +1,1631 @@
+{
+ "analysis": "critic-demeaned disagreement u_perp, post hoc, 3 October 2026",
+ "benchmarks": {
+  "multilingual": {
+   "16k_primary": {
+    "AUROC_c_detection": 0.56,
+    "AUROC_u_published": 0.565,
+    "J": 7,
+    "critics": [
+     "ray2333_grm_gemma2_2b_rewardmodel_ft",
+     "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+     "skywork_skywork_reward_v2_llama_3_1_8b",
+     "skywork_skywork_reward_v2_llama_3_2_1b",
+     "skywork_skywork_reward_v2_qwen3_1_7b",
+     "skywork_skywork_reward_v2_qwen3_4b",
+     "tiger_lab_acecoderm_7b"
+    ],
+    "failures": 35,
+    "matrix": "16k_primary",
+    "missing_cells": 0,
+    "missing_rule": "abort if any cell is missing (none were)",
+    "n": 77,
+    "panels": {
+     "panel4": {
+      "AUROC_u_perp": 0.569,
+      "AUROC_u_perp_CI": [
+       0.419,
+       0.705
+      ],
+      "AUROC_u_recomputed_CI": [
+       0.405,
+       0.685
+      ],
+      "AUROC_u_recomputed_rank_norm_sd": 0.549,
+      "E2_error_corr": {
+       "after_demeaning": [
+        0.759,
+        0.759
+       ],
+       "before_demeaning": [
+        0.759,
+        0.759
+       ],
+       "floor_note": "independence floor: the E2 error correlation if every critic's rank score were independent of the label and of the other critics. A permutation of y does not reproduce it, because between-critic rank correlation remains; the upper edge of the observed band survives permutation.",
+       "label_permutation_range_mean": [
+        0.765,
+        0.765
+       ],
+       "max_abs_change": 0.0,
+       "n_subsets": 1,
+       "uninformative_critic_floor": [
+        0.752,
+        0.752
+       ],
+       "why": "the E2 error uses per-critic empirical-CDF ranks fit on train rows; a per-critic shift leaves those ranks unchanged, so critic demeaning cannot move this correlation. Pearson pairwise correlation of raw columns is shift-invariant per column for the same reason."
+      },
+      "alpha_hat_train": [
+       -10.534,
+       -7.594,
+       3.872,
+       2.721
+      ],
+      "corr_u_perp_vs_u_published": 0.281,
+      "corr_u_perp_vs_u_recomputed": 0.86,
+      "endpoint_add_u_perp_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.074,
+         0.105
+        ],
+        "baseline_AUROC": 0.561,
+        "delta": 0.016
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.071,
+         0.118
+        ],
+        "baseline_AUROC": 0.473,
+        "delta": 0.02,
+        "rows_used": 77
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.099,
+         0.105
+        ],
+        "baseline_AUROC": 0.459,
+        "delta": 0.007,
+        "rows_used": 77
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.395,
+         0.48
+        ],
+        "delta": -0.048,
+        "folds_contributing": 12
+       }
+      },
+      "endpoint_add_u_published_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.074,
+         0.175
+        ],
+        "baseline_AUROC": 0.561,
+        "delta": 0.048
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.079,
+         0.052
+        ],
+        "baseline_AUROC": 0.473,
+        "delta": -0.018,
+        "rows_used": 77
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.133,
+         0.08
+        ],
+        "baseline_AUROC": 0.459,
+        "delta": -0.022,
+        "rows_used": 77
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.375,
+         0.421
+        ],
+        "delta": -0.145,
+        "folds_contributing": 12
+       }
+      },
+      "endpoint_add_u_recomputed_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.087,
+         0.127
+        ],
+        "baseline_AUROC": 0.561,
+        "delta": 0.024
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.079,
+         0.078
+        ],
+        "baseline_AUROC": 0.473,
+        "delta": -0.003,
+        "rows_used": 77
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.121,
+         0.053
+        ],
+        "baseline_AUROC": 0.459,
+        "delta": -0.024,
+        "rows_used": 77
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.409,
+         0.5
+        ],
+        "delta": -0.097,
+        "folds_contributing": 12
+       }
+      },
+      "identity": {
+       "max_abs_diff_sd(dc_all_rows) - sd(critic_demeaned_all_rows)": 8.881784197001252e-16,
+       "max_abs_diff_sd(dc_all_rows) - u_perp": 0.2069414836348087,
+       "max_abs_diff_sd(dc_train_fit) - u_perp": 8.881784197001252e-16,
+       "max_abs_diff_u_perp_on_rank_scale - u_recomputed": 0.0009668634117039332,
+       "reading": "spread after double-centring equals spread after critic demeaning whenever the same critic means are used (the trajectory mean is constant across critics); the second line differs only because all-row and train-only critic means differ, which is the train/held-out rule, not a bug",
+       "train_mean_rank_per_critic": [
+        0.51,
+        0.509,
+        0.508,
+        0.508
+       ]
+      },
+      "members": [
+       "ray2333_grm_gemma2_2b_rewardmodel_ft",
+       "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+       "skywork_skywork_reward_v2_llama_3_2_1b",
+       "skywork_skywork_reward_v2_qwen3_1_7b"
+      ],
+      "pairwise": {
+       "double_centered_residual_pairwise_corr_mean": -0.33,
+       "double_centered_residual_pairwise_corr_range": [
+        -0.542,
+        -0.011
+       ],
+       "note": "residual correlations are mechanically negative on average (sum-to-zero across critics, expectation -1/(J-1)); they are a diagnostic of what remains after removing both main effects, not an estimate of shared error.",
+       "raw_scores_pairwise_corr_mean": 0.071,
+       "raw_scores_pairwise_corr_range": [
+        -0.399,
+        0.555
+       ]
+      },
+      "refit_bootstrap_fixed_unit_weights": {
+       "CI95_refit": [
+        -0.08,
+        0.104
+       ],
+       "draws_valid": 4000
+      },
+      "ss": {
+       "ICC_C1_consistency": 0.169,
+       "J": 4,
+       "MS_residual": 4.198,
+       "MS_trajectory": 7.602,
+       "SS_critic": 12665.999,
+       "SS_residual": 957.05,
+       "SS_total": 14200.837,
+       "SS_trajectory": 577.788,
+       "df": {
+        "critic": 3,
+        "residual": 228,
+        "trajectory": 76
+       },
+       "n": 77,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.892,
+       "share_residual": 0.067,
+       "share_trajectory": 0.041
+      },
+      "ss_rank_normalized": {
+       "ICC_C1_consistency": 0.05,
+       "J": 4,
+       "MS_residual": 0.079,
+       "MS_trajectory": 0.095,
+       "SS_critic": 0.127,
+       "SS_residual": 17.984,
+       "SS_total": 25.363,
+       "SS_trajectory": 7.252,
+       "df": {
+        "critic": 3,
+        "residual": 228,
+        "trajectory": 76
+       },
+       "n": 77,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.005,
+       "share_residual": 0.709,
+       "share_trajectory": 0.286
+      }
+     },
+     "zoo7": {
+      "AUROC_u_perp": 0.561,
+      "AUROC_u_perp_CI": [
+       0.414,
+       0.703
+      ],
+      "AUROC_u_recomputed_CI": [
+       0.446,
+       0.708
+      ],
+      "AUROC_u_recomputed_rank_norm_sd": 0.582,
+      "E2_error_corr": {
+       "after_demeaning": [
+        0.748,
+        0.914
+       ],
+       "before_demeaning": [
+        0.748,
+        0.914
+       ],
+       "floor_note": "independence floor: the E2 error correlation if every critic's rank score were independent of the label and of the other critics. A permutation of y does not reproduce it, because between-critic rank correlation remains; the upper edge of the observed band survives permutation.",
+       "label_permutation_range_mean": [
+        0.743,
+        0.917
+       ],
+       "max_abs_change": 0.0,
+       "n_subsets": 35,
+       "uninformative_critic_floor": [
+        0.747,
+        0.754
+       ],
+       "why": "the E2 error uses per-critic empirical-CDF ranks fit on train rows; a per-critic shift leaves those ranks unchanged, so critic demeaning cannot move this correlation. Pearson pairwise correlation of raw columns is shift-invariant per column for the same reason."
+      },
+      "alpha_hat_train": [
+       -10.534,
+       -7.594,
+       7.834,
+       3.872,
+       2.721,
+       9.109,
+       0.538
+      ],
+      "corr_u_perp_vs_u_published": 0.15,
+      "corr_u_perp_vs_u_recomputed": 0.848,
+      "endpoint_add_u_perp_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.106,
+         0.08
+        ],
+        "baseline_AUROC": 0.561,
+        "delta": -0.01
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.077,
+         0.019
+        ],
+        "baseline_AUROC": 0.473,
+        "delta": -0.031,
+        "rows_used": 77
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.097,
+         0.019
+        ],
+        "baseline_AUROC": 0.459,
+        "delta": -0.035,
+        "rows_used": 77
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.414,
+         0.458
+        ],
+        "delta": -0.048,
+        "folds_contributing": 12
+       }
+      },
+      "endpoint_add_u_recomputed_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.072,
+         0.135
+        ],
+        "baseline_AUROC": 0.561,
+        "delta": 0.033
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.079,
+         0.118
+        ],
+        "baseline_AUROC": 0.473,
+        "delta": 0.016,
+        "rows_used": 77
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.07,
+         0.129
+        ],
+        "baseline_AUROC": 0.459,
+        "delta": 0.035,
+        "rows_used": 77
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.364,
+         0.6
+        ],
+        "delta": -0.113,
+        "folds_contributing": 12
+       }
+      },
+      "identity": {
+       "max_abs_diff_sd(dc_all_rows) - sd(critic_demeaned_all_rows)": 8.881784197001252e-16,
+       "max_abs_diff_sd(dc_all_rows) - u_perp": 0.31231431451206193,
+       "max_abs_diff_sd(dc_train_fit) - u_perp": 8.881784197001252e-16,
+       "max_abs_diff_u_perp_on_rank_scale - u_recomputed": 0.0007459681773994142,
+       "reading": "spread after double-centring equals spread after critic demeaning whenever the same critic means are used (the trajectory mean is constant across critics); the second line differs only because all-row and train-only critic means differ, which is the train/held-out rule, not a bug",
+       "train_mean_rank_per_critic": [
+        0.51,
+        0.509,
+        0.508,
+        0.508,
+        0.508,
+        0.508,
+        0.508
+       ]
+      },
+      "members": [
+       "ray2333_grm_gemma2_2b_rewardmodel_ft",
+       "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+       "skywork_skywork_reward_v2_llama_3_1_8b",
+       "skywork_skywork_reward_v2_llama_3_2_1b",
+       "skywork_skywork_reward_v2_qwen3_1_7b",
+       "skywork_skywork_reward_v2_qwen3_4b",
+       "tiger_lab_acecoderm_7b"
+      ],
+      "pairwise": {
+       "double_centered_residual_pairwise_corr_mean": -0.148,
+       "double_centered_residual_pairwise_corr_range": [
+        -0.781,
+        0.589
+       ],
+       "note": "residual correlations are mechanically negative on average (sum-to-zero across critics, expectation -1/(J-1)); they are a diagnostic of what remains after removing both main effects, not an estimate of shared error.",
+       "raw_scores_pairwise_corr_mean": 0.189,
+       "raw_scores_pairwise_corr_range": [
+        -0.399,
+        0.831
+       ]
+      },
+      "refit_bootstrap_fixed_unit_weights": {
+       "CI95_refit": [
+        -0.104,
+        0.088
+       ],
+       "draws_valid": 4000
+      },
+      "ss": {
+       "ICC_C1_consistency": 0.275,
+       "J": 7,
+       "MS_residual": 8.521,
+       "MS_trajectory": 31.203,
+       "SS_critic": 27324.766,
+       "SS_residual": 3885.635,
+       "SS_total": 33581.815,
+       "SS_trajectory": 2371.414,
+       "df": {
+        "critic": 6,
+        "residual": 456,
+        "trajectory": 76
+       },
+       "n": 77,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.814,
+       "share_residual": 0.116,
+       "share_trajectory": 0.071
+      },
+      "ss_rank_normalized": {
+       "ICC_C1_consistency": 0.175,
+       "J": 7,
+       "MS_residual": 0.069,
+       "MS_trajectory": 0.171,
+       "SS_critic": 0.204,
+       "SS_residual": 31.376,
+       "SS_total": 44.571,
+       "SS_trajectory": 12.991,
+       "df": {
+        "critic": 6,
+        "residual": 456,
+        "trajectory": 76
+       },
+       "n": 77,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.005,
+       "share_residual": 0.704,
+       "share_trajectory": 0.291
+      }
+     }
+    },
+    "repositories": 37,
+    "sign_check": "detection AUROC of -c above 0.5",
+    "train_rows": 59
+   },
+   "prefix4k_like_for_like": {
+    "AUROC_c_detection": 0.56,
+    "AUROC_u_published": 0.565,
+    "J": 7,
+    "critics": [
+     "ray2333_grm_gemma2_2b_rewardmodel_ft",
+     "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+     "skywork_skywork_reward_v2_llama_3_1_8b",
+     "skywork_skywork_reward_v2_llama_3_2_1b",
+     "skywork_skywork_reward_v2_qwen3_1_7b",
+     "skywork_skywork_reward_v2_qwen3_4b",
+     "tiger_lab_acecoderm_7b"
+    ],
+    "failures": 35,
+    "matrix": "prefix4k_like_for_like",
+    "missing_cells": 0,
+    "missing_rule": "abort if any cell is missing (none were)",
+    "n": 77,
+    "panels": {
+     "panel4": {
+      "AUROC_u_perp": 0.587,
+      "AUROC_u_perp_CI": [
+       0.455,
+       0.719
+      ],
+      "AUROC_u_recomputed_CI": [
+       0.425,
+       0.703
+      ],
+      "AUROC_u_recomputed_rank_norm_sd": 0.565,
+      "E2_error_corr": {
+       "after_demeaning": [
+        0.769,
+        0.769
+       ],
+       "before_demeaning": [
+        0.769,
+        0.769
+       ],
+       "floor_note": "independence floor: the E2 error correlation if every critic's rank score were independent of the label and of the other critics. A permutation of y does not reproduce it, because between-critic rank correlation remains; the upper edge of the observed band survives permutation.",
+       "label_permutation_range_mean": [
+        0.789,
+        0.789
+       ],
+       "max_abs_change": 0.0,
+       "n_subsets": 1,
+       "uninformative_critic_floor": [
+        0.745,
+        0.745
+       ],
+       "why": "the E2 error uses per-critic empirical-CDF ranks fit on train rows; a per-critic shift leaves those ranks unchanged, so critic demeaning cannot move this correlation. Pearson pairwise correlation of raw columns is shift-invariant per column for the same reason."
+      },
+      "alpha_hat_train": [
+       -7.435,
+       -6.695,
+       2.367,
+       0.353
+      ],
+      "corr_u_perp_vs_u_published": 0.848,
+      "corr_u_perp_vs_u_recomputed": 0.848,
+      "endpoint_add_u_perp_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.062,
+         0.114
+        ],
+        "baseline_AUROC": 0.561,
+        "delta": 0.027
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.056,
+         -0.002
+        ],
+        "baseline_AUROC": 0.473,
+        "delta": -0.027,
+        "rows_used": 77
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.101,
+         -0.008
+        ],
+        "baseline_AUROC": 0.459,
+        "delta": -0.048,
+        "rows_used": 77
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.364,
+         0.35
+        ],
+        "delta": -0.145,
+        "folds_contributing": 12
+       }
+      },
+      "endpoint_add_u_published_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.074,
+         0.175
+        ],
+        "baseline_AUROC": 0.561,
+        "delta": 0.048
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.079,
+         0.052
+        ],
+        "baseline_AUROC": 0.473,
+        "delta": -0.018,
+        "rows_used": 77
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.133,
+         0.08
+        ],
+        "baseline_AUROC": 0.459,
+        "delta": -0.022,
+        "rows_used": 77
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.375,
+         0.421
+        ],
+        "delta": -0.145,
+        "folds_contributing": 12
+       }
+      },
+      "endpoint_add_u_recomputed_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.074,
+         0.175
+        ],
+        "baseline_AUROC": 0.561,
+        "delta": 0.048
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.079,
+         0.052
+        ],
+        "baseline_AUROC": 0.473,
+        "delta": -0.018,
+        "rows_used": 77
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.133,
+         0.08
+        ],
+        "baseline_AUROC": 0.459,
+        "delta": -0.022,
+        "rows_used": 77
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.375,
+         0.421
+        ],
+        "delta": -0.145,
+        "folds_contributing": 12
+       }
+      },
+      "identity": {
+       "max_abs_diff_sd(dc_all_rows) - sd(critic_demeaned_all_rows)": 4.440892098500626e-16,
+       "max_abs_diff_sd(dc_all_rows) - u_perp": 0.14290855035657168,
+       "max_abs_diff_sd(dc_train_fit) - u_perp": 8.881784197001252e-16,
+       "max_abs_diff_u_perp_on_rank_scale - u_recomputed": 0.0002734051119927805,
+       "reading": "spread after double-centring equals spread after critic demeaning whenever the same critic means are used (the trajectory mean is constant across critics); the second line differs only because all-row and train-only critic means differ, which is the train/held-out rule, not a bug",
+       "train_mean_rank_per_critic": [
+        0.508,
+        0.509,
+        0.508,
+        0.509
+       ]
+      },
+      "members": [
+       "ray2333_grm_gemma2_2b_rewardmodel_ft",
+       "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+       "skywork_skywork_reward_v2_llama_3_2_1b",
+       "skywork_skywork_reward_v2_qwen3_1_7b"
+      ],
+      "pairwise": {
+       "double_centered_residual_pairwise_corr_mean": -0.326,
+       "double_centered_residual_pairwise_corr_range": [
+        -0.662,
+        0.136
+       ],
+       "note": "residual correlations are mechanically negative on average (sum-to-zero across critics, expectation -1/(J-1)); they are a diagnostic of what remains after removing both main effects, not an estimate of shared error.",
+       "raw_scores_pairwise_corr_mean": 0.083,
+       "raw_scores_pairwise_corr_range": [
+        -0.189,
+        0.397
+       ]
+      },
+      "refit_bootstrap_fixed_unit_weights": {
+       "CI95_refit": [
+        -0.067,
+        0.104
+       ],
+       "draws_valid": 4000
+      },
+      "ss": {
+       "ICC_C1_consistency": 0.075,
+       "J": 4,
+       "MS_residual": 4.378,
+       "MS_trajectory": 5.801,
+       "SS_critic": 5639.222,
+       "SS_residual": 998.29,
+       "SS_total": 7078.423,
+       "SS_trajectory": 440.911,
+       "df": {
+        "critic": 3,
+        "residual": 228,
+        "trajectory": 76
+       },
+       "n": 77,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.797,
+       "share_residual": 0.141,
+       "share_trajectory": 0.062
+      },
+      "ss_rank_normalized": {
+       "ICC_C1_consistency": 0.166,
+       "J": 4,
+       "MS_residual": 0.072,
+       "MS_trajectory": 0.129,
+       "SS_critic": 0.031,
+       "SS_residual": 16.35,
+       "SS_total": 26.181,
+       "SS_trajectory": 9.8,
+       "df": {
+        "critic": 3,
+        "residual": 228,
+        "trajectory": 76
+       },
+       "n": 77,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.001,
+       "share_residual": 0.624,
+       "share_trajectory": 0.374
+      }
+     },
+     "zoo7": {
+      "AUROC_u_perp": 0.556,
+      "AUROC_u_perp_CI": [
+       0.415,
+       0.693
+      ],
+      "AUROC_u_recomputed_CI": [
+       0.438,
+       0.725
+      ],
+      "AUROC_u_recomputed_rank_norm_sd": 0.583,
+      "E2_error_corr": {
+       "after_demeaning": [
+        0.737,
+        0.839
+       ],
+       "before_demeaning": [
+        0.737,
+        0.839
+       ],
+       "floor_note": "independence floor: the E2 error correlation if every critic's rank score were independent of the label and of the other critics. A permutation of y does not reproduce it, because between-critic rank correlation remains; the upper edge of the observed band survives permutation.",
+       "label_permutation_range_mean": [
+        0.75,
+        0.849
+       ],
+       "max_abs_change": 0.0,
+       "n_subsets": 35,
+       "uninformative_critic_floor": [
+        0.736,
+        0.749
+       ],
+       "why": "the E2 error uses per-critic empirical-CDF ranks fit on train rows; a per-critic shift leaves those ranks unchanged, so critic demeaning cannot move this correlation. Pearson pairwise correlation of raw columns is shift-invariant per column for the same reason."
+      },
+      "alpha_hat_train": [
+       -7.435,
+       -6.695,
+       1.251,
+       2.367,
+       0.353,
+       6.079,
+       -2.678
+      ],
+      "corr_u_perp_vs_u_published": 0.712,
+      "corr_u_perp_vs_u_recomputed": 0.852,
+      "endpoint_add_u_perp_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.093,
+         0.106
+        ],
+        "baseline_AUROC": 0.561,
+        "delta": 0.007
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.086,
+         0.003
+        ],
+        "baseline_AUROC": 0.473,
+        "delta": -0.041,
+        "rows_used": 77
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.141,
+         -0.018
+        ],
+        "baseline_AUROC": 0.459,
+        "delta": -0.071,
+        "rows_used": 77
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.402,
+         0.37
+        ],
+        "delta": -0.145,
+        "folds_contributing": 12
+       }
+      },
+      "endpoint_add_u_recomputed_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.1,
+         0.143
+        ],
+        "baseline_AUROC": 0.561,
+        "delta": 0.019
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.117,
+         0.037
+        ],
+        "baseline_AUROC": 0.473,
+        "delta": -0.041,
+        "rows_used": 77
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.152,
+         0.078
+        ],
+        "baseline_AUROC": 0.459,
+        "delta": -0.033,
+        "rows_used": 77
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.353,
+         0.487
+        ],
+        "delta": -0.016,
+        "folds_contributing": 12
+       }
+      },
+      "identity": {
+       "max_abs_diff_sd(dc_all_rows) - sd(critic_demeaned_all_rows)": 4.440892098500626e-16,
+       "max_abs_diff_sd(dc_all_rows) - u_perp": 0.13613051719618552,
+       "max_abs_diff_sd(dc_train_fit) - u_perp": 8.881784197001252e-16,
+       "max_abs_diff_u_perp_on_rank_scale - u_recomputed": 0.0001590202643690919,
+       "reading": "spread after double-centring equals spread after critic demeaning whenever the same critic means are used (the trajectory mean is constant across critics); the second line differs only because all-row and train-only critic means differ, which is the train/held-out rule, not a bug",
+       "train_mean_rank_per_critic": [
+        0.508,
+        0.509,
+        0.509,
+        0.508,
+        0.509,
+        0.508,
+        0.509
+       ]
+      },
+      "members": [
+       "ray2333_grm_gemma2_2b_rewardmodel_ft",
+       "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+       "skywork_skywork_reward_v2_llama_3_1_8b",
+       "skywork_skywork_reward_v2_llama_3_2_1b",
+       "skywork_skywork_reward_v2_qwen3_1_7b",
+       "skywork_skywork_reward_v2_qwen3_4b",
+       "tiger_lab_acecoderm_7b"
+      ],
+      "pairwise": {
+       "double_centered_residual_pairwise_corr_mean": -0.164,
+       "double_centered_residual_pairwise_corr_range": [
+        -0.641,
+        0.315
+       ],
+       "note": "residual correlations are mechanically negative on average (sum-to-zero across critics, expectation -1/(J-1)); they are a diagnostic of what remains after removing both main effects, not an estimate of shared error.",
+       "raw_scores_pairwise_corr_mean": 0.131,
+       "raw_scores_pairwise_corr_range": [
+        -0.286,
+        0.506
+       ]
+      },
+      "refit_bootstrap_fixed_unit_weights": {
+       "CI95_refit": [
+        -0.093,
+        0.104
+       ],
+       "draws_valid": 4000
+      },
+      "ss": {
+       "ICC_C1_consistency": 0.131,
+       "J": 7,
+       "MS_residual": 4.345,
+       "MS_trajectory": 8.949,
+       "SS_critic": 11482.748,
+       "SS_residual": 1981.26,
+       "SS_total": 14144.122,
+       "SS_trajectory": 680.113,
+       "df": {
+        "critic": 6,
+        "residual": 456,
+        "trajectory": 76
+       },
+       "n": 77,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.812,
+       "share_residual": 0.14,
+       "share_trajectory": 0.048
+      },
+      "ss_rank_normalized": {
+       "ICC_C1_consistency": 0.173,
+       "J": 7,
+       "MS_residual": 0.072,
+       "MS_trajectory": 0.177,
+       "SS_critic": 0.214,
+       "SS_residual": 32.747,
+       "SS_total": 46.433,
+       "SS_trajectory": 13.472,
+       "df": {
+        "critic": 6,
+        "residual": 456,
+        "trajectory": 76
+       },
+       "n": 77,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.005,
+       "share_residual": 0.705,
+       "share_trajectory": 0.29
+      }
+     }
+    },
+    "repositories": 37,
+    "sign_check": "detection AUROC of -c above 0.5",
+    "train_rows": 59
+   }
+  },
+  "verified": {
+   "16k_primary": {
+    "AUROC_c_detection": 0.621,
+    "AUROC_u_published": 0.508,
+    "J": 7,
+    "critics": [
+     "ray2333_grm_gemma2_2b_rewardmodel_ft",
+     "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+     "skywork_skywork_reward_v2_llama_3_1_8b",
+     "skywork_skywork_reward_v2_llama_3_2_1b",
+     "skywork_skywork_reward_v2_qwen3_1_7b",
+     "skywork_skywork_reward_v2_qwen3_4b",
+     "tiger_lab_acecoderm_7b"
+    ],
+    "failures": 12,
+    "matrix": "16k_primary",
+    "missing_cells": 0,
+    "missing_rule": "abort if any cell is missing (none were)",
+    "n": 34,
+    "panels": {
+     "panel4": {
+      "AUROC_u_perp": 0.53,
+      "AUROC_u_perp_CI": [
+       0.268,
+       0.771
+      ],
+      "AUROC_u_recomputed_CI": [
+       0.222,
+       0.864
+      ],
+      "AUROC_u_recomputed_rank_norm_sd": 0.439,
+      "E2_error_corr": {
+       "after_demeaning": [
+        0.785,
+        0.785
+       ],
+       "before_demeaning": [
+        0.785,
+        0.785
+       ],
+       "floor_note": "independence floor: the E2 error correlation if every critic's rank score were independent of the label and of the other critics. A permutation of y does not reproduce it, because between-critic rank correlation remains; the upper edge of the observed band survives permutation.",
+       "label_permutation_range_mean": [
+        0.796,
+        0.796
+       ],
+       "max_abs_change": 0.0,
+       "n_subsets": 1,
+       "uninformative_critic_floor": [
+        0.725,
+        0.725
+       ],
+       "why": "the E2 error uses per-critic empirical-CDF ranks fit on train rows; a per-critic shift leaves those ranks unchanged, so critic demeaning cannot move this correlation. Pearson pairwise correlation of raw columns is shift-invariant per column for the same reason."
+      },
+      "alpha_hat_train": [
+       -10.603,
+       -7.939,
+       5.163,
+       4.842
+      ],
+      "corr_u_perp_vs_u_published": -0.118,
+      "corr_u_perp_vs_u_recomputed": 0.733,
+      "endpoint_add_u_perp_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.233,
+         0.017
+        ],
+        "baseline_AUROC": 0.614,
+        "delta": -0.049
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.48,
+         -0.054
+        ],
+        "baseline_AUROC": 0.644,
+        "delta": -0.212,
+        "rows_used": 34
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.088,
+         0.0
+        ],
+        "baseline_AUROC": 0.527,
+        "delta": -0.045,
+        "rows_used": 34
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -1.0,
+         0.69
+        ],
+        "delta": -0.012,
+        "folds_contributing": 3
+       }
+      },
+      "endpoint_add_u_published_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.165,
+         0.24
+        ],
+        "baseline_AUROC": 0.614,
+        "delta": -0.03
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.283,
+         0.075
+        ],
+        "baseline_AUROC": 0.644,
+        "delta": -0.189,
+        "rows_used": 34
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.159,
+         0.089
+        ],
+        "baseline_AUROC": 0.527,
+        "delta": -0.076,
+        "rows_used": 34
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -1.0,
+         0.4
+        ],
+        "delta": -0.152,
+        "folds_contributing": 3
+       }
+      },
+      "endpoint_add_u_recomputed_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.278,
+         0.038
+        ],
+        "baseline_AUROC": 0.614,
+        "delta": -0.136
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.45,
+         0.059
+        ],
+        "baseline_AUROC": 0.644,
+        "delta": -0.273,
+        "rows_used": 34
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.381,
+         0.106
+        ],
+        "baseline_AUROC": 0.527,
+        "delta": -0.106,
+        "rows_used": 34
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.833,
+         0.5
+        ],
+        "delta": -0.346,
+        "folds_contributing": 3
+       }
+      },
+      "identity": {
+       "max_abs_diff_sd(dc_all_rows) - sd(critic_demeaned_all_rows)": 4.440892098500626e-16,
+       "max_abs_diff_sd(dc_all_rows) - u_perp": 0.12706068141416527,
+       "max_abs_diff_sd(dc_train_fit) - u_perp": 4.440892098500626e-16,
+       "max_abs_diff_u_perp_on_rank_scale - u_recomputed": 0.001012721326328625,
+       "reading": "spread after double-centring equals spread after critic demeaning whenever the same critic means are used (the trajectory mean is constant across critics); the second line differs only because all-row and train-only critic means differ, which is the train/held-out rule, not a bug",
+       "train_mean_rank_per_critic": [
+        0.519,
+        0.517,
+        0.517,
+        0.518
+       ]
+      },
+      "members": [
+       "ray2333_grm_gemma2_2b_rewardmodel_ft",
+       "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+       "skywork_skywork_reward_v2_llama_3_2_1b",
+       "skywork_skywork_reward_v2_qwen3_1_7b"
+      ],
+      "pairwise": {
+       "double_centered_residual_pairwise_corr_mean": -0.296,
+       "double_centered_residual_pairwise_corr_range": [
+        -0.755,
+        -0.086
+       ],
+       "note": "residual correlations are mechanically negative on average (sum-to-zero across critics, expectation -1/(J-1)); they are a diagnostic of what remains after removing both main effects, not an estimate of shared error.",
+       "raw_scores_pairwise_corr_mean": 0.35,
+       "raw_scores_pairwise_corr_range": [
+        -0.099,
+        0.733
+       ]
+      },
+      "refit_bootstrap_fixed_unit_weights": {
+       "CI95_refit": [
+        -0.175,
+        0.059
+       ],
+       "draws_valid": 4000
+      },
+      "ss": {
+       "ICC_C1_consistency": 0.335,
+       "J": 4,
+       "MS_residual": 2.454,
+       "MS_trajectory": 7.399,
+       "SS_critic": 6839.802,
+       "SS_residual": 242.93,
+       "SS_total": 7326.914,
+       "SS_trajectory": 244.183,
+       "df": {
+        "critic": 3,
+        "residual": 99,
+        "trajectory": 33
+       },
+       "n": 34,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.934,
+       "share_residual": 0.033,
+       "share_trajectory": 0.033
+      },
+      "ss_rank_normalized": {
+       "ICC_C1_consistency": 0.257,
+       "J": 4,
+       "MS_residual": 0.066,
+       "MS_trajectory": 0.158,
+       "SS_critic": 0.047,
+       "SS_residual": 6.582,
+       "SS_total": 11.85,
+       "SS_trajectory": 5.222,
+       "df": {
+        "critic": 3,
+        "residual": 99,
+        "trajectory": 33
+       },
+       "n": 34,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.004,
+       "share_residual": 0.555,
+       "share_trajectory": 0.441
+      }
+     },
+     "zoo7": {
+      "AUROC_u_perp": 0.629,
+      "AUROC_u_perp_CI": [
+       0.382,
+       0.906
+      ],
+      "AUROC_u_recomputed_CI": [
+       0.379,
+       0.952
+      ],
+      "AUROC_u_recomputed_rank_norm_sd": 0.557,
+      "E2_error_corr": {
+       "after_demeaning": [
+        0.71,
+        0.891
+       ],
+       "before_demeaning": [
+        0.71,
+        0.891
+       ],
+       "floor_note": "independence floor: the E2 error correlation if every critic's rank score were independent of the label and of the other critics. A permutation of y does not reproduce it, because between-critic rank correlation remains; the upper edge of the observed band survives permutation.",
+       "label_permutation_range_mean": [
+        0.72,
+        0.898
+       ],
+       "max_abs_change": 0.0,
+       "n_subsets": 35,
+       "uninformative_critic_floor": [
+        0.711,
+        0.725
+       ],
+       "why": "the E2 error uses per-critic empirical-CDF ranks fit on train rows; a per-critic shift leaves those ranks unchanged, so critic demeaning cannot move this correlation. Pearson pairwise correlation of raw columns is shift-invariant per column for the same reason."
+      },
+      "alpha_hat_train": [
+       -10.603,
+       -7.939,
+       9.292,
+       5.163,
+       4.842,
+       12.196,
+       -0.18
+      ],
+      "corr_u_perp_vs_u_published": 0.029,
+      "corr_u_perp_vs_u_recomputed": 0.705,
+      "endpoint_add_u_perp_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.125,
+         0.059
+        ],
+        "baseline_AUROC": 0.614,
+        "delta": 0.004
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.347,
+         0.015
+        ],
+        "baseline_AUROC": 0.644,
+        "delta": -0.114,
+        "rows_used": 34
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.17,
+         0.035
+        ],
+        "baseline_AUROC": 0.527,
+        "delta": -0.049,
+        "rows_used": 34
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -1.0,
+         1.0
+        ],
+        "delta": 0.012,
+        "folds_contributing": 3
+       }
+      },
+      "endpoint_add_u_recomputed_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.119,
+         0.183
+        ],
+        "baseline_AUROC": 0.614,
+        "delta": -0.023
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.304,
+         0.188
+        ],
+        "baseline_AUROC": 0.644,
+        "delta": -0.17,
+        "rows_used": 34
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.205,
+         0.05
+        ],
+        "baseline_AUROC": 0.527,
+        "delta": -0.087,
+        "rows_used": 34
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.5,
+         1.0
+        ],
+        "delta": -0.199,
+        "folds_contributing": 3
+       }
+      },
+      "identity": {
+       "max_abs_diff_sd(dc_all_rows) - sd(critic_demeaned_all_rows)": 8.881784197001252e-16,
+       "max_abs_diff_sd(dc_all_rows) - u_perp": 0.18775205543148044,
+       "max_abs_diff_sd(dc_train_fit) - u_perp": 8.881784197001252e-16,
+       "max_abs_diff_u_perp_on_rank_scale - u_recomputed": 0.0008179174393744826,
+       "reading": "spread after double-centring equals spread after critic demeaning whenever the same critic means are used (the trajectory mean is constant across critics); the second line differs only because all-row and train-only critic means differ, which is the train/held-out rule, not a bug",
+       "train_mean_rank_per_critic": [
+        0.519,
+        0.517,
+        0.517,
+        0.517,
+        0.518,
+        0.517,
+        0.517
+       ]
+      },
+      "members": [
+       "ray2333_grm_gemma2_2b_rewardmodel_ft",
+       "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+       "skywork_skywork_reward_v2_llama_3_1_8b",
+       "skywork_skywork_reward_v2_llama_3_2_1b",
+       "skywork_skywork_reward_v2_qwen3_1_7b",
+       "skywork_skywork_reward_v2_qwen3_4b",
+       "tiger_lab_acecoderm_7b"
+      ],
+      "pairwise": {
+       "double_centered_residual_pairwise_corr_mean": -0.14,
+       "double_centered_residual_pairwise_corr_range": [
+        -0.781,
+        0.626
+       ],
+       "note": "residual correlations are mechanically negative on average (sum-to-zero across critics, expectation -1/(J-1)); they are a diagnostic of what remains after removing both main effects, not an estimate of shared error.",
+       "raw_scores_pairwise_corr_mean": 0.311,
+       "raw_scores_pairwise_corr_range": [
+        -0.12,
+        0.892
+       ]
+      },
+      "refit_bootstrap_fixed_unit_weights": {
+       "CI95_refit": [
+        -0.117,
+        0.137
+       ],
+       "draws_valid": 4000
+      },
+      "ss": {
+       "ICC_C1_consistency": 0.318,
+       "J": 7,
+       "MS_residual": 6.018,
+       "MS_trajectory": 25.704,
+       "SS_critic": 14253.003,
+       "SS_residual": 1191.619,
+       "SS_total": 16292.849,
+       "SS_trajectory": 848.227,
+       "df": {
+        "critic": 6,
+        "residual": 198,
+        "trajectory": 33
+       },
+       "n": 34,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.875,
+       "share_residual": 0.073,
+       "share_trajectory": 0.052
+      },
+      "ss_rank_normalized": {
+       "ICC_C1_consistency": 0.244,
+       "J": 7,
+       "MS_residual": 0.07,
+       "MS_trajectory": 0.228,
+       "SS_critic": 0.065,
+       "SS_residual": 13.866,
+       "SS_total": 21.47,
+       "SS_trajectory": 7.538,
+       "df": {
+        "critic": 6,
+        "residual": 198,
+        "trajectory": 33
+       },
+       "n": 34,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.003,
+       "share_residual": 0.646,
+       "share_trajectory": 0.351
+      }
+     }
+    },
+    "repositories": 9,
+    "sign_check": "detection AUROC of -c above 0.5",
+    "train_rows": 30
+   },
+   "rows_audit_scores_like_for_like": {
+    "AUROC_c_detection": 0.621,
+    "AUROC_u_published": 0.508,
+    "J": 4,
+    "critics": [
+     "ray2333_grm_gemma2_2b_rewardmodel_ft",
+     "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+     "skywork_skywork_reward_v2_llama_3_2_1b",
+     "skywork_skywork_reward_v2_qwen3_1_7b"
+    ],
+    "failures": 12,
+    "matrix": "rows_audit_scores_like_for_like",
+    "missing_cells": 0,
+    "missing_rule": "abort if any cell is missing (none were)",
+    "n": 34,
+    "panels": {
+     "panel4": {
+      "AUROC_u_perp": 0.496,
+      "AUROC_u_perp_CI": [
+       0.28,
+       0.893
+      ],
+      "AUROC_u_recomputed_CI": [
+       0.318,
+       0.85
+      ],
+      "AUROC_u_recomputed_rank_norm_sd": 0.508,
+      "E2_error_corr": {
+       "after_demeaning": [
+        0.729,
+        0.729
+       ],
+       "before_demeaning": [
+        0.729,
+        0.729
+       ],
+       "floor_note": "independence floor: the E2 error correlation if every critic's rank score were independent of the label and of the other critics. A permutation of y does not reproduce it, because between-critic rank correlation remains; the upper edge of the observed band survives permutation.",
+       "label_permutation_range_mean": [
+        0.718,
+        0.718
+       ],
+       "max_abs_change": 0.0,
+       "n_subsets": 1,
+       "uninformative_critic_floor": [
+        0.732,
+        0.732
+       ],
+       "why": "the E2 error uses per-critic empirical-CDF ranks fit on train rows; a per-critic shift leaves those ranks unchanged, so critic demeaning cannot move this correlation. Pearson pairwise correlation of raw columns is shift-invariant per column for the same reason."
+      },
+      "alpha_hat_train": [
+       -7.758,
+       -5.21,
+       1.59,
+       -0.091
+      ],
+      "corr_u_perp_vs_u_published": 0.815,
+      "corr_u_perp_vs_u_recomputed": 0.815,
+      "endpoint_add_u_perp_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.17,
+         0.273
+        ],
+        "baseline_AUROC": 0.614,
+        "delta": -0.015
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.328,
+         0.0
+        ],
+        "baseline_AUROC": 0.644,
+        "delta": -0.22,
+        "rows_used": 34
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.214,
+         0.08
+        ],
+        "baseline_AUROC": 0.527,
+        "delta": -0.121,
+        "rows_used": 34
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -0.498,
+         1.0
+        ],
+        "delta": -0.187,
+        "folds_contributing": 3
+       }
+      },
+      "endpoint_add_u_published_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.165,
+         0.24
+        ],
+        "baseline_AUROC": 0.614,
+        "delta": -0.03
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.283,
+         0.075
+        ],
+        "baseline_AUROC": 0.644,
+        "delta": -0.189,
+        "rows_used": 34
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.159,
+         0.089
+        ],
+        "baseline_AUROC": 0.527,
+        "delta": -0.076,
+        "rows_used": 34
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -1.0,
+         0.4
+        ],
+        "delta": -0.152,
+        "folds_contributing": 3
+       }
+      },
+      "endpoint_add_u_recomputed_to_c": {
+       "fixed_unit_weights_PRIMARY": {
+        "CI95": [
+         -0.165,
+         0.24
+        ],
+        "baseline_AUROC": 0.614,
+        "delta": -0.03
+       },
+       "logistic_5fold": {
+        "CI95": [
+         -0.283,
+         0.075
+        ],
+        "baseline_AUROC": 0.644,
+        "delta": -0.189,
+        "rows_used": 34
+       },
+       "logistic_LORO": {
+        "CI95": [
+         -0.159,
+         0.089
+        ],
+        "baseline_AUROC": 0.527,
+        "delta": -0.076,
+        "rows_used": 34
+       },
+       "within_fold_size_weighted": {
+        "CI95": [
+         -1.0,
+         0.4
+        ],
+        "delta": -0.152,
+        "folds_contributing": 3
+       }
+      },
+      "identity": {
+       "max_abs_diff_sd(dc_all_rows) - sd(critic_demeaned_all_rows)": 4.440892098500626e-16,
+       "max_abs_diff_sd(dc_all_rows) - u_perp": 0.14395226963076357,
+       "max_abs_diff_sd(dc_train_fit) - u_perp": 8.881784197001252e-16,
+       "max_abs_diff_u_perp_on_rank_scale - u_recomputed": 1.1102230246251565e-16,
+       "reading": "spread after double-centring equals spread after critic demeaning whenever the same critic means are used (the trajectory mean is constant across critics); the second line differs only because all-row and train-only critic means differ, which is the train/held-out rule, not a bug",
+       "train_mean_rank_per_critic": [
+        0.517,
+        0.517,
+        0.517,
+        0.517
+       ]
+      },
+      "members": [
+       "ray2333_grm_gemma2_2b_rewardmodel_ft",
+       "ray2333_grm_llama3_2_3b_rewardmodel_ft",
+       "skywork_skywork_reward_v2_llama_3_2_1b",
+       "skywork_skywork_reward_v2_qwen3_1_7b"
+      ],
+      "pairwise": {
+       "double_centered_residual_pairwise_corr_mean": -0.328,
+       "double_centered_residual_pairwise_corr_range": [
+        -0.468,
+        -0.072
+       ],
+       "note": "residual correlations are mechanically negative on average (sum-to-zero across critics, expectation -1/(J-1)); they are a diagnostic of what remains after removing both main effects, not an estimate of shared error.",
+       "raw_scores_pairwise_corr_mean": -0.028,
+       "raw_scores_pairwise_corr_range": [
+        -0.18,
+        0.128
+       ]
+      },
+      "refit_bootstrap_fixed_unit_weights": {
+       "CI95_refit": [
+        -0.222,
+        0.262
+       ],
+       "draws_valid": 4000
+      },
+      "ss": {
+       "ICC_C1_consistency": -0.025,
+       "J": 4,
+       "MS_residual": 7.171,
+       "MS_trajectory": 6.476,
+       "SS_critic": 1842.709,
+       "SS_residual": 709.94,
+       "SS_total": 2766.356,
+       "SS_trajectory": 213.707,
+       "df": {
+        "critic": 3,
+        "residual": 99,
+        "trajectory": 33
+       },
+       "n": 34,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.666,
+       "share_residual": 0.257,
+       "share_trajectory": 0.077
+      },
+      "ss_rank_normalized": {
+       "ICC_C1_consistency": -0.055,
+       "J": 4,
+       "MS_residual": 0.091,
+       "MS_trajectory": 0.072,
+       "SS_critic": 0.024,
+       "SS_residual": 9.017,
+       "SS_total": 11.418,
+       "SS_trajectory": 2.377,
+       "df": {
+        "critic": 3,
+        "residual": 99,
+        "trajectory": 33
+       },
+       "n": 34,
+       "note": "SS_trajectory carries q_i + c_i (true quality plus common-mode error), which the matrix cannot separate; ICC(C,1) is the trajectory-level share after removing critic location, i.e. the relative-error view (Brennan).",
+       "share_critic": 0.002,
+       "share_residual": 0.79,
+       "share_trajectory": 0.208
+      }
+     }
+    },
+    "repositories": 9,
+    "sign_check": "detection AUROC of -c above 0.5",
+    "train_rows": 30
+   }
+  }
+ },
+ "conventions": {
+  "critic_means": "fit on split == 'train' rows only, applied to all committed rows",
+  "estimators": "readout_amendment7.endpoint (logistic LORO, logistic 5-fold seed 0, fixed unit weights; repo-clustered bootstrap n=4000 seeds 21/22) + verify_and_robustify.fold_avg_with_ci (n=2000 seed 13); AUROC CIs via readout_amendment7.boot (n=4000 seed 9)",
+  "positive_class": "failure, y = 1[g == 0]",
+  "selector": "-c (reward-model c is higher-is-better)",
+  "u_perp": "sd over critics (ddof=1, as uncertainty_std) of r_ji - alpha_hat_j"
+ }
+}

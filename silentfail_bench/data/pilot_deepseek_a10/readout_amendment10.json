@@ -1,0 +1,34 @@
+{
+  "amendment": 10,
+  "agent": "deepseek-v4.1-flash",
+  "run_id": "a10_deepseek_pilot",
+  "instances": 41,
+  "P10_1": {
+    "submitted": 32,
+    "rate": 0.78,
+    "bar": 0.8,
+    "passes": false
+  },
+  "P10_2": {
+    "failure_rate": 0.268,
+    "failures": 11,
+    "gpt5mini_baseline": {
+      "n": 41,
+      "failure_rate": 0.486,
+      "source": "Amendment 6, validated against the public leaderboard at 0.488",
+      "recomputed_committed_arm_for_contrast": 0.463
+    },
+    "gap": 0.218,
+    "bar": 0.1,
+    "passes": true
+  },
+  "P10_3": {
+    "measured_total_usd": 0.5527,
+    "per_trajectory_usd": 0.0135,
+    "bar": 0.04,
+    "source": "OpenRouter credits endpoint, differenced by the runner",
+    "passes": true
+  },
+  "all_gates_pass": false,
+  "decision": "STOP. Report as a negative capability result. Do not launch the axis, do not substitute GLM-5.3, do not revert to gpt-6-luna (Amendment 10a section 1)."
+}

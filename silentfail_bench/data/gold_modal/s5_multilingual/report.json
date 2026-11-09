@@ -1,0 +1,444 @@
+{
+ "run_id": "s5_multilingual",
+ "dataset": "swe-bench/SWE-Bench_Multilingual",
+ "total": 45,
+ "resolved_ids": [
+  "apache__druid-14092",
+  "apache__druid-15402",
+  "apache__druid-16875",
+  "apache__lucene-12212",
+  "axios__axios-4731",
+  "axios__axios-5085",
+  "fastlane__fastlane-19304",
+  "fmtlib__fmt-2317",
+  "gin-gonic__gin-1805",
+  "gohugoio__hugo-12343",
+  "gohugoio__hugo-12579",
+  "google__gson-1014",
+  "laravel__framework-46234",
+  "mrdoob__three.js-26589",
+  "php-cs-fixer__php-cs-fixer-8064",
+  "phpoffice__phpspreadsheet-3903",
+  "preactjs__preact-3739",
+  "rubocop__rubocop-13375",
+  "sharkdp__bat-2393",
+  "sharkdp__bat-2835",
+  "tokio-rs__tokio-6724",
+  "tokio-rs__tokio-7139",
+  "uutils__coreutils-6731",
+  "vuejs__core-11870"
+ ],
+ "unresolved_ids": [
+  "astral-sh__ruff-15356",
+  "axios__axios-6539",
+  "burntsushi__ripgrep-2209",
+  "fluent__fluentd-4030",
+  "fluent__fluentd-4311",
+  "jekyll__jekyll-8047",
+  "jekyll__jekyll-9141",
+  "jordansissel__fpm-1829",
+  "preactjs__preact-3345",
+  "projectlombok__lombok-2792",
+  "projectlombok__lombok-3009",
+  "prometheus__prometheus-10633",
+  "redis__redis-11734",
+  "rubocop__rubocop-13579",
+  "tokio-rs__axum-2096",
+  "valkey-io__valkey-1842"
+ ],
+ "error_ids": [
+  "babel__babel-15649",
+  "caddyserver__caddy-4943",
+  "gohugoio__hugo-12204",
+  "prometheus__prometheus-9248",
+  "tokio-rs__axum-734"
+ ],
+ "oracle": [],
+ "details": [
+  {
+   "instance_id": "apache__druid-14092",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 50,
+   "f2p": "1/1",
+   "p2p": "1/1"
+  },
+  {
+   "instance_id": "apache__druid-15402",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 93,
+   "f2p": "1/1",
+   "p2p": "2/2"
+  },
+  {
+   "instance_id": "apache__druid-16875",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 53,
+   "f2p": "1/1",
+   "p2p": "2/2"
+  },
+  {
+   "instance_id": "apache__lucene-12212",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 89,
+   "f2p": "1/1",
+   "p2p": "10/10"
+  },
+  {
+   "instance_id": "astral-sh__ruff-15356",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 54,
+   "f2p": "0/1",
+   "p2p": "131/133"
+  },
+  {
+   "instance_id": "axios__axios-5085",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 5,
+   "f2p": "1/1",
+   "p2p": "1/1"
+  },
+  {
+   "instance_id": "axios__axios-6539",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 5,
+   "f2p": "0/1",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "axios__axios-4731",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 4,
+   "f2p": "1/1",
+   "p2p": "1/1"
+  },
+  {
+   "instance_id": "babel__babel-15649",
+   "model_name_or_path": "s5_judge_multilingual",
+   "error": "patch apply failed"
+  },
+  {
+   "instance_id": "burntsushi__ripgrep-2209",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "0/1",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "caddyserver__caddy-4943",
+   "model_name_or_path": "s5_judge_multilingual",
+   "error": "KeyError: 'tests_status'"
+  },
+  {
+   "instance_id": "fastlane__fastlane-19304",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 6,
+   "f2p": "1/1",
+   "p2p": "10/10"
+  },
+  {
+   "instance_id": "fluent__fluentd-4311",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 5,
+   "f2p": "0/3",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "fluent__fluentd-4030",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 7,
+   "f2p": "0/1",
+   "p2p": "4/4"
+  },
+  {
+   "instance_id": "fmtlib__fmt-2317",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 22,
+   "f2p": "1/1",
+   "p2p": "103/103"
+  },
+  {
+   "instance_id": "gin-gonic__gin-1805",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "1/1",
+   "p2p": "13/13"
+  },
+  {
+   "instance_id": "gohugoio__hugo-12343",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 10,
+   "f2p": "1/1",
+   "p2p": "23/23"
+  },
+  {
+   "instance_id": "gohugoio__hugo-12579",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 12,
+   "f2p": "1/1",
+   "p2p": "23/23"
+  },
+  {
+   "instance_id": "gohugoio__hugo-12204",
+   "model_name_or_path": "s5_judge_multilingual",
+   "error": "patch apply failed"
+  },
+  {
+   "instance_id": "google__gson-1014",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 19,
+   "f2p": "2/2",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "jekyll__jekyll-9141",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 11,
+   "f2p": "0/1",
+   "p2p": "4/4"
+  },
+  {
+   "instance_id": "jekyll__jekyll-8047",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 4,
+   "f2p": "0/1",
+   "p2p": "10/11"
+  },
+  {
+   "instance_id": "jordansissel__fpm-1829",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 5,
+   "f2p": "1/6",
+   "p2p": "41/41"
+  },
+  {
+   "instance_id": "laravel__framework-46234",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 3,
+   "f2p": "1/1",
+   "p2p": "44/44"
+  },
+  {
+   "instance_id": "mrdoob__three.js-26589",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 9,
+   "f2p": "3/3",
+   "p2p": "13/13"
+  },
+  {
+   "instance_id": "php-cs-fixer__php-cs-fixer-8064",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 2,
+   "f2p": "1/1",
+   "p2p": "17/17"
+  },
+  {
+   "instance_id": "phpoffice__phpspreadsheet-3903",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 3,
+   "f2p": "1/1",
+   "p2p": "10/10"
+  },
+  {
+   "instance_id": "preactjs__preact-3739",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 5,
+   "f2p": "1/1",
+   "p2p": "12/12"
+  },
+  {
+   "instance_id": "preactjs__preact-3345",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 7,
+   "f2p": "0/1",
+   "p2p": "16/16"
+  },
+  {
+   "instance_id": "projectlombok__lombok-2792",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 26,
+   "f2p": "0/1",
+   "p2p": "300/300"
+  },
+  {
+   "instance_id": "projectlombok__lombok-3009",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 24,
+   "f2p": "1/1",
+   "p2p": "321/322"
+  },
+  {
+   "instance_id": "prometheus__prometheus-10633",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 6,
+   "f2p": "0/1",
+   "p2p": "0/0"
+  },
+  {
+   "instance_id": "prometheus__prometheus-9248",
+   "model_name_or_path": "s5_judge_multilingual",
+   "error": "KeyError: 'tests_status'"
+  },
+  {
+   "instance_id": "redis__redis-11734",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 97,
+   "f2p": "0/2",
+   "p2p": "47/47"
+  },
+  {
+   "instance_id": "rubocop__rubocop-13579",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 4,
+   "f2p": "0/4",
+   "p2p": "15/15"
+  },
+  {
+   "instance_id": "rubocop__rubocop-13375",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 11,
+   "f2p": "1/1",
+   "p2p": "100/100"
+  },
+  {
+   "instance_id": "sharkdp__bat-2393",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 10,
+   "f2p": "1/1",
+   "p2p": "2/2"
+  },
+  {
+   "instance_id": "sharkdp__bat-2835",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 18,
+   "f2p": "1/1",
+   "p2p": "12/12"
+  },
+  {
+   "instance_id": "tokio-rs__axum-2096",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 17,
+   "f2p": "2/4",
+   "p2p": "17/17"
+  },
+  {
+   "instance_id": "tokio-rs__axum-734",
+   "model_name_or_path": "s5_judge_multilingual",
+   "error": "KeyError: 'tests_status'"
+  },
+  {
+   "instance_id": "tokio-rs__tokio-7139",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 13,
+   "f2p": "1/1",
+   "p2p": "16/16"
+  },
+  {
+   "instance_id": "tokio-rs__tokio-6724",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 8,
+   "f2p": "1/1",
+   "p2p": "2/2"
+  },
+  {
+   "instance_id": "uutils__coreutils-6731",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 19,
+   "f2p": "1/1",
+   "p2p": "9/9"
+  },
+  {
+   "instance_id": "valkey-io__valkey-1842",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": false,
+   "patch_applied": true,
+   "runtime_s": 1499,
+   "f2p": "0/1",
+   "p2p": "0/3"
+  },
+  {
+   "instance_id": "vuejs__core-11870",
+   "model_name_or_path": "s5_judge_multilingual",
+   "resolved": true,
+   "patch_applied": true,
+   "runtime_s": 6,
+   "f2p": "1/1",
+   "p2p": "7/7"
+  }
+ ]
+}
